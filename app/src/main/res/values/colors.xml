@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="login_edit_text_color">#CCCCCC</color>
+
+    <color name="iconWhite">#FDFDFD</color>
+
+    <color name="orangeColor">#FF9200</color>
+    <color name="blueColor">#007FE1</color>
+    <color name="greenColor">#00B63B</color>
+    <color name="purpleColor">#6012B3</color>
+
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#727272</color>
+
+    <color name="facebook_blue">#464F99</color>
+
+    <color name="star_green">#05d605</color>
+    <color name="star_blue">#3CC5ED</color>
+    <color name="star_orange">#FF7E04</color>
+
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#B6B6B6</color>
+
+    <color name="text_button_disabled">#AAAAAA</color>
+    <color name="background_button_disabled">#DDDDDD</color>
+    <color name="text_button_selected">#FFFFFF</color>
+
+    <color name="black_semi_transparent">#B2000000</color>
+
+    <color name="black_transparent">#80000000</color>
+
+    <color name="gray_semi_transparent">#B2CCCCCC</color>
+</resources>
