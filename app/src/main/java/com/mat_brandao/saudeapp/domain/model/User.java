@@ -1,5 +1,6 @@
 package com.mat_brandao.saudeapp.domain.model;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmObject;
@@ -9,26 +10,46 @@ import io.realm.RealmObject;
  */
 
 public class User extends RealmObject {
+    public static final int NORMAL_LOGIN_TYPE = 0;
+    public static final int FACEBOOK_LOGIN_TYPE = 1;
+    public static final int GOOGLE_LOGIN_TYPE = 1;
+
     @SerializedName("nomeCompleto")
+    @Expose
     private String name;
     @SerializedName("email")
+    @Expose
     private String email;
     @SerializedName("senha")
+    @Expose
     private String password;
     @SerializedName("nomeUsuario")
+    @Expose
     private String username;
     @SerializedName("CEP")
+    @Expose
     private String cep;
     @SerializedName("sexo")
+    @Expose
     private String sex;
+    @SerializedName("tokenFacebook")
+    @Expose
+    private String facebookToken;
+    @SerializedName("tokenGoogle")
+    @Expose
+    private String googleToken;
+
+    private int passwordType;
 
     public User() {
     }
 
-    public User(String name, String email, String username, String password, String cep, String sex) {
+    public User(String name, String email, String username, String password, String facebookToken, String googleToken, String cep, String sex) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.facebookToken = facebookToken;
+        this.googleToken = googleToken;
         this.username = username;
         this.cep = cep;
         this.sex = sex;
@@ -80,5 +101,13 @@ public class User extends RealmObject {
 
     public void setSex(String sex) {
         this.sex = sex;
+    }
+
+    public int getPasswordType() {
+        return passwordType;
+    }
+
+    public void setPasswordType(int passwordType) {
+        this.passwordType = passwordType;
     }
 }

@@ -5,6 +5,7 @@ import android.util.Patterns;
 import android.widget.ArrayAdapter;
 
 import com.mat_brandao.saudeapp.R;
+import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.util.MaskUtil;
 
 import java.io.IOException;
@@ -31,6 +32,8 @@ public class RegisterPresenterImpl implements RegisterPresenter {
     private CompositeSubscription mSubscription = new CompositeSubscription();
     private String mName, mEmail, mSelectedSex, mCep, mPassword;
     private long mBirthDate;
+
+    private User mUser;
 
     @Override
     public void onResume() {
@@ -61,8 +64,25 @@ public class RegisterPresenterImpl implements RegisterPresenter {
         mContext = context;
         mView = view;
 
+        mUser = mInteractor.getUser();
+
         setupSpinners();
         setupObservables();
+
+        if (mUser != null) {
+            showFacebookData();
+        }
+    }
+
+    private void showFacebookData() {
+        mName = mUser.getName();
+        mEmail = mUser.getEmail();
+        mPassword = mUser.getPassword();
+        mView.setNameText(mUser.getName());
+        mView.setEmailText(mUser.getEmail());
+        mView.setPasswordText(mUser.getPassword());
+        mView.setPasswordConfirmationText(mUser.getPassword());
+        mView.disableFields();
     }
 
     private void setupObservables() {
@@ -175,12 +195,44 @@ public class RegisterPresenterImpl implements RegisterPresenter {
 
     @Override
     public void onSaveFabClick() {
-        mLastObservable = mInteractor.requestCreateUser(mName, mEmail, mSelectedSex,
+        if (mUser == null) {
+            requestCreateNormalUser();
+        } else if (mUser.getPasswordType() == User.FACEBOOK_LOGIN_TYPE) {
+            requestCreateFacebookUser();
+        } else if (mUser.getPasswordType() == User.GOOGLE_LOGIN_TYPE) {
+            requestCreateGoogleUser();
+        }
+    }
+
+    private void requestCreateNormalUser() {
+        mLastObservable = mInteractor.requestCreateNormalUser(mName, mEmail, mSelectedSex,
                 mCep, mBirthDate, mPassword);
         mLastObserver = createUserObserver;
 
         mView.showProgressDialog(mContext.getString(R.string.progress_creating_user));
-        mSubscription.add(mInteractor.requestCreateUser(mName, mEmail, mSelectedSex, MaskUtil.unmask(mCep), mBirthDate, mPassword)
+        mSubscription.add(mInteractor.requestCreateNormalUser(mName, mEmail, mSelectedSex, MaskUtil.unmask(mCep), mBirthDate, mPassword)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(createUserObserver));
+    }
+
+    private void requestCreateFacebookUser() {
+        mLastObservable = mInteractor.requestCreateFacebookUser(mName, mEmail, mSelectedSex,
+                mCep, mBirthDate, mPassword);
+        mLastObserver = createUserObserver;
+
+        mView.showProgressDialog(mContext.getString(R.string.progress_creating_user));
+        mSubscription.add(mInteractor.requestCreateFacebookUser(mName, mEmail, mSelectedSex, MaskUtil.unmask(mCep), mBirthDate, mPassword)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(createUserObserver));
+    }
+
+    private void requestCreateGoogleUser() {
+        mLastObservable = mInteractor.requestCreateGoogleUser(mName, mEmail, mSelectedSex,
+                mCep, mBirthDate, mPassword);
+        mLastObserver = createUserObserver;
+
+        mView.showProgressDialog(mContext.getString(R.string.progress_creating_user));
+        mSubscription.add(mInteractor.requestCreateGoogleUser(mName, mEmail, mSelectedSex, MaskUtil.unmask(mCep), mBirthDate, mPassword)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(createUserObserver));
     }

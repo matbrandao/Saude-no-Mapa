@@ -21,8 +21,28 @@ public class RegisterInteractorImpl implements RegisterInteractor {
     }
 
     @Override
-    public Observable<Response<ResponseBody>> requestCreateUser(String name, String email, String sex, String cep, long birthDate, String password) {
+    public Observable<Response<ResponseBody>> requestCreateNormalUser(String name, String email, String sex,
+                                                                      String cep, long birthDate, String password) {
         return RestClient.get()
-                .createUser(new User(name, email, email, password, cep, sex));
+                .createUser(new User(name, email, email, password, null, null, cep, sex));
+    }
+
+    @Override
+    public Observable<Response<ResponseBody>> requestCreateFacebookUser(String name, String email, String sex,
+                                                                        String cep, long birthDate, String password) {
+        return RestClient.get()
+                .createUser(new User(name, email, email, null, password, null, cep, sex));
+    }
+
+    @Override
+    public Observable<Response<ResponseBody>> requestCreateGoogleUser(String name, String email, String sex,
+                                                                      String cep, long birthDate, String password) {
+        return RestClient.get()
+                .createUser(new User(name, email, email, null, null, password, cep, sex));
+    }
+
+    @Override
+    public User getUser() {
+        return mUserRepository.getUser();
     }
 }

@@ -91,7 +91,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/password_edit_text"
-                android:maxLength="32"
                 android:inputType="textPassword"
                 android:hint="@string/password_hint"/>
         </android.support.design.widget.TextInputLayout>

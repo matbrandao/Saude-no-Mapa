@@ -1,5 +1,6 @@
 package com.mat_brandao.saudeapp.domain.model;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -9,10 +10,14 @@ import java.util.List;
  */
 
 public class Error401 {
+    @Expose
     private String url;
+    @Expose
     private int statusCode;
+    @Expose
     private String reasonPhrase;
     @SerializedName("mensagens")
+    @Expose
     private List<ErrorMessage> messageList;
 
     public String getUrl() {

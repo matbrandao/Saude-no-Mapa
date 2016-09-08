@@ -52,6 +52,7 @@ public class RestClient {
 
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd")
+                .excludeFieldsWithoutExposeAnnotation()
                 .create();
 
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());

@@ -1,5 +1,6 @@
 package com.mat_brandao.saudeapp.domain.model;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -7,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ErrorMessage {
     @SerializedName("texto")
+    @Expose
     private String text;
 
     public String getText() {

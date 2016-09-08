@@ -19,4 +19,12 @@ public interface RetrofitInterface {
 
     @POST("appCivicoRS/rest/pessoas")
     Observable<Response<ResponseBody>> createUser(@Body User user);
+
+    @POST("appCivicoRS/rest/pessoas/autenticar")
+    Observable<Response<User>> loginWithFacebook(@Header("email") String email, @Header("facebookToken") String token);
+
+    @POST("appCivicoRS/rest/pessoas/autenticar")
+    Observable<Response<User>> loginWithGoogle(@Header("email") String email, @Header("googleToken") String token);
+
+
 }

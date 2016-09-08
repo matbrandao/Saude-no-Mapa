@@ -158,12 +158,13 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted {
                         } else {
                             User user = new User();
                             user.setName(name);
+                            Log.d(TAG, "onSuccess: " + loginResult.getAccessToken().getToken());
                             user.setEmail(email);
-                            user.setPassword(AccessToken.getCurrentAccessToken().getApplicationId() +
-                                    AccessToken.getCurrentAccessToken().getUserId());
+                            user.setPassword(AccessToken.getCurrentAccessToken().getToken());
+                            user.setPasswordType(User.FACEBOOK_LOGIN_TYPE);
                             mInteractor.saveUserToRealm(user);
                             isFacebook = true;
-                            mSubscription.add(mInteractor.requestLoginWithAccount(email, user.getPassword())
+                            mSubscription.add(mInteractor.requestLoginWithFacebook(email, user.getPassword())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(loginObserver));
                         }
@@ -220,6 +221,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted {
                     mView.showToast(mContext.getString(R.string.http_error_500));
                 }
             } else {
+                Timber.i("header = " + userResponse.headers().get("appToken"));
                 Timber.i("name = " + userResponse.body().getName());
 //                mInteractor.saveUserToRealm(userResponse.getData());
 //                mView.goToActivity(MainActivity.class);

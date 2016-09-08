@@ -89,4 +89,16 @@ public class LoginInteractorImpl implements LoginInteractor {
         mUserRepository.clearUsers();
         mUserRepository.saveUser(user);
     }
+
+    @Override
+    public Observable<Response<User>> requestLoginWithFacebook(String email, String token) {
+        return RestClient.get()
+                .loginWithFacebook(email, token);
+    }
+
+    @Override
+    public Observable<Response<User>> requestLoginWithGoogle(String email, String token) {
+        return RestClient.get()
+                .loginWithGoogle(email, token);
+    }
 }

@@ -2,6 +2,8 @@ package com.mat_brandao.saudeapp;
 
 import android.app.Application;
 
+import com.facebook.FacebookSdk;
+
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import timber.log.Timber;
@@ -23,5 +25,8 @@ public class SaudeApp extends Application {
                 .build();
 
         Realm.setDefaultConfiguration(configuration);
+
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        Timber.i("Signature " +  FacebookSdk.getApplicationSignature(getApplicationContext()));
     }
 }
