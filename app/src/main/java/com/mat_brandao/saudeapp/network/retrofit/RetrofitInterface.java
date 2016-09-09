@@ -15,6 +15,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import rx.Observable;
 
 /**
@@ -41,5 +42,5 @@ public interface RetrofitInterface {
     @GET("mapa-da-saude/rest/estabelecimentos/latitude/{latitude}/longitude/{longitude}/raio/{raio}")
     Observable<Response<List<Establishment>>> getEstablishmentsByGeoLocation(
             @Path("latitude") Double latitude, @Path("longitude") Double longitude,
-            @Path("raio") Double radius);
+            @Path("raio") Double radius, @Query("pagina") Integer pagination);
 }

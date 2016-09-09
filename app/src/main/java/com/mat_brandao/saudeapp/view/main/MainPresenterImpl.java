@@ -10,8 +10,17 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.mat_brandao.saudeapp.R;
+import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
 import com.tbruyelle.rxpermissions.RxPermissions;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Response;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnLocationFound {
     private static final String TAG = "MainPresenterImpl";
@@ -20,9 +29,13 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
     private MainInteractorImpl mInteractor;
     private Context mContext;
     private MainView mView;
-    private GoogleMap mMap;
 
+    private GoogleMap mMap;
     private Location mLocation;
+
+    private CompositeSubscription mSubscription = new CompositeSubscription();
+
+    private List<Establishment> mEstablishmentList = new ArrayList<>();
 
     @Override
     public void onResume() {
@@ -36,6 +49,7 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
 
     @Override
     public void onDestroy() {
+        mSubscription.unsubscribe();
         mView = null;
     }
 
@@ -104,13 +118,47 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
     @Override
     public void onLocationFound(Location location) {
         // TODO: 09/09/2016
-        Log.d(TAG, "onLocationFound() called with: " + "location = [" + location + "]");
         mLocation = location;
         mMap.setMyLocationEnabled(true);
         updateMapLocation();
+
+        requestEstablishments(0);
+    }
+
+    private void requestEstablishments(int pagination) {
+        mSubscription.add(mInteractor.requestEstablishmentsByLocation(mLocation, pagination)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(requestEstablishmentsObserver));
     }
 
     private void updateMapLocation() {
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), DEFAULT_ZOOM));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(mLocation.getLatitude(),
+                        mLocation.getLongitude()),
+                DEFAULT_ZOOM));
     }
+
+    Observer<Response<List<Establishment>>> requestEstablishmentsObserver = new Observer<Response<List<Establishment>>>() {
+        @Override
+        public void onCompleted() {
+            Log.d(TAG, "onCompleted() called with: " + "");
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.d(TAG, "onError() called with: " + "e = [" + e + "]");
+        }
+
+        @Override
+        public void onNext(Response<List<Establishment>> listResponse) {
+            if (listResponse.isSuccessful()) {
+                mEstablishmentList.addAll(listResponse.body());
+                if (listResponse.body().size() == 30) {
+                    requestEstablishments(mEstablishmentList.size());
+                }
+            } else {
+
+            }
+        }
+    };
 }
