@@ -18,6 +18,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.Scope;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.util.StringListener;
 import com.mat_brandao.saudeapp.view.base.BaseActivity;
@@ -28,6 +31,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class LoginActivity extends BaseActivity implements LoginView {
+    public static final int GOOGLE_SIGN_IN = 100;
 
     @Bind(R.id.logo_image)
     ImageView logoImage;
@@ -49,6 +53,10 @@ public class LoginActivity extends BaseActivity implements LoginView {
     Button loginFacebookButton;
     @Bind(R.id.account_login)
     TextView accountLogin;
+    @Bind(R.id.forgot_password)
+    TextView forgotPassword;
+    @Bind(R.id.login_google_button)
+    SignInButton loginGoogleButton;
 
     private LoginPresenterImpl mPresenter;
 
@@ -120,6 +128,11 @@ public class LoginActivity extends BaseActivity implements LoginView {
     @OnClick(R.id.login_facebook_button)
     void facebookLogin() {
         mPresenter.facebookLoginClicked();
+    }
+
+    @OnClick(R.id.login_google_button)
+    void googleLogin() {
+        mPresenter.googleLoginClicked();
     }
 
     @OnClick(R.id.login_normal_button)
@@ -205,6 +218,17 @@ public class LoginActivity extends BaseActivity implements LoginView {
         });
 
         alertDialog.show();
+    }
+
+    @Override
+    public void setGoogleButtonScope(GoogleSignInOptions gso) {
+        loginGoogleButton.setSize(SignInButton.SIZE_STANDARD);
+        loginGoogleButton.setScopes(gso.getScopeArray());
+    }
+
+    @Override
+    public void startActivityForResult(Intent signInIntent) {
+        startActivityForResult(signInIntent, GOOGLE_SIGN_IN);
     }
 
     @Override

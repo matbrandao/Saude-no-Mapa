@@ -31,4 +31,6 @@ public interface LoginInteractor {
     Observable<Response<ResponseBody>> requestRememberPassword(String email);
 
     void saveUserToRealm(User user);
+
+    void clearUsers();
 }

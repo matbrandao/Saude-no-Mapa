@@ -23,8 +23,6 @@ public interface RegisterInteractor {
     Observable<Response<ResponseBody>> requestCreateGoogleUser(String name, String email, String sex,
                                                                String cep, long birthDate, String password);
 
-    void requestLoginToFacebook(List<String> permissions, FacebookCallback<LoginResult> callback);
-
     Observable<Response<User>> requestLoginWithAccount(String email, String password);
 
     Observable<Response<User>> requestLoginWithFacebook(String email, String token);
@@ -34,8 +32,6 @@ public interface RegisterInteractor {
     void saveUserToRealm(User user);
 
     User getUser();
-
-    void onActivityResult(int requestCode, int resultCode, Intent data);
 
     Observable<Response<ResponseBody>> requestSaveProfilePhoto(Integer avatarDrawable);
 }

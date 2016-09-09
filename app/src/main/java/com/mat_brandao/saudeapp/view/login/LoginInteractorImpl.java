@@ -91,6 +91,11 @@ public class LoginInteractorImpl implements LoginInteractor {
     }
 
     @Override
+    public void clearUsers() {
+        mUserRepository.clearUsers();
+    }
+
+    @Override
     public Observable<Response<User>> requestLoginWithFacebook(String email, String token) {
         return RestClient.get()
                 .loginWithFacebook(email, token);

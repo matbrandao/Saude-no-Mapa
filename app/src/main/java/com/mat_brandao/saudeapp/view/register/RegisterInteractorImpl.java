@@ -31,7 +31,6 @@ public class RegisterInteractorImpl implements RegisterInteractor {
 
     private final Context mContext;
     private final UserRepositoryImpl mUserRepository;
-    private CallbackManager mCallbackmanager;
 
     public RegisterInteractorImpl(Context context) {
         mContext = context;
@@ -57,20 +56,6 @@ public class RegisterInteractorImpl implements RegisterInteractor {
                                                                       String cep, long birthDate, String password) {
         return RestClient.get()
                 .createUser(new User(name, email, name.toLowerCase().replace(" ", ""), null, null, password, cep, sex));
-    }
-
-    @Override
-    public void requestLoginToFacebook(List<String> permissions, FacebookCallback<LoginResult> callback) {
-        mCallbackmanager = CallbackManager.Factory.create();
-        LoginManager.getInstance()
-                .logInWithReadPermissions((LoginActivity) mContext, permissions);
-        LoginManager.getInstance()
-                .registerCallback(mCallbackmanager, callback);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mCallbackmanager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

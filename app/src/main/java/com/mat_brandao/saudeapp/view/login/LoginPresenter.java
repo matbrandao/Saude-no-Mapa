@@ -16,4 +16,6 @@ public interface LoginPresenter extends BasePresenter {
     void registerButtonClicked();
 
     void onActivityResult(int requestCode, int resultCode, Intent data);
+
+    void googleLoginClicked();
 }

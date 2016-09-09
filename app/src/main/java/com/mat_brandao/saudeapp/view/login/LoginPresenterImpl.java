@@ -3,6 +3,7 @@ package com.mat_brandao.saudeapp.view.login;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.EditText;
@@ -12,6 +13,14 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.login.LoginResult;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
 import com.google.gson.Gson;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Error401;
@@ -24,12 +33,16 @@ import org.json.JSONException;
 import java.util.Arrays;
 
 import retrofit2.Response;
+import rx.Observable;
 import rx.Observer;
+import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.Subscriptions;
 import timber.log.Timber;
 
-public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted {
+public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "LoginPresenterImpl";
 
     private LoginInteractorImpl mInteractor;
@@ -39,6 +52,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted {
     private boolean isFacebook;
 
     private CompositeSubscription mSubscription = new CompositeSubscription();
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     public void onResume() {
@@ -64,6 +78,22 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted {
         EditText emailEdit = mView.getEmailEditText();
         EditText passEdit = mView.getPasswordEditText();
         mInteractor.validateForms(emailEdit, passEdit, this);
+
+        configureGoogleClient();
+    }
+
+    private void configureGoogleClient() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(new Scope(Scopes.PLUS_LOGIN))
+                .requestEmail()
+                .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(mContext)
+                .enableAutoManage((LoginActivity) mContext, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+        mView.setGoogleButtonScope(gso);
     }
 
     @Override
@@ -91,6 +121,12 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted {
     }
 
     @Override
+    public void googleLoginClicked() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        mView.startActivityForResult(signInIntent);
+    }
+
+    @Override
     public void facebookLoginClicked() {
         mView.showProgressDialog("Efetuando login...");
         mInteractor.requestLoginToFacebook(Arrays.asList("email", "public_profile"), facebookCallback);
@@ -109,6 +145,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted {
 
     @Override
     public void registerButtonClicked() {
+        mInteractor.clearUsers();
         mView.goToActivity(RegisterActivity.class);
     }
 
@@ -175,8 +212,6 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted {
             parameters.putString("fields", "id,name,email");
             request.setParameters(parameters);
             request.executeAsync();
-
-            Log.d(TAG, "onSuccess() called with: " + "loginResult = [" + loginResult + "]");
         }
 
         @Override
@@ -234,11 +269,40 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mInteractor.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == LoginActivity.GOOGLE_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
+        } else {
+            mInteractor.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void handleSignInResult(GoogleSignInResult result) {
+        if (result.isSuccess()) {
+            GoogleSignInAccount acct = result.getSignInAccount();
+            User user = new User();
+            user.setName(acct.getDisplayName());
+            // FIXME: 09/09/2016
+            user.setEmail("2" + acct.getEmail());
+            user.setPassword(acct.zzafm());
+            user.setPasswordType(User.GOOGLE_LOGIN_TYPE);
+            mInteractor.saveUserToRealm(user);
+            isFacebook = true;
+            mSubscription.add(mInteractor.requestLoginWithGoogle(user.getEmail(), user.getPassword())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(loginObserver));
+        } else {
+            mView.showToast(mContext.getString(R.string.login_error_try_again));
+        }
     }
 
     @Override
     public void onRetryClicked() {
         // TODO: 07-Sep-16
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        // TODO: 09/09/2016  
     }
 }
