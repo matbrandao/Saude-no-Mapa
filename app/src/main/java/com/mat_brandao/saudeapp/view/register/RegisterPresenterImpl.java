@@ -2,6 +2,7 @@ package com.mat_brandao.saudeapp.view.register;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,6 +18,7 @@ import com.mat_brandao.saudeapp.domain.model.Error401;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
 import com.mat_brandao.saudeapp.domain.util.MaskUtil;
+import com.mat_brandao.saudeapp.view.main.MainActivity;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.IOException;
@@ -220,7 +222,7 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
                             requestCreateGoogleUser();
                         }
                     } else {
-                        mView.showToast("Para criar o seu usuário é necessário a seguinte permissão.");
+                        mView.showToast(mContext.getString(R.string.needed_permission_to_create_user));
                     }
                 });
     }
@@ -386,7 +388,7 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
                 user.setAppToken(userResponse.headers().get("appToken"));
                 if (mUser != null)
                     user.setPasswordType(mUser.getPasswordType());
-                mInteractor.saveUserToRealm(userResponse.body());
+                mInteractor.saveUserToRealm(user);
                 mUser = mInteractor.getUser();
 
                 mSubscription.add(mInteractor.requestSaveProfilePhoto(mAvatarUrl)
@@ -412,7 +414,9 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
         public void onNext(Response<ResponseBody> responseBody) {
             Timber.i("onNext() called with: responseBody = [" + responseBody + "]");
             if (responseBody.isSuccessful()) {
-
+                Intent intent = new Intent(mContext, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                mView.goToActivity(intent);
             }
         }
     };

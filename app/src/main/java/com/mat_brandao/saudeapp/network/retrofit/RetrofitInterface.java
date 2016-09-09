@@ -1,6 +1,9 @@
 package com.mat_brandao.saudeapp.network.retrofit;
 
+import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.model.User;
+
+import java.util.List;
 
 import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
@@ -34,4 +37,9 @@ public interface RetrofitInterface {
     @POST("appCivicoRS/rest/pessoas/{userId}/fotoPerfil")
     Observable<Response<ResponseBody>> saveProfilePhoto(@Path("userId") long userId,
                                                         @Part MultipartBody.Part filePart);
+
+    @GET("mapa-da-saude/rest/estabelecimentos/latitude/{latitude}/longitude/{longitude}/raio/{raio}")
+    Observable<Response<List<Establishment>>> getEstablishmentsByGeoLocation(
+            @Path("latitude") Double latitude, @Path("longitude") Double longitude,
+            @Path("raio") Double radius);
 }

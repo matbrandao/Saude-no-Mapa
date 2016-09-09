@@ -26,6 +26,7 @@ import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Error401;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.util.OnFormEmitted;
+import com.mat_brandao.saudeapp.view.main.MainActivity;
 import com.mat_brandao.saudeapp.view.register.RegisterActivity;
 
 import org.json.JSONException;
@@ -258,11 +259,12 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
                     mView.showToast(mContext.getString(R.string.http_error_500));
                 }
             } else {
-                Timber.i("header = " + userResponse.headers().get("appToken"));
-                Timber.i("name = " + userResponse.body().getName());
-//                mInteractor.saveUserToRealm(userResponse.getData());
-//                mView.goToActivity(MainActivity.class);
-//                mView.finishActivity();
+                User user = userResponse.body();
+                user.setAppToken(userResponse.headers().get("appToken"));
+                mInteractor.saveUserToRealm(user);
+                Intent intent = new Intent(mContext, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                mView.goToActivity(intent);
             }
         }
     };

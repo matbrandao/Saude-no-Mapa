@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "811875232937",
+    "project_id": "firebase-saudeapp"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:811875232937:android:81d53218d3925849",
+        "android_client_info": {
+          "package_name": "com.mat_brandao.saudeapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "811875232937-gnc0kqbmnah7fb3lq90k5q72fii9fc6l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mat_brandao.saudeapp",
+            "certificate_hash": "FD7BFC708ADCF7C0A82948634BC861372FFF31A3"
+          }
+        },
+        {
+          "client_id": "811875232937-h26n9hh44ov6k6246ffasl43539d27od.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9iDRX2oENR2DYdek12nyNJ9TJleVe008"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -40,4 +40,9 @@
     <string name="dialog_reset_password_message">Informe seu e-mail para recuperar sua senha.</string>
     <string name="remember_password_email_sent">Um e-mail com instruções foi enviado ao endereço informado.</string>
     <string name="progress_logging_in">Efetuando Login</string>
+    <string name="needed_permission_to_create_user">Para criar o seu usuário é necessário a seguinte permissão.</string>
+    <string name="needed_location_permission">Para o melhor funcionamento do aplicativo, é necessária a permissão de localização.</string>
+    <string name="dialog_gps_title">Acionar GPS</string>
+    <string name="dialog_gps_message">Para o melhor funcionamento do aplicativo, por favor, ligue o GPS</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>
