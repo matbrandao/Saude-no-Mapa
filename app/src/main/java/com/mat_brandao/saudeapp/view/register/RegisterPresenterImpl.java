@@ -1,12 +1,23 @@
 package com.mat_brandao.saudeapp.view.register;
 
+import android.Manifest;
 import android.content.Context;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Patterns;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ArrayAdapter;
 
+import com.google.gson.Gson;
 import com.mat_brandao.saudeapp.R;
+import com.mat_brandao.saudeapp.domain.model.Error401;
 import com.mat_brandao.saudeapp.domain.model.User;
+import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
 import com.mat_brandao.saudeapp.domain.util.MaskUtil;
+import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -22,7 +33,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-public class RegisterPresenterImpl implements RegisterPresenter {
+public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectClickListener<Integer> {
     private RegisterInteractorImpl mInteractor;
     private Context mContext;
     private RegisterView mView;
@@ -34,6 +45,8 @@ public class RegisterPresenterImpl implements RegisterPresenter {
     private long mBirthDate;
 
     private User mUser;
+    private BottomSheetDialog mBottomSheetDialog;
+    private Integer mAvatarUrl = R.drawable.avatar_placeholder;
 
     @Override
     public void onResume() {
@@ -195,13 +208,21 @@ public class RegisterPresenterImpl implements RegisterPresenter {
 
     @Override
     public void onSaveFabClick() {
-        if (mUser == null) {
-            requestCreateNormalUser();
-        } else if (mUser.getPasswordType() == User.FACEBOOK_LOGIN_TYPE) {
-            requestCreateFacebookUser();
-        } else if (mUser.getPasswordType() == User.GOOGLE_LOGIN_TYPE) {
-            requestCreateGoogleUser();
-        }
+        RxPermissions.getInstance(mContext)
+                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .subscribe(isGranted -> {
+                    if (isGranted) {
+                        if (mUser == null) {
+                            requestCreateNormalUser();
+                        } else if (mUser.getPasswordType() == User.FACEBOOK_LOGIN_TYPE) {
+                            requestCreateFacebookUser();
+                        } else if (mUser.getPasswordType() == User.GOOGLE_LOGIN_TYPE) {
+                            requestCreateGoogleUser();
+                        }
+                    } else {
+                        mView.showToast("Para criar o seu usuário é necessário a seguinte permissão.");
+                    }
+                });
     }
 
     private void requestCreateNormalUser() {
@@ -250,28 +271,78 @@ public class RegisterPresenterImpl implements RegisterPresenter {
         mView.setBirthDateText(date);
     }
 
+    @Override
+    public void onAvatarClick() {
+        setupBottomSheetDialog();
+    }
+
+    private void setupBottomSheetDialog() {
+        mBottomSheetDialog = new BottomSheetDialog(mContext);
+        View dialogView = LayoutInflater.from(mContext)
+                .inflate(R.layout.dialog_bottom_sheet_profile, null);
+
+        RecyclerView avatarRecycler = (RecyclerView) dialogView.findViewById(R.id.avatar_recycler);
+        avatarRecycler.setHasFixedSize(true);
+        avatarRecycler.setLayoutManager(new GridLayoutManager(mContext, 3, GridLayoutManager.VERTICAL, false));
+
+        avatarRecycler.setAdapter(new AvatarAdapter(mContext, this));
+
+        mBottomSheetDialog.setContentView(dialogView);
+
+        dialogView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+
+        BottomSheetBehavior mBehavior = BottomSheetBehavior.from((View) dialogView.getParent());
+        mBehavior.setPeekHeight(dialogView.getMeasuredHeight() + 200);
+
+        mBottomSheetDialog.show();
+    }
+
+    @Override
+    public void onItemClick(Integer avatarDrawable) {
+        mView.loadImageToAvatar(avatarDrawable);
+        mAvatarUrl = avatarDrawable;
+        mBottomSheetDialog.dismiss();
+    }
+
     Observer<Response<ResponseBody>> createUserObserver = new Observer<Response<ResponseBody>>() {
         @Override
         public void onCompleted() {
-            mView.dismissProgressDialog();
-            Timber.i("onCompleted() called");
         }
 
         @Override
         public void onError(Throwable e) {
-            mView.dismissProgressDialog();
             mView.showNoConnectionSnackBar();
         }
 
         @Override
         public void onNext(Response<ResponseBody> response) {
+            mView.dismissProgressDialog();
+
             if (response.isSuccessful()) {
                 try {
                     mView.showToast(response.body().string().replace("\"", ""));
                 } catch (Exception e) {
                     mView.showToast(mContext.getString(R.string.http_success_register_user));
                 }
-                mView.finishActivity();
+                if (mUser == null) {
+                    mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
+                    mSubscription.add(mInteractor
+                            .requestLoginWithAccount(mEmail, mPassword)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(loginObserver));
+                } else if (mUser.getPasswordType() == User.FACEBOOK_LOGIN_TYPE) {
+                    mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
+                    mSubscription.add(mInteractor
+                            .requestLoginWithFacebook(mEmail, mPassword)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(loginObserver));
+                } else if (mUser.getPasswordType() == User.GOOGLE_LOGIN_TYPE) {
+                    mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
+                    mSubscription.add(mInteractor
+                            .requestLoginWithGoogle(mEmail, mPassword)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(loginObserver));
+                }
             } else {
                 if (response.code() == 400) {
                     try {
@@ -282,6 +353,66 @@ public class RegisterPresenterImpl implements RegisterPresenter {
                 } else {
                     mView.showToast(mContext.getString(R.string.http_error_500));
                 }
+            }
+        }
+    };
+
+    Observer<Response<User>> loginObserver = new Observer<Response<User>>() {
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            mView.dismissProgressDialog();
+            mView.showNoConnectionSnackBar();
+        }
+
+        @Override
+        public void onNext(Response<User> userResponse) {
+            if (!userResponse.isSuccessful()) {
+                if (userResponse.code() == 401) {
+                    try {
+                        Error401 error401 = new Gson().fromJson(userResponse.errorBody().string(), Error401.class);
+                        mView.showToast(error401.getMessageList().get(0).getText() + ".\nVerifique seus dados");
+                    } catch (Exception e) {
+                        mView.showToast(mContext.getString(R.string.http_error_generic));
+                    }
+                } else {
+                    mView.showToast(mContext.getString(R.string.http_error_500));
+                }
+            } else {
+                User user = userResponse.body();
+                user.setAppToken(userResponse.headers().get("appToken"));
+                if (mUser != null)
+                    user.setPasswordType(mUser.getPasswordType());
+                mInteractor.saveUserToRealm(userResponse.body());
+                mUser = mInteractor.getUser();
+
+                mSubscription.add(mInteractor.requestSaveProfilePhoto(mAvatarUrl)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(saveProfilePhotoObserver));
+            }
+        }
+    };
+
+    Observer<Response<ResponseBody>> saveProfilePhotoObserver = new Observer<Response<ResponseBody>>() {
+        @Override
+        public void onCompleted() {
+            mView.dismissProgressDialog();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            mView.dismissProgressDialog();
+            Timber.i("onError() called with: e = [" + e + "]");
+        }
+
+        @Override
+        public void onNext(Response<ResponseBody> responseBody) {
+            Timber.i("onNext() called with: responseBody = [" + responseBody + "]");
+            if (responseBody.isSuccessful()) {
+
             }
         }
     };

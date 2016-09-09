@@ -39,5 +39,5 @@
     <string name="login_hint_email">E-mail</string>
     <string name="dialog_reset_password_message">Informe seu e-mail para recuperar sua senha.</string>
     <string name="remember_password_email_sent">Um e-mail com instruções foi enviado ao endereço informado.</string>
-
+    <string name="progress_logging_in">Efetuando Login</string>
 </resources>

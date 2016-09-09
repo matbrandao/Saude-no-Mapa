@@ -50,4 +50,6 @@ public interface RegisterView extends BaseView.BaseProgressView {
     void setSexSpinnerAdapter(ArrayAdapter<String> stringArrayAdapter);
 
     void setBirthDateText(String date);
+
+    void loadImageToAvatar(Integer url);
 }

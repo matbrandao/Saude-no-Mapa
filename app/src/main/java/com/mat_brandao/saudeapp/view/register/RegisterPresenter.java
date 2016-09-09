@@ -8,4 +8,6 @@ public interface RegisterPresenter extends BasePresenter {
     void onBirthDateTouchListener();
 
     void onDateSet(int yy, int mm, int dd);
+
+    void onAvatarClick();
 }

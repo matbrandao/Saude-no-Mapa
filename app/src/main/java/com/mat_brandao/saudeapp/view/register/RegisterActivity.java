@@ -27,12 +27,14 @@ import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.util.MaskUtil;
 import com.mat_brandao.saudeapp.view.base.BaseActivity;
 import com.mat_brandao.saudeapp.view.base.BasePresenter;
+import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 import rx.Observable;
 
 public class RegisterActivity extends BaseActivity implements RegisterView {
@@ -69,6 +71,8 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
     TextInputLayout cepInputLayout;
     @Bind(R.id.sex_spinner)
     Spinner sexSpinner;
+    @Bind(R.id.avatar_image)
+    CircleImageView avatarImage;
 
     private static RegisterPresenterImpl mPresenter;
 
@@ -88,7 +92,6 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
 
         toggleFabButton(false);
         cepEditText.addTextChangedListener(MaskUtil.insertCep(cepEditText));
-//        birthDateEditText.addTextChangedListener(MaskUtil.insertDate(birthDateEditText));
 
         birthDateEditText.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
@@ -100,6 +103,11 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
         });
 
         mPresenter = new RegisterPresenterImpl(this, this);
+    }
+
+    @OnClick(R.id.avatar_image)
+    void onAvatarClick() {
+        mPresenter.onAvatarClick();
     }
 
     @OnClick(R.id.save_user_fab)
@@ -292,6 +300,13 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
     @Override
     public void setBirthDateText(String date) {
         birthDateEditText.setText(date);
+    }
+
+    @Override
+    public void loadImageToAvatar(Integer url) {
+        Picasso.with(this)
+                .load(url)
+                .into(avatarImage);
     }
 
     @SuppressLint("ValidFragment")

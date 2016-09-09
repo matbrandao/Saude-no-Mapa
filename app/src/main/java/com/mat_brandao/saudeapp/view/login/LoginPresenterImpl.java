@@ -158,13 +158,15 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted {
                         } else {
                             User user = new User();
                             user.setName(name);
-                            Log.d(TAG, "onSuccess: " + loginResult.getAccessToken().getToken());
-                            user.setEmail(email);
-                            user.setPassword(AccessToken.getCurrentAccessToken().getToken());
+                            // FIXME: 08-Sep-16
+//                            Log.d(TAG, "onSuccess: " + loginResult.getAccessToken().getToken());
+                            user.setEmail("x" + email);
+                            user.setPassword(AccessToken.getCurrentAccessToken().getApplicationId() +
+                                    AccessToken.getCurrentAccessToken().getUserId() + "x");
                             user.setPasswordType(User.FACEBOOK_LOGIN_TYPE);
                             mInteractor.saveUserToRealm(user);
                             isFacebook = true;
-                            mSubscription.add(mInteractor.requestLoginWithFacebook(email, user.getPassword())
+                            mSubscription.add(mInteractor.requestLoginWithFacebook(user.getEmail(), user.getPassword())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(loginObserver));
                         }

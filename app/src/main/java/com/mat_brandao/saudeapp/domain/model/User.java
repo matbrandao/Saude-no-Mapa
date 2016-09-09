@@ -12,8 +12,11 @@ import io.realm.RealmObject;
 public class User extends RealmObject {
     public static final int NORMAL_LOGIN_TYPE = 0;
     public static final int FACEBOOK_LOGIN_TYPE = 1;
-    public static final int GOOGLE_LOGIN_TYPE = 1;
+    public static final int GOOGLE_LOGIN_TYPE = 2;
 
+    @SerializedName("cod")
+    @Expose
+    private long id;
     @SerializedName("nomeCompleto")
     @Expose
     private String name;
@@ -38,10 +41,26 @@ public class User extends RealmObject {
     @SerializedName("tokenGoogle")
     @Expose
     private String googleToken;
+    @SerializedName("avatarUrl")
+    @Expose
+    private String avatarUrl;
 
     private int passwordType;
+    private String appToken;
 
     public User() {
+    }
+
+    public User(String name, String email, String username, String password, String facebookToken, String googleToken, String cep, String sex, String avatarUrl) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.facebookToken = facebookToken;
+        this.googleToken = googleToken;
+        this.username = username;
+        this.cep = cep;
+        this.sex = sex;
+        this.avatarUrl = avatarUrl;
     }
 
     public User(String name, String email, String username, String password, String facebookToken, String googleToken, String cep, String sex) {
@@ -109,5 +128,37 @@ public class User extends RealmObject {
 
     public void setPasswordType(int passwordType) {
         this.passwordType = passwordType;
+    }
+
+    public String getAppToken() {
+        return appToken;
+    }
+
+    public void setAppToken(String appToken) {
+        this.appToken = appToken;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getGoogleToken() {
+        return googleToken;
+    }
+
+    public void setGoogleToken(String googleToken) {
+        this.googleToken = googleToken;
+    }
+
+    public String getFacebookToken() {
+        return facebookToken;
+    }
+
+    public void setFacebookToken(String facebookToken) {
+        this.facebookToken = facebookToken;
     }
 }

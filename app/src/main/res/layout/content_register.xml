@@ -14,6 +14,14 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/avatar_image"
+            android:src="@drawable/avatar_placeholder"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"/>
+
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

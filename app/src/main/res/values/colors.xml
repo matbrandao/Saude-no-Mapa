@@ -26,7 +26,7 @@
 
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
-
+    <color name="white_transparent">#33FFFFFF</color>
     <color name="text_button_disabled">#AAAAAA</color>
     <color name="background_button_disabled">#DDDDDD</color>
     <color name="text_button_selected">#FFFFFF</color>
