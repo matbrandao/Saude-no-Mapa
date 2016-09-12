@@ -45,4 +45,14 @@
     <string name="dialog_gps_title">Acionar GPS</string>
     <string name="dialog_gps_message">Para o melhor funcionamento do aplicativo, por favor, ligue o GPS</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="filter_dialog_title">Filtrar Estabelecimentos</string>
+    <string name="rede_atendimento_filter">Rede Atendimento:</string>
+    <string name="vinculo_sus_filter">Vínculo ao SUS:</string>
+    <string name="categoria_filter">Categoria:</string>
+    <string name="atendimento_urgencial_filter">Atendimento Urgencial:</string>
+    <string name="atendimento_ambulatorial_filter">Atendimento Ambulatorial:</string>
+    <string name="centro_cirurgico_filter">Centro Cirúrgico:</string>
+    <string name="obstetra_filter">Obstetra:</string>
+    <string name="neo_natal_filter">Neo Natal:</string>
+    <string name="dialise_filter">Diálise:</string>
 </resources>

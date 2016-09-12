@@ -2,13 +2,19 @@ package com.mat_brandao.saudeapp.view.main;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Handler;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -19,13 +25,17 @@ import com.google.gson.Gson;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Error401;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
+import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import retrofit2.Response;
+import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -47,6 +57,9 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
 
     private List<Establishment> mEstablishmentList = new ArrayList<>();
     private Marker lastOpenned;
+    private List<String> mRedeAtendimentoList, mCategoriaList, mVinculoSusList;
+    private Observable<Response<List<Establishment>>> mLastObservable;
+    private Observer<Response<List<Establishment>>> mLastObserver;
 
     @Override
     public void onResume() {
@@ -66,13 +79,19 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
 
     @Override
     public void onRetryClicked() {
-
+        mView.toggleFabButton(false);
+        mView.setProgressFabVisibility(View.VISIBLE);
+        mLastObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(mLastObserver);
     }
 
     public MainPresenterImpl(MainView view, Context context) {
         mInteractor = new MainInteractorImpl(context);
         mContext = context;
         mView = view;
+
+        // TODO: 12/09/2016 add loading to first loading
     }
 
     @Override
@@ -109,7 +128,7 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
                     mInteractor.animateMarketToTop(mMap, marker, mView.getMapContainerHeight());
                     new Handler().postDelayed(() -> {
                         ((MainActivity) mContext).runOnUiThread(() -> {
-                            showMarkerBottomSheetDialog(marker);
+                            showMarkerBottomSheetDialog(mInteractor.getEstablishmentFromMarker(marker));
                         });
                     }, 500);
                     marker.showInfoWindow();
@@ -118,16 +137,20 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
                 });
     }
 
-    private void showMarkerBottomSheetDialog(Marker marker) {
+    private void showMarkerBottomSheetDialog(Establishment establishment) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
         View dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_bottom_sheet_marker, null);
+        MarkerViews bottomViews = new MarkerViews();
+        ButterKnife.bind(bottomViews, dialogView);
+
+        bottomViews.establishmentTitle.setText(GenericUtil.capitalize(establishment.getNomeFantasia().toLowerCase()));
 
         bottomSheetDialog.setContentView(dialogView);
 
         dialogView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
         BottomSheetBehavior mBehavior = BottomSheetBehavior.from((View) dialogView.getParent());
-        mBehavior.setPeekHeight((int) (mView.getMapContainerHeight() - 200));
+        mBehavior.setPeekHeight((int) (mView.getMapContainerHeight() - 400));
 
         bottomSheetDialog.show();
     }
@@ -165,7 +188,67 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
     }
 
     @Override
+    public void onFilterFabClick() {
+        showFilterBottomSheetDialog();
+    }
+
+    private void showFilterBottomSheetDialog() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
+        View dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_bottom_sheet_filter, null);
+        FilterViews bottomViews = new FilterViews();
+        ButterKnife.bind(bottomViews, dialogView);
+
+        bottomViews.redeAtendimentoSpinner.setAdapter(getRedeAtendimentoAdapter());
+//        bottomViews.vinculoSusSpinner.setAdapter(getVinculoSusAdapter());
+        bottomViews.categoriaSpinner.setAdapter(getCategoriaSpinner());
+        bottomSheetDialog.setContentView(dialogView);
+
+        dialogView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+
+        BottomSheetBehavior mBehavior = BottomSheetBehavior.from((View) dialogView.getParent());
+        mBehavior.setPeekHeight((int) (mView.getMapContainerHeight() - 400));
+
+        bottomSheetDialog.show();
+    }
+
+    private SpinnerAdapter getCategoriaSpinner() {
+        List<String> itemList = new ArrayList<>();
+        itemList.add("Selecionar");
+
+        mCategoriaList = new ArrayList<>();
+        for (Establishment establishment : mEstablishmentList) {
+            String categoria = GenericUtil.capitalize(establishment.getCategoriaUnidade().toLowerCase());
+            if (!mCategoriaList.contains(categoria)) {
+                mCategoriaList.add(categoria);
+            }
+        }
+
+        itemList.addAll(mCategoriaList);
+        return new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, itemList);
+    }
+
+    private ArrayAdapter<String> getRedeAtendimentoAdapter() {
+        List<String> itemList = new ArrayList<>();
+        itemList.add("Selecionar");
+
+        mRedeAtendimentoList = new ArrayList<>();
+        for (Establishment establishment : mEstablishmentList) {
+            if (!mRedeAtendimentoList.contains(establishment.getEsferaAdministrativa())) {
+                mRedeAtendimentoList.add(establishment.getEsferaAdministrativa());
+            }
+        }
+
+        itemList.addAll(mRedeAtendimentoList);
+        return new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, itemList);
+    }
+
+    @Override
     public void onLocationFound(Location location) {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         mLocation = location;
         mMap.setMyLocationEnabled(true);
         updateMapLocation();
@@ -174,6 +257,8 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
     }
 
     private void requestEstablishments(int pagination) {
+        mLastObservable = mInteractor.requestEstablishmentsByLocation(mLocation, pagination);
+        mLastObserver = requestEstablishmentsObserver;
         mSubscription.add(mInteractor.requestEstablishmentsByLocation(mLocation, pagination)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(requestEstablishmentsObserver));
@@ -216,6 +301,10 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
                 if (mEstablishmentList.size() <= ESTABLISHMENT_SEARCH_LIMIT) {
                     mInteractor.animateCameraToAllEstablishments(mMap);
                 }
+                if (mEstablishmentList.size() > 0) {
+                    mView.toggleFabButton(true);
+                    mView.setProgressFabVisibility(View.GONE);
+                }
             } else {
                 try {
                     Error401 error401 = new Gson().fromJson(listResponse.errorBody().string(), Error401.class);
@@ -227,4 +316,18 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
             }
         }
     };
+
+    class MarkerViews {
+        @Bind(R.id.establishment_title)
+        TextView establishmentTitle;
+    }
+
+    class FilterViews {
+        @Bind(R.id.rede_atendimento_spinner)
+        Spinner redeAtendimentoSpinner;
+//        @Bind(R.id.vinculo_sus_spinner)
+//        Spinner vinculoSusSpinner;
+        @Bind(R.id.categoria_spinner)
+        Spinner categoriaSpinner;
+    }
 }

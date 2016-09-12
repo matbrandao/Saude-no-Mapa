@@ -17,11 +17,14 @@ import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.repository.UserRepositoryImpl;
+import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
 import com.mat_brandao.saudeapp.network.retrofit.RestClient;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import retrofit2.Response;
@@ -33,7 +36,7 @@ public class MainInteractorImpl implements MainInteractor {
     private final Context mContext;
     private final UserRepositoryImpl mUserRepository;
     private User mUser;
-    private HashMap<String, Marker> mDeviceMarkerHash;
+    private HashMap<Establishment, Marker> mDeviceMarkerHash;
 
 
     public MainInteractorImpl(Context context) {
@@ -84,11 +87,11 @@ public class MainInteractorImpl implements MainInteractor {
     @Override
     public void drawEstablishment(GoogleMap map, Establishment establishment) {
         if (map != null) {
-            mDeviceMarkerHash.put(establishment.getCodUnidade(), map
+            mDeviceMarkerHash.put(establishment, map
                     .addMarker(new MarkerOptions()
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_local_hospital))
                             .position(new LatLng(establishment.getLatitude(), establishment.getLongitude()))
-                            .title(establishment.getNomeFantasia())));
+                            .title(GenericUtil.capitalize(establishment.getNomeFantasia().toLowerCase()))));
         }
     }
 
@@ -114,5 +117,15 @@ public class MainInteractorImpl implements MainInteractor {
         LatLng latLng = marker.getPosition();
         LatLng centerlatlng = new LatLng(latLng.latitude - degree_30p, latLng.longitude);
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(centerlatlng, 15), 500, null);
+    }
+
+    @Override
+    public Establishment getEstablishmentFromMarker(Marker marker) {
+        for (Map.Entry entry : mDeviceMarkerHash.entrySet()) {
+            if (marker.equals(entry.getValue())) {
+                return (Establishment) entry.getKey();
+            }
+        }
+        return null;
     }
 }

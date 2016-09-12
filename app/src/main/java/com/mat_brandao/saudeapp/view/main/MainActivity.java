@@ -2,13 +2,17 @@ package com.mat_brandao.saudeapp.view.main;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.SupportMapFragment;
 import com.mat_brandao.saudeapp.R;
@@ -17,6 +21,7 @@ import com.mat_brandao.saudeapp.view.base.BasePresenter;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends BaseActivity implements MainView {
 
@@ -26,6 +31,10 @@ public class MainActivity extends BaseActivity implements MainView {
     CoordinatorLayout coordinatorLayout;
     @Bind(R.id.map_container)
     LinearLayout mapContainer;
+    @Bind(R.id.filter_fab)
+    FloatingActionButton filterFab;
+    @Bind(R.id.progress_fab)
+    ProgressBar progressFab;
 
     private MainPresenterImpl mPresenter;
 
@@ -40,11 +49,17 @@ public class MainActivity extends BaseActivity implements MainView {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        toggleFabButton(false);
         mPresenter = new MainPresenterImpl(this, this);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(mPresenter);
+    }
+
+    @OnClick(R.id.filter_fab)
+    void onFilterFabClick() {
+        mPresenter.onFilterFabClick();
     }
 
     @Override
@@ -85,6 +100,18 @@ public class MainActivity extends BaseActivity implements MainView {
     }
 
     @Override
+    public void toggleFabButton(boolean enabled) {
+        // TODO: 12/09/2016 Maybe animate this state change
+        if (enabled) {
+            filterFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorAccent)));
+            filterFab.setEnabled(true);
+        } else {
+            filterFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.login_edit_text_color)));
+            filterFab.setEnabled(false);
+        }
+    }
+
+    @Override
     public void showGpsDialog(DialogInterface.OnClickListener onAcceptListener) {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
         alertBuilder.setTitle(R.string.dialog_gps_title);
@@ -105,6 +132,11 @@ public class MainActivity extends BaseActivity implements MainView {
     @Override
     public double getMapContainerHeight() {
         return (double) mapContainer.getHeight();
+    }
+
+    @Override
+    public void setProgressFabVisibility(int visibility) {
+        progressFab.setVisibility(visibility);
     }
 
     @Override

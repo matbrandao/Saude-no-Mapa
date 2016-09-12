@@ -28,4 +28,6 @@ public interface MainInteractor {
     void animateCameraToAllEstablishments(GoogleMap mMap);
 
     void animateMarketToTop(GoogleMap map, Marker marker, double mapHeight);
+
+    Establishment getEstablishmentFromMarker(Marker marker);
 }

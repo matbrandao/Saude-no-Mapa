@@ -6,4 +6,6 @@ public interface MainPresenter extends BasePresenter {
     void onGpsTurnedOn();
 
     void onGpsTurnedOff();
+
+    void onFilterFabClick();
 }
