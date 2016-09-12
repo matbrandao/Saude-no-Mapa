@@ -4,9 +4,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.SupportMapFragment;
 import com.mat_brandao.saudeapp.R;
@@ -20,6 +22,11 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+    @Bind(R.id.coordinator_layout)
+    CoordinatorLayout coordinatorLayout;
+    @Bind(R.id.map_container)
+    LinearLayout mapContainer;
+
     private MainPresenterImpl mPresenter;
 
     @Override
@@ -62,7 +69,9 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Override
     public void showNoConnectionSnackBar() {
-        // TODO: 09/09/2016  
+        super.showConnectionError(coordinatorLayout, view -> {
+            mPresenter.onRetryClicked();
+        });
     }
 
     @Override
@@ -91,6 +100,11 @@ public class MainActivity extends BaseActivity implements MainView {
     public void startGpsIntent() {
         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivityForResult(intent, 202);
+    }
+
+    @Override
+    public double getMapContainerHeight() {
+        return (double) mapContainer.getHeight();
     }
 
     @Override

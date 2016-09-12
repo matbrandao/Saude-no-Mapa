@@ -8,4 +8,6 @@ public interface MainView extends BaseView.BaseProgressView {
     void showGpsDialog(DialogInterface.OnClickListener onAcceptListener);
 
     void startGpsIntent();
+
+    double getMapContainerHeight();
 }

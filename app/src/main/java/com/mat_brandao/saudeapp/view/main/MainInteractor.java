@@ -1,8 +1,9 @@
 package com.mat_brandao.saudeapp.view.main;
 
-import android.content.Context;
 import android.location.Location;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Marker;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
 
@@ -19,4 +20,12 @@ public interface MainInteractor {
     void requestMyLocation(OnLocationFound listener);
 
     Observable<Response<List<Establishment>>> requestEstablishmentsByLocation(Location location, int pagination);
+
+    void clearMarkers(GoogleMap map);
+
+    void drawEstablishment(GoogleMap map, Establishment establishment);
+
+    void animateCameraToAllEstablishments(GoogleMap mMap);
+
+    void animateMarketToTop(GoogleMap map, Marker marker, double mapHeight);
 }
