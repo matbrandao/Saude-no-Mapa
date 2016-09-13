@@ -55,4 +55,7 @@
     <string name="obstetra_filter">Obstetra:</string>
     <string name="neo_natal_filter">Neo Natal:</string>
     <string name="dialise_filter">Diálise:</string>
+    <string name="title_activity_remedy">Remédios</string>
+    <string name="needed_camera_permission">Para escanear um código de barras, é necessário a permissão para utilizar a câmera do aparelho.</string>
+    <string name="progress_searching_remedies">Buscando Remédio</string>
 </resources>
