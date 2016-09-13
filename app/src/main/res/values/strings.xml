@@ -58,4 +58,7 @@
     <string name="title_activity_remedy">Remédios</string>
     <string name="needed_camera_permission">Para escanear um código de barras, é necessário a permissão para utilizar a câmera do aparelho.</string>
     <string name="progress_searching_remedies">Buscando Remédio</string>
+    <string name="search_remedy_hint">Procurar remédio</string>
+    <string name="search_for_remedies_text">Utilize o campo acima para buscar remédios</string>
+    <string name="no_remedies_found">Nenhum resultado para o remédio citado</string>
 </resources>

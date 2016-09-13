@@ -1,12 +1,17 @@
 package com.mat_brandao.saudeapp.view.remedy;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.jakewharton.rxbinding.widget.RxTextView;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.view.base.BaseActivity;
 import com.mat_brandao.saudeapp.view.base.BasePresenter;
@@ -14,6 +19,7 @@ import com.mat_brandao.saudeapp.view.base.BasePresenter;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Observable;
 import timber.log.Timber;
 
 public class RemedyActivity extends BaseActivity implements RemedyView {
@@ -24,6 +30,15 @@ public class RemedyActivity extends BaseActivity implements RemedyView {
     FloatingActionButton fab;
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
+    @Bind(R.id.search_remedy_edit_text)
+    TextInputEditText searchRemedyEditText;
+    @Bind(R.id.progress_layout)
+    LinearLayout progressLayout;
+    @Bind(R.id.empty_serch_text)
+    TextView emptySerchText;
+    @Bind(R.id.no_remedies_found_text)
+    TextView noRemediesFoundText;
+
     private RemedyPresenterImpl mPresenter;
 
     @Override
@@ -86,6 +101,32 @@ public class RemedyActivity extends BaseActivity implements RemedyView {
     @Override
     public void gotoActivityWithResult(Intent intent) {
         startActivityForResult(intent, 101);
+    }
+
+    @Override
+    public void dismissKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(searchRemedyEditText.getWindowToken(), 0);
+    }
+
+    @Override
+    public void setProgressLayoutVisibility(int visibility) {
+        progressLayout.setVisibility(visibility);
+    }
+
+    @Override
+    public void setEmptyTextVisibility(int visibility) {
+        emptySerchText.setVisibility(visibility);
+    }
+
+    @Override
+    public void setNoResultsTextVisibility(int visibility) {
+        noRemediesFoundText.setVisibility(visibility);
+    }
+
+    @Override
+    public Observable<CharSequence> registerSearchObservable() {
+        return RxTextView.textChanges(searchRemedyEditText);
     }
 
     @Override

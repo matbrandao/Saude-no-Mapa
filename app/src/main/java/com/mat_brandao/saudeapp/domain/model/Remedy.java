@@ -108,7 +108,7 @@ public class Remedy implements Serializable {
     private String ultimaAlteracao;
     @SerializedName("cod")
     @Expose
-    private Integer cod;
+    private Long cod;
 
     /**
      *
@@ -691,7 +691,7 @@ public class Remedy implements Serializable {
      * @return
      * The cod
      */
-    public Integer getCod() {
+    public Long getCod() {
         return cod;
     }
 
@@ -700,7 +700,7 @@ public class Remedy implements Serializable {
      * @param cod
      * The cod
      */
-    public void setCod(Integer cod) {
+    public void setCod(Long cod) {
         this.cod = cod;
     }
 }
