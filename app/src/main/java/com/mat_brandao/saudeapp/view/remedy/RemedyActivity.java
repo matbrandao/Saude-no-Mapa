@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
@@ -38,6 +40,8 @@ public class RemedyActivity extends BaseActivity implements RemedyView {
     TextView emptySerchText;
     @Bind(R.id.no_remedies_found_text)
     TextView noRemediesFoundText;
+    @Bind(R.id.remedy_recycler)
+    RecyclerView remedyRecycler;
 
     private RemedyPresenterImpl mPresenter;
 
@@ -54,6 +58,9 @@ public class RemedyActivity extends BaseActivity implements RemedyView {
         setSupportActionBar(toolbar);
 
         mPresenter = new RemedyPresenterImpl(this, this);
+
+        remedyRecycler.setHasFixedSize(true);
+        remedyRecycler.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @OnClick(R.id.scan_barcode_fab)
@@ -122,6 +129,11 @@ public class RemedyActivity extends BaseActivity implements RemedyView {
     @Override
     public void setNoResultsTextVisibility(int visibility) {
         noRemediesFoundText.setVisibility(visibility);
+    }
+
+    @Override
+    public void setRemedyAdapter(RemedyAdapter adapter) {
+        remedyRecycler.setAdapter(adapter);
     }
 
     @Override

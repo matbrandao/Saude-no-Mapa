@@ -13,6 +13,8 @@ public interface RemedyView extends BaseView.BaseProgressView {
 
     void setNoResultsTextVisibility(int visibility);
 
+    void setRemedyAdapter(RemedyAdapter adapter);
+
     Observable<CharSequence> registerSearchObservable();
 
     void gotoActivityWithResult(Intent intent);
