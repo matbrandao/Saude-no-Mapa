@@ -5,7 +5,6 @@
     android:layout_height="wrap_content"
     android:clipToPadding="true"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
-    android:background="@color/white_transparent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -13,13 +12,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white_transparent"
         android:orientation="vertical">
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp">
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -36,22 +35,23 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/establishment_title"
+                        android:id="@+id/filter_title"
                         android:textSize="18sp"
                         android:paddingLeft="5dp"
                         android:paddingRight="5dp"
                         android:fontFamily="sans-serif-light"
-                        android:layout_centerHorizontal="true"
                         android:gravity="center_horizontal"
-                        android:text="@string/filter_dialog_title"/>
+                        android:text="@string/filter_dialog_title"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"/>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginTop="1dp"
-                        android:layout_below="@id/establishment_title"
-                        android:layout_alignLeft="@id/establishment_title"
-                        android:layout_alignRight="@id/establishment_title"
+                        android:layout_below="@id/filter_title"
+                        android:layout_alignLeft="@id/filter_title"
+                        android:layout_alignRight="@id/filter_title"
                         android:background="@color/divider"/>
                 </RelativeLayout>
 
@@ -252,5 +252,16 @@
                 </LinearLayout>
             </LinearLayout>
         </android.support.v7.widget.CardView>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/filter_button"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:textColor="@color/white"
+            style="@style/Base.Widget.AppCompat.Button.Colored"
+            android:text="@string/filter_button_text"
+            android:textAllCaps="false"/>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

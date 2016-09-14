@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -22,6 +24,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.gson.Gson;
+import com.jakewharton.rxbinding.widget.RxAdapterView;
+import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Error401;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
@@ -55,11 +59,18 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
 
     private CompositeSubscription mSubscription = new CompositeSubscription();
 
+    private List<Establishment> mFilteredEstablishmentList = new ArrayList<>();
     private List<Establishment> mEstablishmentList = new ArrayList<>();
+
+    private List<Establishment> mRemoveList = new ArrayList<>();
+
     private Marker lastOpenned;
-    private List<String> mRedeAtendimentoList, mCategoriaList, mVinculoSusList;
+    private List<String> mRedeAtendimentoList, mCategoriaList;
     private Observable<Response<List<Establishment>>> mLastObservable;
     private Observer<Response<List<Establishment>>> mLastObserver;
+
+    private boolean mIsFiltered;
+    private TextView mCurrentFilterTitle;
 
     @Override
     public void onResume() {
@@ -139,6 +150,7 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
 
     private void showMarkerBottomSheetDialog(Establishment establishment) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
+
         View dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_bottom_sheet_marker, null);
         MarkerViews bottomViews = new MarkerViews();
         ButterKnife.bind(bottomViews, dialogView);
@@ -146,6 +158,8 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
         bottomViews.establishmentTitle.setText(GenericUtil.capitalize(establishment.getNomeFantasia().toLowerCase()));
 
         bottomSheetDialog.setContentView(dialogView);
+        bottomSheetDialog.getWindow().findViewById(R.id.design_bottom_sheet)
+                .setBackgroundResource(R.color.default_dialog_background);
 
         dialogView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
@@ -192,23 +206,158 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
         showFilterBottomSheetDialog();
     }
 
+    private void doFilter(FilterViews bottomViews) {
+        mFilteredEstablishmentList.clear();
+        mFilteredEstablishmentList.addAll(mEstablishmentList);
+        mRemoveList.clear();
+
+        int redePosition = bottomViews.redeAtendimentoSpinner.getSelectedItemPosition();
+        String redeAtendimento = mRedeAtendimentoList.get(redePosition == 0 ? redePosition : redePosition - 1);
+        for (Establishment establishment : mEstablishmentList) {
+            if (redePosition > 0 && !redeAtendimento.equals(establishment.getEsferaAdministrativa())) {
+                mRemoveList.add(establishment);
+            }
+        }
+
+        int categoriaPosition = bottomViews.categoriaSpinner.getSelectedItemPosition();
+        String categoria = mCategoriaList.get(categoriaPosition == 0 ? categoriaPosition : categoriaPosition - 1).toUpperCase();
+        for (Establishment establishment : mEstablishmentList) {
+            if (categoriaPosition > 0 && !categoria.equals(establishment.getCategoriaUnidade())) {
+                mRemoveList.add(establishment);
+            }
+        }
+
+        boolean temVinculoSus = bottomViews.vinculoSusCheckbox.isChecked();
+        for (Establishment establishment : mFilteredEstablishmentList) {
+            if (temVinculoSus && !establishment.getVinculoSus().equals("Sim")) {
+                mRemoveList.add(establishment);
+            }
+        }
+
+        boolean temAtendimentoUrgencial = bottomViews.atendimentoUrgencialCheckbox.isChecked();
+        for (Establishment establishment : mFilteredEstablishmentList) {
+            if (temAtendimentoUrgencial && !establishment.getTemAtendimentoUrgencia().equals("Sim")) {
+                mRemoveList.add(establishment);
+            }
+        }
+
+        boolean temAtendimentoAmbulatorial = bottomViews.atendimentoAmbulatorialCheckbox.isChecked();
+        for (Establishment establishment : mFilteredEstablishmentList) {
+            if (temAtendimentoAmbulatorial && !establishment.getTemAtendimentoAmbulatorial().equals("Sim")) {
+                mRemoveList.add(establishment);
+            }
+        }
+
+        boolean temCentroCirurgico = bottomViews.centroCirurgicoCheckbox.isChecked();
+        for (Establishment establishment : mFilteredEstablishmentList) {
+            if (temCentroCirurgico && !establishment.getTemCentroCirurgico().equals("Sim")) {
+                mRemoveList.add(establishment);
+            }
+        }
+
+        boolean temObstetra = bottomViews.obstetraCheckbox.isChecked();
+        for (Establishment establishment : mFilteredEstablishmentList) {
+            if (temObstetra && !establishment.getTemObstetra().equals("Sim")) {
+                mRemoveList.add(establishment);
+            }
+        }
+
+        boolean temNeoNatal = bottomViews.neoNatalCheckbox.isChecked();
+        for (Establishment establishment : mFilteredEstablishmentList) {
+            if (temNeoNatal && !establishment.getTemNeoNatal().equals("Sim")) {
+                mRemoveList.add(establishment);
+            }
+        }
+
+        boolean temDialise = bottomViews.dialiseCheckbox.isChecked();
+        for (Establishment establishment : mFilteredEstablishmentList) {
+            if (temDialise && !establishment.getTemDialise().equals("Sim")) {
+                mRemoveList.add(establishment);
+            }
+        }
+
+        mFilteredEstablishmentList.removeAll(mRemoveList);
+        updateCurrentFilterTitle();
+    }
+
     private void showFilterBottomSheetDialog() {
+        mIsFiltered = false;
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
         View dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_bottom_sheet_filter, null);
         FilterViews bottomViews = new FilterViews();
         ButterKnife.bind(bottomViews, dialogView);
 
+        mCurrentFilterTitle = bottomViews.filterTitle;
+        updateCurrentFilterTitle();
+
         bottomViews.redeAtendimentoSpinner.setAdapter(getRedeAtendimentoAdapter());
-//        bottomViews.vinculoSusSpinner.setAdapter(getVinculoSusAdapter());
         bottomViews.categoriaSpinner.setAdapter(getCategoriaSpinner());
+
+        RxAdapterView.itemSelections(bottomViews.redeAtendimentoSpinner).subscribe(integer -> {
+            doFilter(bottomViews);
+        });
+
+        RxAdapterView.itemSelections(bottomViews.categoriaSpinner).subscribe(integer -> {
+            doFilter(bottomViews);
+        });
+
+        RxCompoundButton.checkedChanges(bottomViews.vinculoSusCheckbox).subscribe(isChecked -> {
+            doFilter(bottomViews);
+        });
+
+        RxCompoundButton.checkedChanges(bottomViews.atendimentoUrgencialCheckbox).subscribe(isChecked -> {
+            doFilter(bottomViews);
+        });
+
+        RxCompoundButton.checkedChanges(bottomViews.atendimentoAmbulatorialCheckbox).subscribe(isChecked -> {
+            doFilter(bottomViews);
+        });
+
+        RxCompoundButton.checkedChanges(bottomViews.centroCirurgicoCheckbox).subscribe(isChecked -> {
+            doFilter(bottomViews);
+        });
+
+        RxCompoundButton.checkedChanges(bottomViews.obstetraCheckbox).subscribe(isChecked -> {
+            doFilter(bottomViews);
+        });
+
+        RxCompoundButton.checkedChanges(bottomViews.neoNatalCheckbox).subscribe(isChecked -> {
+            doFilter(bottomViews);
+        });
+
+        RxCompoundButton.checkedChanges(bottomViews.dialiseCheckbox).subscribe(isChecked -> {
+            doFilter(bottomViews);
+        });
+
+        bottomViews.filterButton.setOnClickListener(view -> {
+            mIsFiltered = true;
+            mInteractor.clearMarkers(mMap);
+            showMapPins(mFilteredEstablishmentList);
+            mInteractor.animateCameraToAllEstablishments(mMap);
+            bottomSheetDialog.dismiss();
+        });
+
         bottomSheetDialog.setContentView(dialogView);
+        bottomSheetDialog.getWindow().findViewById(R.id.design_bottom_sheet)
+                .setBackgroundResource(R.color.default_dialog_background);
 
         dialogView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
         BottomSheetBehavior mBehavior = BottomSheetBehavior.from((View) dialogView.getParent());
         mBehavior.setPeekHeight((int) (mView.getMapContainerHeight() - 400));
 
+        bottomSheetDialog.setOnDismissListener(dialogInterface -> {
+            if (!mIsFiltered) {
+                mFilteredEstablishmentList.clear();
+                mFilteredEstablishmentList.addAll(mEstablishmentList);
+            }
+        });
+
         bottomSheetDialog.show();
+    }
+
+    private void updateCurrentFilterTitle() {
+        mCurrentFilterTitle.setText(mContext.getString(R.string.filter_dialog_title) + " (" + mFilteredEstablishmentList.size() + ")");
     }
 
     private SpinnerAdapter getCategoriaSpinner() {
@@ -286,12 +435,14 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
         @Override
         public void onError(Throwable e) {
             Log.d(TAG, "onError() called with: " + "e = [" + e + "]");
+            mView.setProgressFabVisibility(View.INVISIBLE);
             mView.showNoConnectionSnackBar();
         }
 
         @Override
         public void onNext(Response<List<Establishment>> listResponse) {
             if (listResponse.isSuccessful()) {
+                mFilteredEstablishmentList.addAll(listResponse.body());
                 mEstablishmentList.addAll(listResponse.body());
 
                 showMapPins(listResponse.body());
@@ -323,11 +474,27 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
     }
 
     class FilterViews {
-        @Bind(R.id.rede_atendimento_spinner)
-        Spinner redeAtendimentoSpinner;
-//        @Bind(R.id.vinculo_sus_spinner)
-//        Spinner vinculoSusSpinner;
+        @Bind(R.id.filter_title)
+        TextView filterTitle;
         @Bind(R.id.categoria_spinner)
         Spinner categoriaSpinner;
+        @Bind(R.id.rede_atendimento_spinner)
+        Spinner redeAtendimentoSpinner;
+        @Bind(R.id.vinculo_sus_checkbox)
+        CheckBox vinculoSusCheckbox;
+        @Bind(R.id.atendimento_urgencial_checkbox)
+        CheckBox atendimentoUrgencialCheckbox;
+        @Bind(R.id.atendimento_ambulatorial_checkbox)
+        CheckBox atendimentoAmbulatorialCheckbox;
+        @Bind(R.id.centro_cirurgico_checkbox)
+        CheckBox centroCirurgicoCheckbox;
+        @Bind(R.id.obstetra_checkbox)
+        CheckBox obstetraCheckbox;
+        @Bind(R.id.neo_natal_checkbox)
+        CheckBox neoNatalCheckbox;
+        @Bind(R.id.dialise_checkbox)
+        CheckBox dialiseCheckbox;
+        @Bind(R.id.filter_button)
+        Button filterButton;
     }
 }

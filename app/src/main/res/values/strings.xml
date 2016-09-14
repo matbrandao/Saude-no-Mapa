@@ -55,4 +55,5 @@
     <string name="obstetra_filter">Obstetra:</string>
     <string name="neo_natal_filter">Neo Natal:</string>
     <string name="dialise_filter">Diálise:</string>
+    <string name="filter_button_text">Filtrar</string>
 </resources>

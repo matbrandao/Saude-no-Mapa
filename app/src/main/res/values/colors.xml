@@ -36,4 +36,5 @@
     <color name="black_transparent">#80000000</color>
 
     <color name="gray_semi_transparent">#B2CCCCCC</color>
+    <color name="default_dialog_background">#00000000</color>
 </resources>
