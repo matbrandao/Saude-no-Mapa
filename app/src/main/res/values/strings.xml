@@ -67,6 +67,6 @@
     <string name="laboratorio_text">Laboratório:</string>
     <string name="cnpj_text">CNPJ:</string>
     <string name="registro_text">Registro:</string>
-    <string name="possui_restricao_text">Possui Restrição</string>
+    <string name="possui_restricao_text">Possui Restrição Hospitalar</string>
     <string name="filter_button_text">Filtrar</string>
 </resources>

@@ -157,8 +157,8 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
         }
 
         bottomSheetDialog.setContentView(dialogView);
-//        bottomSheetDialog.getWindow().findViewById(R.id.design_bottom_sheet)
-//                .setBackgroundResource(R.color.default_dialog_background);
+        bottomSheetDialog.getWindow().findViewById(R.id.design_bottom_sheet)
+                .setBackgroundResource(R.color.default_dialog_background);
 
         dialogView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
