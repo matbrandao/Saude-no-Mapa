@@ -66,14 +66,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.75"
                         android:textSize="15sp"
-                        android:text="@string/categoria_filter"
-                        android:id="@+id/textView"/>
+                        android:text="@string/principio_ativo_text"/>
 
-                    <Spinner
+                    <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1.25"
-                        android:id="@+id/categoria_spinner"
+                        android:gravity="left"
+                        android:id="@+id/principio_ativo_text"
                         android:layout_marginLeft="5dp"/>
                 </LinearLayout>
 
@@ -88,41 +88,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.75"
                         android:textSize="15sp"
-                        android:text="@string/rede_atendimento_filter"/>
+                        android:text="@string/classe_terapeutica_text"/>
 
-                    <Spinner
+                    <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1.25"
-                        android:id="@+id/rede_atendimento_spinner"
-                        android:layout_marginLeft="5dp"/>
-                </LinearLayout>
-
-                <View
-                    android:layout_width="50dp"
-                    android:layout_height="1dp"
-                    android:layout_margin="3dp"
-                    android:background="@color/divider"/>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:weightSum="2"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.5"
-                        android:textSize="15sp"
-                        android:text="@string/vinculo_sus_filter"/>
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/vinculo_sus_checkbox"
+                        android:gravity="left"
+                        android:id="@+id/classe_terapeutica_text"
                         android:layout_marginLeft="5dp"/>
                 </LinearLayout>
 
@@ -130,20 +103,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:weightSum="2"
                     android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1.5"
+                        android:layout_weight="0.75"
                         android:textSize="15sp"
-                        android:text="@string/atendimento_urgencial_filter"/>
+                        android:text="@string/apresentacao_text"/>
 
-                    <CheckBox
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:id="@+id/atendimento_urgencial_checkbox"
+                        android:layout_weight="1.25"
+                        android:gravity="left"
+                        android:id="@+id/apresentacao_text"
                         android:layout_marginLeft="5dp"/>
                 </LinearLayout>
 
@@ -151,20 +125,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:weightSum="2"
                     android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1.5"
+                        android:layout_weight="0.75"
                         android:textSize="15sp"
-                        android:text="@string/atendimento_ambulatorial_filter"/>
+                        android:text="@string/laboratorio_text"/>
 
-                    <CheckBox
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:id="@+id/atendimento_ambulatorial_checkbox"
+                        android:layout_weight="1.25"
+                        android:gravity="left"
+                        android:id="@+id/laboratorio_text"
                         android:layout_marginLeft="5dp"/>
                 </LinearLayout>
 
@@ -172,20 +147,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:weightSum="2"
                     android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1.5"
+                        android:layout_weight="0.75"
                         android:textSize="15sp"
-                        android:text="@string/centro_cirurgico_filter"/>
+                        android:text="@string/cnpj_text"/>
 
-                    <CheckBox
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:id="@+id/centro_cirurgico_checkbox"
+                        android:layout_weight="1.25"
+                        android:gravity="left"
+                        android:id="@+id/cnpj_text"
                         android:layout_marginLeft="5dp"/>
                 </LinearLayout>
 
@@ -193,64 +169,33 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:weightSum="2"
                     android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1.5"
+                        android:layout_weight="0.75"
                         android:textSize="15sp"
-                        android:text="@string/obstetra_filter"/>
+                        android:text="@string/registro_text"/>
 
-                    <CheckBox
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:id="@+id/obstetra_checkbox"
+                        android:layout_weight="1.25"
+                        android:gravity="left"
+                        android:id="@+id/registro_text"
                         android:layout_marginLeft="5dp"/>
                 </LinearLayout>
 
-                <LinearLayout
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:weightSum="2"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.5"
-                        android:textSize="15sp"
-                        android:text="@string/neo_natal_filter"/>
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/neo_natal_checkbox"
-                        android:layout_marginLeft="5dp"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:weightSum="2"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.5"
-                        android:textSize="15sp"
-                        android:text="@string/dialise_filter"/>
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/dialise_checkbox"
-                        android:layout_marginLeft="5dp"/>
-                </LinearLayout>
+                    android:id="@+id/possui_restricao_text"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    android:gravity="center_horizontal"
+                    android:text="@string/possui_restricao_text"/>
             </LinearLayout>
         </android.support.v7.widget.CardView>
     </LinearLayout>

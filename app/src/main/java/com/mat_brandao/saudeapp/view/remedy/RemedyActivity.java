@@ -113,7 +113,12 @@ public class RemedyActivity extends BaseActivity implements RemedyView {
     @Override
     public void dismissKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(searchRemedyEditText.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+    }
+
+    @Override
+    public int getRootHeight() {
+        return coordinatorLayout.getHeight();
     }
 
     @Override

@@ -20,4 +20,6 @@ public interface RemedyView extends BaseView.BaseProgressView {
     void gotoActivityWithResult(Intent intent);
 
     void dismissKeyboard();
+
+    int getRootHeight();
 }
