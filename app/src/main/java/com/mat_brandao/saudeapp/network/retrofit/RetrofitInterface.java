@@ -1,6 +1,7 @@
 package com.mat_brandao.saudeapp.network.retrofit;
 
 import com.mat_brandao.saudeapp.domain.model.Establishment;
+import com.mat_brandao.saudeapp.domain.model.Remedy;
 import com.mat_brandao.saudeapp.domain.model.User;
 
 import java.util.List;
@@ -43,4 +44,7 @@ public interface RetrofitInterface {
     Observable<Response<List<Establishment>>> getEstablishmentsByGeoLocation(
             @Path("latitude") Double latitude, @Path("longitude") Double longitude,
             @Path("raio") Double radius, @Query("pagina") Integer pagination);
+
+    @GET("mapa-da-saude/rest/remedios")
+    Observable<Response<List<Remedy>>> getRemedies(@Query("codBarraEan") String barCode, @Query("produto") String name);
 }

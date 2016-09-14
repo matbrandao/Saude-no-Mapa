@@ -55,6 +55,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:9.4.0'
     compile 'com.google.android.gms:play-services-location:9.4.0'
     compile 'com.google.android.gms:play-services-auth:9.4.0'
+//    compile 'com.google.android.gms:play-services-vision:9.4.0'
 
     compile 'com.android.support:appcompat-v7:24.2.0'
     compile 'com.android.support:design:24.2.0'
@@ -80,6 +81,8 @@ dependencies {
     compile 'com.google.code.gson:gson:2.6.2'
 
     compile 'pl.charmas.android:android-reactive-location:0.9@aar'
+
+    compile 'me.dm7.barcodescanner:zxing:1.9'
 
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'

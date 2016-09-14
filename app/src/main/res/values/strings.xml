@@ -55,5 +55,18 @@
     <string name="obstetra_filter">Obstetra:</string>
     <string name="neo_natal_filter">Neo Natal:</string>
     <string name="dialise_filter">Diálise:</string>
+    <string name="title_activity_remedy">Remédios</string>
+    <string name="needed_camera_permission">Para escanear um código de barras, é necessário a permissão para utilizar a câmera do aparelho.</string>
+    <string name="progress_searching_remedies">Buscando Remédio</string>
+    <string name="search_remedy_hint">Procurar remédio</string>
+    <string name="search_for_remedies_text">Utilize o campo acima para buscar remédios</string>
+    <string name="no_remedies_found">Nenhum resultado para o remédio citado</string>
+    <string name="principio_ativo_text">Principio ativo:</string>
+    <string name="classe_terapeutica_text">Classe Terapêutica:</string>
+    <string name="apresentacao_text">Apresentação:</string>
+    <string name="laboratorio_text">Laboratório:</string>
+    <string name="cnpj_text">CNPJ:</string>
+    <string name="registro_text">Registro:</string>
+    <string name="possui_restricao_text">Possui Restrição</string>
     <string name="filter_button_text">Filtrar</string>
 </resources>
