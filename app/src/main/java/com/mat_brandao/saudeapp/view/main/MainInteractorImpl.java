@@ -110,8 +110,7 @@ public class MainInteractorImpl implements MainInteractor {
 
     @Override
     public void animateMarketToTop(GoogleMap map, Marker marker, double mapHeight) {
-        float zoom_lvl = map.getCameraPosition().zoom;
-        double dpPerdegree = 256.0 * Math.pow(2, zoom_lvl) / 170.0;
+        double dpPerdegree = 256.0 * Math.pow(2, 15) / 170.0;
         double screen_height_30p = 25.0 * mapHeight / 100.0;
         double degree_30p = screen_height_30p / dpPerdegree;
         LatLng latLng = marker.getPosition();
