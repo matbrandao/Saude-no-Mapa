@@ -18,7 +18,7 @@ import com.mat_brandao.saudeapp.domain.model.Error401;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
 import com.mat_brandao.saudeapp.domain.util.MaskUtil;
-import com.mat_brandao.saudeapp.view.main.MainActivity;
+import com.mat_brandao.saudeapp.view.establishment.EstablishmentFragment;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.IOException;
@@ -414,7 +414,7 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
         public void onNext(Response<ResponseBody> responseBody) {
             Timber.i("onNext() called with: responseBody = [" + responseBody + "]");
             if (responseBody.isSuccessful()) {
-                Intent intent = new Intent(mContext, MainActivity.class);
+                Intent intent = new Intent(mContext, EstablishmentFragment.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 mView.goToActivity(intent);
             }

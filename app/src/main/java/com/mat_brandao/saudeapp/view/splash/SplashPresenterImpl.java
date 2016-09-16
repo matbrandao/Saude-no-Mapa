@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.view.login.LoginActivity;
+import com.mat_brandao.saudeapp.view.establishment.EstablishmentFragment;
 import com.mat_brandao.saudeapp.view.main.MainActivity;
 
 public class SplashPresenterImpl implements SplashPresenter {

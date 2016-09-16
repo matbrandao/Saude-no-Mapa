@@ -1,18 +1,9 @@
 package com.mat_brandao.saudeapp.view.main;
 
-import android.content.DialogInterface;
-import android.view.View;
+import android.support.v4.app.Fragment;
 
 import com.mat_brandao.saudeapp.view.base.BaseView;
 
 public interface MainView extends BaseView.BaseProgressView {
-    void toggleFabButton(boolean enabled);
-
-    void showGpsDialog(DialogInterface.OnClickListener onAcceptListener);
-
-    void startGpsIntent();
-
-    double getMapContainerHeight();
-
-    void setProgressFabVisibility(int visibility);
+    void showFragment(Fragment fragment);
 }

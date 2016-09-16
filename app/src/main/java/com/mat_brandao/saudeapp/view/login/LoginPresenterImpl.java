@@ -26,6 +26,7 @@ import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Error401;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.util.OnFormEmitted;
+import com.mat_brandao.saudeapp.view.establishment.EstablishmentFragment;
 import com.mat_brandao.saudeapp.view.main.MainActivity;
 import com.mat_brandao.saudeapp.view.register.RegisterActivity;
 
@@ -34,14 +35,9 @@ import org.json.JSONException;
 import java.util.Arrays;
 
 import retrofit2.Response;
-import rx.Observable;
 import rx.Observer;
-import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.Subscriptions;
-import timber.log.Timber;
 
 public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "LoginPresenterImpl";
