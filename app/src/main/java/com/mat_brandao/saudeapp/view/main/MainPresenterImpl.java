@@ -2,18 +2,23 @@ package com.mat_brandao.saudeapp.view.main;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -156,17 +161,71 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
         ButterKnife.bind(bottomViews, dialogView);
 
         bottomViews.establishmentTitle.setText(GenericUtil.capitalize(establishment.getNomeFantasia().toLowerCase()));
+        bottomViews.descricaoCompletaText.setText(GenericUtil.capitalize(establishment.getDescricaoCompleta().toLowerCase()));
+        bottomViews.enderecoText.setText(mInteractor.getAddressText(establishment.getLogradouro(), establishment.getNumero(),
+                establishment.getBairro(), establishment.getCidade(), establishment.getUf(), establishment.getCep()));
+        bottomViews.phoneText.setText(establishment.getTelefone());
+        bottomViews.tipoUnidadeText.setText(GenericUtil.capitalize(establishment.getTipoUnidade().toLowerCase()));
+        bottomViews.redeAtendimentoText.setText(GenericUtil.capitalize(establishment.getEsferaAdministrativa().toLowerCase()));
+        bottomViews.vinculoSusText.setText(GenericUtil.capitalize(establishment.getVinculoSus().toLowerCase()));
+        bottomViews.fluxoClientelaText.setText(mInteractor.getFluxoClientelaText(establishment.getFluxoClientela()));
+        bottomViews.cnpjText.setText(establishment.getCnpj());
+
+        bottomViews.enderecoText.setOnClickListener(view -> {
+            showGoToAddressDialog(establishment.getLatitude(), establishment.getLongitude());
+        });
+
+        bottomViews.phoneText.setOnClickListener(view -> {
+            showCallToPhoneDialog(establishment.getTelefone());
+        });
 
         bottomSheetDialog.setContentView(dialogView);
         bottomSheetDialog.getWindow().findViewById(R.id.design_bottom_sheet)
                 .setBackgroundResource(R.color.default_dialog_background);
 
-        dialogView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        bottomViews.mainInfoCard.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
         BottomSheetBehavior mBehavior = BottomSheetBehavior.from((View) dialogView.getParent());
-        mBehavior.setPeekHeight((int) (mView.getMapContainerHeight() - 400));
+        mBehavior.setPeekHeight(bottomViews.mainInfoCard.getMeasuredHeight() + 100);
+
+        bottomSheetDialog.setOnDismissListener(dialogInterface -> {
+            lastOpenned.hideInfoWindow();
+        });
 
         bottomSheetDialog.show();
+    }
+
+    private void showCallToPhoneDialog(String telefone) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle(R.string.call_dialog_title);
+        builder.setMessage(mContext.getString(R.string.call_dialog_message) + telefone + "?");
+        builder.setPositiveButton(R.string.call_dialog_positive, (dialogInterface, i) -> {
+            RxPermissions.getInstance(mContext)
+                    .request(Manifest.permission.CALL_PHONE)
+                    .subscribe(granted -> {
+                        if (granted) {
+                            Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + telefone));
+                            mView.goToActivity(intent);
+                        } else {
+                            mView.showToast(mContext.getString(R.string.call_phone_permission_needed));
+                        }
+                    });
+        });
+        builder.setNegativeButton(R.string.call_dialog_negative, (dialogInterface, i) -> {});
+        builder.create().show();
+    }
+
+    private void showGoToAddressDialog(Double latitude, Double longitude) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle(R.string.location_dialog_title);
+        builder.setMessage(mContext.getString(R.string.location_dialog_message));
+        builder.setPositiveButton(R.string.location_dialog_positive, (dialogInterface, i) -> {
+            Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                    Uri.parse("http://maps.google.com/maps?daddr=" + latitude + "," + longitude));
+            mView.goToActivity(intent);
+        });
+        builder.setNegativeButton(R.string.location_dialog_negative, (dialogInterface, i) -> {});
+        builder.create().show();
     }
 
     private void requestUserLocation() {
@@ -203,6 +262,12 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
 
     @Override
     public void onFilterFabClick() {
+        mView.toggleFabButton(false);
+        new Handler().postDelayed(() -> {
+            ((MainActivity) mContext).runOnUiThread(() -> {
+                mView.toggleFabButton(true);
+            });
+        }, 1000);
         showFilterBottomSheetDialog();
     }
 
@@ -344,7 +409,7 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
         dialogView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
         BottomSheetBehavior mBehavior = BottomSheetBehavior.from((View) dialogView.getParent());
-        mBehavior.setPeekHeight((int) (mView.getMapContainerHeight() - 400));
+        mBehavior.setPeekHeight((int) (mView.getMapContainerHeight() + 400));
 
         bottomSheetDialog.setOnDismissListener(dialogInterface -> {
             if (!mIsFiltered) {
@@ -471,6 +536,26 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
     class MarkerViews {
         @Bind(R.id.establishment_title)
         TextView establishmentTitle;
+        @Bind(R.id.descricao_completa_text)
+        TextView descricaoCompletaText;
+        @Bind(R.id.endereco_text)
+        TextView enderecoText;
+        @Bind(R.id.phone_text)
+        TextView phoneText;
+        @Bind(R.id.main_info_card)
+        LinearLayout mainInfoCard;
+        @Bind(R.id.tipo_unidade_text)
+        TextView tipoUnidadeText;
+        @Bind(R.id.rede_atendimento_text)
+        TextView redeAtendimentoText;
+        @Bind(R.id.vinculo_sus_text)
+        TextView vinculoSusText;
+        @Bind(R.id.fluxo_clientela_text)
+        TextView fluxoClientelaText;
+        @Bind(R.id.cnpj_text)
+        TextView cnpjText;
+        @Bind(R.id.bottom_sheet)
+        NestedScrollView bottomSheet;
     }
 
     class FilterViews {

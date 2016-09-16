@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
 
     <application
         android:name=".SaudeApp"
@@ -46,21 +47,20 @@
         <activity
             android:name=".view.splash.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN"/> -->
-            <!-- <category android:name="android.intent.category.LAUNCHER"/> -->
-            <!-- </intent-filter> -->
+             <intent-filter>
+             <action android:name="android.intent.action.MAIN"/>
+             <category android:name="android.intent.category.LAUNCHER"/>
+             </intent-filter>
         </activity>
         <activity
             android:name=".view.remedy.RemedyActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN"/>-->
 
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+            <!--</intent-filter>-->
         </activity>
         <activity android:name=".view.remedy.ScanActivity">
         </activity>

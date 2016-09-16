@@ -13,6 +13,9 @@ public class Establishment implements Serializable {
     @SerializedName("codUnidade")
     @Expose
     private String codUnidade;
+    @SerializedName("cnpj")
+    @Expose
+    private String cnpj;
     @SerializedName("codIbge")
     @Expose
     private Integer codIbge;
@@ -638,4 +641,11 @@ public class Establishment implements Serializable {
         this.longitude = _long;
     }
 
+    public String getCnpj() {
+        return cnpj;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
+    }
 }

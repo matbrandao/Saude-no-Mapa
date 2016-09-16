@@ -69,4 +69,18 @@
     <string name="registro_text">Registro:</string>
     <string name="possui_restricao_text">Possui Restrição Hospitalar</string>
     <string name="filter_button_text">Filtrar</string>
+    <string name="tipo_unidade_text">Tipo de Unidade:</string>
+    <string name="rede_atendimento_text">Rede de Atendimento:</string>
+    <string name="fluxo_clientela_text">Fluxo de Atendimento:</string>
+    <string name="vinculo_sus_text">Possui Vínculo ao SUS:</string>
+    <string name="phone_text">Telefone:</string>
+    <string name="call_phone_permission_needed">Para efetuar a ligação, é necessário a permissão solicitada.</string>
+    <string name="call_dialog_title">Efetuar Ligação</string>
+    <string name="call_dialog_message">"Deseja ligar para o número "</string>
+    <string name="call_dialog_positive">Ligar</string>
+    <string name="call_dialog_negative">Cancelar</string>
+    <string name="location_dialog_title">Abrir Mapa</string>
+    <string name="location_dialog_message">Deseja abrir o mapa com a localização do estabelecimento?</string>
+    <string name="location_dialog_positive">Abrir Mapa</string>
+    <string name="location_dialog_negative">Cancelar</string>
 </resources>

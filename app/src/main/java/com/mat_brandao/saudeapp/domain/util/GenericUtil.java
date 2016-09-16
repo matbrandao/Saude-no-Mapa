@@ -10,6 +10,7 @@ public class GenericUtil {
         if (TextUtils.isEmpty(str)) {
             return str;
         }
+        str = str.toLowerCase();
         char[] arr = str.toCharArray();
         boolean capitalizeNext = true;
         String phrase = "";

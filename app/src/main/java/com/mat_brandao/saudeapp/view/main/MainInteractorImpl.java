@@ -18,13 +18,13 @@ import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.repository.UserRepositoryImpl;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
+import com.mat_brandao.saudeapp.domain.util.MaskUtil;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
 import com.mat_brandao.saudeapp.network.retrofit.RestClient;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import retrofit2.Response;
@@ -127,5 +127,23 @@ public class MainInteractorImpl implements MainInteractor {
             }
         }
         return null;
+    }
+
+    @Override
+    public String getFluxoClientelaText(String fluxoClientela) {
+        if (fluxoClientela.toLowerCase().contains("espontânea") && fluxoClientela.toLowerCase().contains("referenciada")) {
+            return "Atendimento espontâneo e referenciado";
+        } else if (fluxoClientela.contains("espontânea") && !fluxoClientela.contains("referenciada")) {
+            return "Apenas atendimento espontâneo";
+        } else if (!fluxoClientela.contains("espontânea") && fluxoClientela.contains("referenciada")) {
+            return "Apenas atendimento referenciado";
+        }
+        return "Indeterminado";
+    }
+
+    @Override
+    public String getAddressText(String logradouro, String numero, String bairro, String cidade, String uf, String cep) {
+        return logradouro + ", Número: " + numero + ". " + GenericUtil.capitalize(bairro) + ", " +
+                GenericUtil.capitalize(cidade) + ", " + uf + " - " + MaskUtil.mask("#####-###", cep);
     }
 }

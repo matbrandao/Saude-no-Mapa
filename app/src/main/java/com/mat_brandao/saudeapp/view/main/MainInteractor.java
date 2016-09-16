@@ -30,4 +30,8 @@ public interface MainInteractor {
     void animateMarketToTop(GoogleMap map, Marker marker, double mapHeight);
 
     Establishment getEstablishmentFromMarker(Marker marker);
+
+    String getFluxoClientelaText(String fluxoClientela);
+
+    String getAddressText(String logradouro, String numero, String bairro, String cidade, String uf, String cep);
 }
