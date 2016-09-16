@@ -12,6 +12,7 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -164,13 +165,18 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
         bottomViews.descricaoCompletaText.setText(GenericUtil.capitalize(establishment.getDescricaoCompleta().toLowerCase()));
         bottomViews.enderecoText.setText(mInteractor.getAddressText(establishment.getLogradouro(), establishment.getNumero(),
                 establishment.getBairro(), establishment.getCidade(), establishment.getUf(), establishment.getCep()));
-        bottomViews.phoneText.setText(establishment.getTelefone());
+        if (TextUtils.isEmpty(establishment.getTelefone())) {
+            bottomViews.phoneLayout.setVisibility(View.GONE);
+        } else {
+            bottomViews.phoneText.setText(establishment.getTelefone());
+        }
+        bottomViews.turnoAtendimento.setText(establishment.getTurnoAtendimento());
         bottomViews.tipoUnidadeText.setText(GenericUtil.capitalize(establishment.getTipoUnidade().toLowerCase()));
         bottomViews.redeAtendimentoText.setText(GenericUtil.capitalize(establishment.getEsferaAdministrativa().toLowerCase()));
         bottomViews.vinculoSusText.setText(GenericUtil.capitalize(establishment.getVinculoSus().toLowerCase()));
         bottomViews.fluxoClientelaText.setText(mInteractor.getFluxoClientelaText(establishment.getFluxoClientela()));
         bottomViews.cnpjText.setText(establishment.getCnpj());
-
+        bottomViews.servicesText.setText(mInteractor.getServicesText(establishment));
         bottomViews.enderecoText.setOnClickListener(view -> {
             showGoToAddressDialog(establishment.getLatitude(), establishment.getLongitude());
         });
@@ -554,8 +560,14 @@ public class MainPresenterImpl implements MainPresenter, OnMapReadyCallback, OnL
         TextView fluxoClientelaText;
         @Bind(R.id.cnpj_text)
         TextView cnpjText;
+        @Bind(R.id.turno_atendimento_text)
+        TextView turnoAtendimento;
+        @Bind(R.id.services_text)
+        TextView servicesText;
         @Bind(R.id.bottom_sheet)
         NestedScrollView bottomSheet;
+        @Bind(R.id.phone_layout)
+        LinearLayout phoneLayout;
     }
 
     class FilterViews {

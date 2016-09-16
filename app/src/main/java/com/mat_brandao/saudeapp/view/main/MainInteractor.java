@@ -34,4 +34,6 @@ public interface MainInteractor {
     String getFluxoClientelaText(String fluxoClientela);
 
     String getAddressText(String logradouro, String numero, String bairro, String cidade, String uf, String cep);
+
+    String getServicesText(Establishment establishment);
 }

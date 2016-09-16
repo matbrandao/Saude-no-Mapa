@@ -146,4 +146,29 @@ public class MainInteractorImpl implements MainInteractor {
         return logradouro + ", Número: " + numero + ". " + GenericUtil.capitalize(bairro) + ", " +
                 GenericUtil.capitalize(cidade) + ", " + uf + " - " + MaskUtil.mask("#####-###", cep);
     }
+
+    @Override
+    public String getServicesText(Establishment establishment) {
+        String result = "";
+        if (establishment.getTemAtendimentoUrgencia().equals("Sim")) {
+            result += "Atendimento Urgencial - ";
+        }
+        if (establishment.getTemAtendimentoAmbulatorial().equals("Sim")) {
+            result += "Atendimento Ambulatorial - ";
+        }
+        if (establishment.getTemCentroCirurgico().equals("Sim")) {
+            result += "Centro Cirúrgico - ";
+        }
+        if (establishment.getTemObstetra().equals("Sim")) {
+            result += "Obstetra - ";
+        }
+        if (establishment.getTemNeoNatal().equals("Sim")) {
+            result += "Neo Natal - ";
+        }
+        if (establishment.getTemDialise().equals("Sim")) {
+            result += "Diálise - ";
+        }
+
+        return result.substring(0, result.length() - 3);
+    }
 }

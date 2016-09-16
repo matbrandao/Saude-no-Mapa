@@ -84,6 +84,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:id="@+id/phone_layout"
                         android:gravity="center_horizontal"
                         android:layout_marginTop="2dp"
                         android:orientation="horizontal">
@@ -106,17 +107,17 @@
                     </LinearLayout>
 
                     <!--<LinearLayout-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_marginTop="5dp"-->
-                        <!--android:gravity="center_horizontal"-->
-                        <!--android:orientation="horizontal">-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginTop="5dp"-->
+                    <!--android:gravity="center_horizontal"-->
+                    <!--android:orientation="horizontal">-->
 
-                        <!--<android.support.design.widget.FloatingActionButton-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--app:backgroundTint="@color/greenColor"-->
-                            <!--android:layout_marginLeft="10dp"/>-->
+                    <!--<android.support.design.widget.FloatingActionButton-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--app:backgroundTint="@color/greenColor"-->
+                    <!--android:layout_marginLeft="10dp"/>-->
                     <!--</LinearLayout>-->
                 </LinearLayout>
             </LinearLayout>
@@ -130,7 +131,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:background="@color/white_transparent"
                 android:gravity="center"
                 android:orientation="vertical">
@@ -223,6 +227,31 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.75"
                         android:textSize="15sp"
+                        android:text="@string/turno_atendimento_text"/>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.25"
+                        android:gravity="left"
+                        android:id="@+id/turno_atendimento_text"
+                        android:layout_marginLeft="10dp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
+                    android:background="@color/clear_yellow"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.75"
+                        android:textSize="15sp"
                         android:text="@string/fluxo_clientela_text"/>
 
                     <TextView
@@ -257,6 +286,56 @@
                         android:id="@+id/cnpj_text"
                         android:layout_marginLeft="10dp"/>
                 </LinearLayout>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:background="@color/white_transparent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/services_title"
+                        android:textSize="18sp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:fontFamily="sans-serif-light"
+                        android:layout_centerHorizontal="true"
+                        android:text="Serviços"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_below="@id/services_title"
+                        android:layout_alignLeft="@id/services_title"
+                        android:layout_alignRight="@id/services_title"
+                        android:background="@color/divider"/>
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/services_text"
+                    android:gravity="center"/>
             </LinearLayout>
         </android.support.v7.widget.CardView>
     </LinearLayout>
