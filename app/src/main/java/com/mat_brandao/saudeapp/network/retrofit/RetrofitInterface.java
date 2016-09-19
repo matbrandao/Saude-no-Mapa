@@ -17,6 +17,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.Streaming;
 import rx.Observable;
 
 /**
@@ -39,6 +40,9 @@ public interface RetrofitInterface {
     @POST("appCivicoRS/rest/pessoas/{userId}/fotoPerfil")
     Observable<Response<ResponseBody>> saveProfilePhoto(@Path("userId") long userId,
                                                         @Part MultipartBody.Part filePart);
+
+    @GET("appCivicoRS/rest/pessoas/{userId}/fotoPerfil")
+    Observable<Response<ResponseBody>> getProfilePhoto(@Path("userId") long userId);
 
     @GET("mapa-da-saude/rest/estabelecimentos/latitude/{latitude}/longitude/{longitude}/raio/{raio}")
     Observable<Response<List<Establishment>>> getEstablishmentsByGeoLocation(

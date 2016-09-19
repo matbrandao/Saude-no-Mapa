@@ -23,6 +23,7 @@ import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.view.base.BaseActivity;
 import com.mat_brandao.saudeapp.view.base.BaseFragment;
 import com.mat_brandao.saudeapp.view.base.BasePresenter;
+import com.mat_brandao.saudeapp.view.main.MainActivity;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -56,6 +57,8 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.establishment_fragment, container, false);
         ButterKnife.bind(this, view);
+
+        ((MainActivity) getActivity()).setToolbarTitle(getContext().getString(R.string.establishments_title));
 
         toggleFabButton(false);
         mPresenter = new EstablishmentPresenterImpl(this, getContext(), getActivity());

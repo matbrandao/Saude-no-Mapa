@@ -142,8 +142,13 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
 
     @Override
     public String getAddressText(String logradouro, String numero, String bairro, String cidade, String uf, String cep) {
-        return logradouro + ", Número: " + numero + ". " + GenericUtil.capitalize(bairro) + ", " +
+        String address = logradouro + ", Número: " + numero + ". " + GenericUtil.capitalize(bairro) + ", " +
                 GenericUtil.capitalize(cidade) + ", " + uf + " - " + MaskUtil.mask("#####-###", cep);
+        if (address.contains("null")) {
+            return null;
+        } else {
+            return address;
+        }
     }
 
     @Override

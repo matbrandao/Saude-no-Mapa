@@ -84,4 +84,5 @@
     <string name="location_dialog_positive">Abrir Mapa</string>
     <string name="location_dialog_negative">Cancelar</string>
     <string name="turno_atendimento_text">Turnos:</string>
+    <string name="establishments_title">Estabelecimentos</string>
 </resources>
