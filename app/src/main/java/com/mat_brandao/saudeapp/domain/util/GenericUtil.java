@@ -26,4 +26,9 @@ public class GenericUtil {
         }
         return phrase;
     }
+
+    public static Long getNumbersFromString(String original) {
+        String numberString = original.replaceAll("\\D+","");
+        return Long.valueOf(numberString);
+    }
 }

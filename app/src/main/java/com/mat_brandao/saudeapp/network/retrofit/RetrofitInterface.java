@@ -1,6 +1,7 @@
 package com.mat_brandao.saudeapp.network.retrofit;
 
 import com.mat_brandao.saudeapp.domain.model.Establishment;
+import com.mat_brandao.saudeapp.domain.model.Installation;
 import com.mat_brandao.saudeapp.domain.model.Remedy;
 import com.mat_brandao.saudeapp.domain.model.User;
 
@@ -14,6 +15,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -24,6 +26,15 @@ import rx.Observable;
  * Created by infosolo2 on 6/24/2015.
  */
 public interface RetrofitInterface {
+    @POST("appCivicoRS/rest/instalacoes")
+    Observable<Response<Installation>> createInstallation(@Body Installation installation);
+
+    @PUT("appCivicoRS/rest/instalacoes")
+    Observable<Response<Installation>> updateInstallation(@Body Installation installation);
+
+    @GET("appCivicoRS/rest/instalacoes/{installationId}")
+    Observable<Response<Installation>> getInstallation(@Path("installationId") Long installationId);
+
     @GET("appCivicoRS/rest/pessoas/autenticar")
     Observable<Response<User>> login(@Header("email") String email, @Header("senha") String password);
 

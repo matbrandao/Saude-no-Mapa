@@ -42,7 +42,7 @@ public class MainInteractorImpl implements MainInteractor {
     @Override
     public void logout() {
         Realm.getDefaultInstance().executeTransaction(realm -> {
-            realm.deleteAll();
+            realm.delete(User.class);
         });
     }
 }

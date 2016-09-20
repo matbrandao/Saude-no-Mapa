@@ -55,7 +55,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:9.4.0'
     compile 'com.google.android.gms:play-services-location:9.4.0'
     compile 'com.google.android.gms:play-services-auth:9.4.0'
-//    compile 'com.google.android.gms:play-services-vision:9.4.0'
+    compile "com.google.firebase:firebase-messaging:9.4.0"
 
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'

@@ -90,4 +90,6 @@
     <string name="menu_item_my_list">Minha Lista</string>
     <string name="found_remedies_text">Remédios Encontrados</string>
     <string name="menu_item_establishments">Estabelecimentos</string>
+    <string name="app_id">261</string>
+    <string name="device_os">Android</string>
 </resources>

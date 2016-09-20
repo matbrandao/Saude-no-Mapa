@@ -21,10 +21,12 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Error401;
 import com.mat_brandao.saudeapp.domain.model.User;
+import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 import com.mat_brandao.saudeapp.domain.util.OnFormEmitted;
 import com.mat_brandao.saudeapp.view.main.MainActivity;
 import com.mat_brandao.saudeapp.view.register.RegisterActivity;
@@ -227,8 +229,6 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
     Observer<Response<User>> loginObserver = new Observer<Response<User>>() {
         @Override
         public void onCompleted() {
-            mView.dismissProgressDialog();
-            Log.d(TAG, "onCompleted() called with: " + "");
         }
 
         @Override
@@ -258,9 +258,33 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
                 User user = userResponse.body();
                 user.setAppToken(userResponse.headers().get("appToken"));
                 mInteractor.saveUserToRealm(user);
-                Intent intent = new Intent(mContext, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                mView.goToActivity(intent);
+
+                if (mInteractor.isFirstUse()) {
+                    String token = FirebaseInstanceId.getInstance().getToken();
+                    if (!TextUtils.isEmpty(token)) {
+                        mInteractor.requestCreateInstallation(token)
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .onErrorReturn(throwable -> null)
+                                .subscribe(installationResponse -> {
+                                    if (installationResponse != null && installationResponse.isSuccessful()) {
+                                        mView.dismissProgressDialog();
+                                        Intent intent = new Intent(mContext, MainActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        mView.goToActivity(intent);
+                                    }
+                                });
+                    } else {
+                        mView.dismissProgressDialog();
+                        Intent intent = new Intent(mContext, MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mView.goToActivity(intent);
+                    }
+                } else {
+                    mView.dismissProgressDialog();
+                    Intent intent = new Intent(mContext, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mView.goToActivity(intent);
+                }
             }
         }
     };

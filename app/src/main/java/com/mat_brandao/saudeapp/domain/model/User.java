@@ -47,6 +47,7 @@ public class User extends RealmObject {
 
     private int passwordType;
     private String appToken;
+    private Long installationId;
 
     public User() {
     }
@@ -160,5 +161,13 @@ public class User extends RealmObject {
 
     public void setFacebookToken(String facebookToken) {
         this.facebookToken = facebookToken;
+    }
+
+    public Long getInstallationId() {
+        return installationId;
+    }
+
+    public void setInstallationId(Long installationId) {
+        this.installationId = installationId;
     }
 }

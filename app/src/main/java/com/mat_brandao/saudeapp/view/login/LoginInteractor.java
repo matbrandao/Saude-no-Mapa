@@ -5,6 +5,7 @@ import android.widget.EditText;
 
 import com.facebook.FacebookCallback;
 import com.facebook.login.LoginResult;
+import com.mat_brandao.saudeapp.domain.model.Installation;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.util.OnFormEmitted;
 
@@ -29,6 +30,10 @@ public interface LoginInteractor {
     Observable<Response<User>> requestLoginWithGoogle(String email, String token);
 
     Observable<Response<ResponseBody>> requestRememberPassword(String email);
+
+    Observable<Response<Installation>> requestCreateInstallation(String deviceToken);
+
+    boolean isFirstUse();
 
     void saveUserToRealm(User user);
 
