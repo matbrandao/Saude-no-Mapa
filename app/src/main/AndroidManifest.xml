@@ -57,7 +57,7 @@
              </intent-filter>
         </activity>
         <activity
-            android:name=".view.remedy.RemedyActivity"
+            android:name=".view.remedy.RemedyFragment"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden">
             <!--<intent-filter>-->

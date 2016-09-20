@@ -55,7 +55,7 @@
     <string name="obstetra_filter">Obstetra:</string>
     <string name="neo_natal_filter">Neo Natal:</string>
     <string name="dialise_filter">Diálise:</string>
-    <string name="title_activity_remedy">Remédios</string>
+    <string name="remedies_title">Remédios</string>
     <string name="needed_camera_permission">Para escanear um código de barras, é necessário a permissão para utilizar a câmera do aparelho.</string>
     <string name="progress_searching_remedies">Buscando Remédio</string>
     <string name="search_remedy_hint">Procurar remédio</string>
@@ -85,4 +85,9 @@
     <string name="location_dialog_negative">Cancelar</string>
     <string name="turno_atendimento_text">Turnos:</string>
     <string name="establishments_title">Estabelecimentos</string>
+    <string name="menu_item_logout">Sair</string>
+    <string name="menu_item_remedy">Remédios</string>
+    <string name="menu_item_my_list">Minha Lista</string>
+    <string name="found_remedies_text">Remédios Encontrados</string>
+    <string name="menu_item_establishments">Estabelecimentos</string>
 </resources>

@@ -26,7 +26,6 @@ import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Error401;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.util.OnFormEmitted;
-import com.mat_brandao.saudeapp.view.establishment.EstablishmentFragment;
 import com.mat_brandao.saudeapp.view.main.MainActivity;
 import com.mat_brandao.saudeapp.view.register.RegisterActivity;
 
@@ -119,13 +118,14 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
 
     @Override
     public void googleLoginClicked() {
+        mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         mView.startActivityForResult(signInIntent);
     }
 
     @Override
     public void facebookLoginClicked() {
-        mView.showProgressDialog("Efetuando login...");
+        mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
         mInteractor.requestLoginToFacebook(Arrays.asList("email", "public_profile"), facebookCallback);
     }
 
@@ -133,7 +133,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
     public void normalLoginClicked(String email, String password) {
         mView.hideKeyboard();
         isFacebook = false;
-        mView.showProgressDialog("Efetuando login");
+        mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
         mSubscription.add(mInteractor
                 .requestLoginWithAccount(email, password)
                 .observeOn(AndroidSchedulers.mainThread())

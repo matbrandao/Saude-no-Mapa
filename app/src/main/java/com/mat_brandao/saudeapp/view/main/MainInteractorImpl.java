@@ -6,8 +6,7 @@ import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.repository.UserRepositoryImpl;
 import com.mat_brandao.saudeapp.network.retrofit.RestClient;
 
-import java.io.File;
-
+import io.realm.Realm;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 import rx.Observable;
@@ -38,5 +37,12 @@ public class MainInteractorImpl implements MainInteractor {
     @Override
     public String getProfilePhotoUrl() {
         return "http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas/" + mUser.getId() + "/fotoPerfil.png";
+    }
+
+    @Override
+    public void logout() {
+        Realm.getDefaultInstance().executeTransaction(realm -> {
+            realm.deleteAll();
+        });
     }
 }

@@ -16,8 +16,6 @@ import com.mat_brandao.saudeapp.view.base.BaseActivity;
 import com.mat_brandao.saudeapp.view.base.BasePresenter;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -48,9 +46,9 @@ public class MainActivity extends BaseActivity implements MainView {
         toolbar.setNavigationIcon(R.drawable.ic_menu);
         toolbar.setNavigationOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
-        navigationView.setNavigationItemSelectedListener(mPresenter);
-
         mPresenter = new MainPresenterImpl(this, this);
+
+        navigationView.setNavigationItemSelectedListener(mPresenter);
     }
 
     @Override
@@ -119,8 +117,14 @@ public class MainActivity extends BaseActivity implements MainView {
     public void setProfileImage(String profilePhotoUrl) {
         Picasso.with(this)
                 .load(profilePhotoUrl)
+                .placeholder(R.drawable.avatar_placeholder)
                 .error(R.drawable.avatar_placeholder)
                 .into(((ImageView) navigationView.getHeaderView(0).findViewById(R.id.profile_image)));
+    }
+
+    @Override
+    public void setNavigationItemChecked(int itemId) {
+        navigationView.setCheckedItem(itemId);
     }
 
     @Override

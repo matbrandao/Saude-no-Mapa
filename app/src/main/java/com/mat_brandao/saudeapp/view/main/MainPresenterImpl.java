@@ -1,27 +1,16 @@
 package com.mat_brandao.saudeapp.view.main;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.util.Log;
 import android.view.MenuItem;
 
+import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.view.establishment.EstablishmentFragment;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-
-import okhttp3.ResponseBody;
-import retrofit2.Response;
-import rx.Observable;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
+import com.mat_brandao.saudeapp.view.login.LoginActivity;
+import com.mat_brandao.saudeapp.view.remedy.RemedyFragment;
 
 public class MainPresenterImpl implements MainPresenter, NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainPresenterImpl";
@@ -61,6 +50,7 @@ public class MainPresenterImpl implements MainPresenter, NavigationView.OnNaviga
         showUserData();
 
         mView.showFragment(EstablishmentFragment.newInstance());
+        mView.setNavigationItemChecked(R.id.menu_item_establishments);
     }
 
     private void showUserData() {
@@ -71,6 +61,18 @@ public class MainPresenterImpl implements MainPresenter, NavigationView.OnNaviga
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        mView.setNavigationItemChecked(item.getItemId());
+        mView.closeDrawer();
+        if (item.getItemId() == R.id.menu_item_remedy) {
+            mView.showFragment(RemedyFragment.newInstance());
+        } else if (item.getItemId() == R.id.menu_item_establishments) {
+            mView.showFragment(EstablishmentFragment.newInstance());
+        } else if (item.getItemId() == R.id.menu_item_logout) {
+            mInteractor.logout();
+            Intent intent = new Intent(mContext, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            mView.goToActivity(intent);
+        }
         return false;
     }
 }

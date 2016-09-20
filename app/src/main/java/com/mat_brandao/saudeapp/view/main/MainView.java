@@ -4,8 +4,6 @@ import android.support.v4.app.Fragment;
 
 import com.mat_brandao.saudeapp.view.base.BaseView;
 
-import java.io.File;
-
 public interface MainView extends BaseView.BaseProgressView {
     void showFragment(Fragment fragment);
 
@@ -16,4 +14,6 @@ public interface MainView extends BaseView.BaseProgressView {
     void setProfileEmailText(String email);
 
     void setProfileImage(String profilePhotoUrl);
+
+    void setNavigationItemChecked(int itemId);
 }

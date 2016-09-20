@@ -1,4 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:checkableBehavior="single">
 
+        <item
+            android:id="@+id/menu_item_establishments"
+            android:title="@string/menu_item_establishments"
+            android:icon="@drawable/ic_local_hospital"/>
+
+        <item
+            android:id="@+id/menu_item_remedy"
+            android:title="@string/menu_item_remedy"
+            android:icon="@drawable/ic_action_pill"/>
+
+        <item
+            android:id="@+id/menu_item_my_list"
+            android:title="@string/menu_item_my_list"
+            android:icon="@drawable/ic_favorite"/>
+
+        <item
+            android:id="@+id/menu_item_logout"
+            android:title="@string/menu_item_logout"
+            android:icon="@drawable/ic_action_exit"/>
+    </group>
 </menu>
