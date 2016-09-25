@@ -14,13 +14,13 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.Scope;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.util.StringListener;
 import com.mat_brandao.saudeapp.view.base.BaseActivity;
@@ -29,6 +29,8 @@ import com.mat_brandao.saudeapp.view.base.BasePresenter;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import ir.mirrajabi.viewfilter.core.ViewFilter;
+import ir.mirrajabi.viewfilter.renderers.BlurRenderer;
 
 public class LoginActivity extends BaseActivity implements LoginView {
     public static final int GOOGLE_SIGN_IN = 100;
@@ -57,6 +59,10 @@ public class LoginActivity extends BaseActivity implements LoginView {
     TextView forgotPassword;
     @Bind(R.id.login_google_button)
     SignInButton loginGoogleButton;
+    @Bind(R.id.login_background_image)
+    ImageView loginBackgroundImage;
+    @Bind(R.id.root_relative_layout)
+    FrameLayout rootRelativeLayout;
 
     private LoginPresenterImpl mPresenter;
 
@@ -78,6 +84,11 @@ public class LoginActivity extends BaseActivity implements LoginView {
         } else {
             ViewCompat.setBackgroundTintList(loginFacebookButton, getResources().getColorStateList(R.color.facebook_blue));
         }
+
+        ViewFilter.getInstance(LoginActivity.this)
+                .setRenderer(new BlurRenderer(16))
+                .applyFilterOnView(loginBackgroundImage,
+                        rootRelativeLayout);
     }
 
     @Override

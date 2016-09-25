@@ -31,7 +31,7 @@ public interface LoginInteractor {
 
     Observable<Response<ResponseBody>> requestRememberPassword(String email);
 
-    Observable<Response<Installation>> requestCreateInstallation(String deviceToken);
+    Observable<Response<Installation>> requestCreateInstallation();
 
     boolean isFirstUse();
 

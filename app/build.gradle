@@ -84,6 +84,8 @@ dependencies {
 
     compile 'me.dm7.barcodescanner:zxing:1.9'
 
+    compile 'com.github.mirrajabi:ViewEffects:1.0'
+
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'

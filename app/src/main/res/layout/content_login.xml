@@ -6,6 +6,24 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark">
 
+   <FrameLayout
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:id="@+id/root_relative_layout">
+
+       <ImageView
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:id="@+id/login_background_image"
+           android:scaleType="matrix"
+           android:background="@drawable/login_back_one"/>
+   </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#44000000"/>
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="200dp"
@@ -13,7 +31,8 @@
         android:src="@mipmap/ic_launcher"
         android:scaleType="fitCenter"
         android:layout_marginTop="32dp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@null"/>
 
     <!--<View-->
     <!--android:layout_width="match_parent"-->

@@ -1,10 +1,7 @@
 package com.mat_brandao.saudeapp.domain.fcm;
 
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Installation;
@@ -12,10 +9,8 @@ import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.util.DateUtil;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 import com.mat_brandao.saudeapp.network.retrofit.RestClient;
-import com.mat_brandao.saudeapp.view.main.MainActivity;
 
 import io.realm.Realm;
-import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by Mateus Brandão on 21-Jul-16.
@@ -30,9 +25,9 @@ public class InstanceIdService extends FirebaseInstanceIdService {
     @Override
     public void onTokenRefresh() {
         // Get updated InstanceID token.
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, "Refreshed token: " + refreshedToken);
-        sendRegistrationToServer(refreshedToken);
+//        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+//        Log.d(TAG, "Refreshed token: " + refreshedToken);
+//        sendRegistrationToServer(refreshedToken);
     }
 
     private void sendRegistrationToServer(String refreshedToken) {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.widget.EditText;
 
 import com.facebook.CallbackManager;
@@ -89,13 +90,13 @@ public class LoginInteractorImpl implements LoginInteractor {
     }
 
     @Override
-    public Observable<Response<Installation>> requestCreateInstallation(String deviceToken) {
+    public Observable<Response<Installation>> requestCreateInstallation() {
         User user = mUserRepository.getUser();
         Installation installation = new Installation();
         installation.setAppId(Integer.valueOf(mContext.getString(R.string.app_id)));
         installation.setDateTime(DateUtil.getNowDate());
         installation.setDeviceOS(mContext.getString(R.string.device_os));
-        installation.setDeviceToken(deviceToken);
+        installation.setDeviceToken(Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID));
         installation.setUserId(user.getId());
         return RestClient.getHeader(user.getAppToken())
                 .createInstallation(installation);

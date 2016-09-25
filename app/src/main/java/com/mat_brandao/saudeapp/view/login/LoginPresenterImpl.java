@@ -21,12 +21,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Error401;
 import com.mat_brandao.saudeapp.domain.model.User;
-import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 import com.mat_brandao.saudeapp.domain.util.OnFormEmitted;
 import com.mat_brandao.saudeapp.view.main.MainActivity;
 import com.mat_brandao.saudeapp.view.register.RegisterActivity;
@@ -260,30 +258,15 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
                 mInteractor.saveUserToRealm(user);
 
                 if (mInteractor.isFirstUse()) {
-                    String token = FirebaseInstanceId.getInstance().getToken();
-                    if (!TextUtils.isEmpty(token)) {
-                        mInteractor.requestCreateInstallation(token)
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .onErrorReturn(throwable -> null)
-                                .subscribe(installationResponse -> {
-                                    if (installationResponse != null && installationResponse.isSuccessful()) {
-                                        mView.dismissProgressDialog();
-                                        Intent intent = new Intent(mContext, MainActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        mView.goToActivity(intent);
-                                    }
-                                });
-                    } else {
-                        mView.dismissProgressDialog();
-                        Intent intent = new Intent(mContext, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mView.goToActivity(intent);
-                    }
-                } else {
-                    mView.dismissProgressDialog();
-                    Intent intent = new Intent(mContext, MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mView.goToActivity(intent);
+                    mInteractor.requestCreateInstallation()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .onErrorReturn(throwable -> null)
+                            .subscribe(installationResponse -> {
+                                mView.dismissProgressDialog();
+                                Intent intent = new Intent(mContext, MainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                mView.goToActivity(intent);
+                            });
                 }
             }
         }
@@ -325,6 +308,6 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        // TODO: 09/09/2016  
+        mView.showToast(mContext.getString(R.string.http_error_generic));
     }
 }
