@@ -29,8 +29,6 @@ import com.mat_brandao.saudeapp.view.base.BasePresenter;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import ir.mirrajabi.viewfilter.core.ViewFilter;
-import ir.mirrajabi.viewfilter.renderers.BlurRenderer;
 
 public class LoginActivity extends BaseActivity implements LoginView {
     public static final int GOOGLE_SIGN_IN = 100;
@@ -85,10 +83,10 @@ public class LoginActivity extends BaseActivity implements LoginView {
             ViewCompat.setBackgroundTintList(loginFacebookButton, getResources().getColorStateList(R.color.facebook_blue));
         }
 
-        ViewFilter.getInstance(LoginActivity.this)
-                .setRenderer(new BlurRenderer(16))
-                .applyFilterOnView(loginBackgroundImage,
-                        rootRelativeLayout);
+//        ViewFilter.getInstance(LoginActivity.this)
+//                .setRenderer(new BlurRenderer(16))
+//                .applyFilterOnView(loginBackgroundImage,
+//                        rootRelativeLayout);
     }
 
     @Override
@@ -164,7 +162,10 @@ public class LoginActivity extends BaseActivity implements LoginView {
 
     @Override
     public void hideAccountLoginText() {
-        accountLogin.animate().alpha(0).setDuration(500).withEndAction(() -> accountLogin.setEnabled(false));
+        accountLogin.animate().alpha(0).setDuration(500).withEndAction(() -> {
+            accountLogin.setEnabled(false);
+            accountLogin.setVisibility(View.GONE);
+        });
     }
 
     @Override

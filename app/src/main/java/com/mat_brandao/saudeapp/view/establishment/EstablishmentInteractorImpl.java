@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -29,6 +30,7 @@ import java.util.Map;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import retrofit2.Response;
 import rx.Observable;
+import timber.log.Timber;
 
 public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     private static final Double SEARCH_RADIUS = 10.0;
@@ -87,12 +89,39 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     @Override
     public void drawEstablishment(GoogleMap map, Establishment establishment) {
         if (map != null) {
+            Timber.i("drawEstablishment() establishment type = [" + establishment.getCategoriaUnidade().toLowerCase() + "]");
+            String categoria = establishment.getCategoriaUnidade().toLowerCase();
             mDeviceMarkerHash.put(establishment, map
                     .addMarker(new MarkerOptions()
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_local_hospital))
+                            .icon(getBitmapDescriptorForCategory(categoria))
                             .position(new LatLng(establishment.getLatitude(), establishment.getLongitude()))
                             .title(GenericUtil.capitalize(establishment.getNomeFantasia().toLowerCase()))));
         }
+    }
+
+    private BitmapDescriptor getBitmapDescriptorForCategory(String categoria) {
+        BitmapDescriptor mapIcon;
+        if (categoria.contains("consultório")) {
+            mapIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_consultorio);
+        } else if (categoria.contains("clínica")) {
+            mapIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_clinica);
+        } else if (categoria.contains("laboratório")) {
+            mapIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_laboratorio);
+        } else if (categoria.contains("urgência")) {
+            mapIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_urgente);
+        } else if (categoria.contains("hospital")) {
+            mapIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_hospital);
+        } else if (categoria.contains("atendimento domiciliar")) {
+            mapIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_domiciliar);
+        } else if (categoria.contains("posto de saúde")) {
+            mapIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_urgente);
+        } else if (categoria.contains("samu")) {
+            mapIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_samu);
+        } else {
+            mapIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_urgente);
+        }
+
+        return mapIcon;
     }
 
     @Override
