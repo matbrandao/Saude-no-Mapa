@@ -98,7 +98,7 @@ public class LoginInteractorImpl implements LoginInteractor {
         installation.setDeviceOS(mContext.getString(R.string.device_os));
         installation.setDeviceToken(Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID));
         installation.setUserId(user.getId());
-        return RestClient.getHeader(user.getAppToken())
+        return RestClient.getHeader(user.getAppToken(), null)
                 .createInstallation(installation);
     }
 
@@ -111,8 +111,7 @@ public class LoginInteractorImpl implements LoginInteractor {
                     .putBoolean(FIRST_USE_KEY, false)
                     .apply();
         }
-        // FIXME: 20/09/2016 
-        return true;
+        return isFirstUse;
     }
 
     @Override

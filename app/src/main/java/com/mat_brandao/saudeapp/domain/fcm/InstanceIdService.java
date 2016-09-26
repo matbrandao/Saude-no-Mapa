@@ -38,7 +38,7 @@ public class InstanceIdService extends FirebaseInstanceIdService {
         if (mUser != null) {
             if (mUser.getInstallationId() != null) {
                 Log.d(TAG, "sendRegistrationToServer: requesting installation");
-                RestClient.getHeader(mUser.getAppToken())
+                RestClient.getHeader(mUser.getAppToken(), null)
                         .getInstallation(mUser.getInstallationId())
                         .onErrorReturn(throwable -> null)
                         .subscribe(installationResponse -> {
@@ -47,7 +47,7 @@ public class InstanceIdService extends FirebaseInstanceIdService {
                                     Log.d(TAG, "sendRegistrationToServer: token is different, trying to update");
                                     installationResponse.body().setDeviceToken(refreshedToken);
 
-                                    RestClient.getHeader(mUser.getAppToken())
+                                    RestClient.getHeader(mUser.getAppToken(), null)
                                             .updateInstallation(installationResponse.body())
                                             .onErrorReturn(throwable -> null)
                                             .subscribe();
@@ -65,7 +65,7 @@ public class InstanceIdService extends FirebaseInstanceIdService {
                 installation.setDeviceToken(refreshedToken);
                 installation.setUserId(mUser.getId());
 
-                RestClient.getHeader(mUser.getAppToken())
+                RestClient.getHeader(mUser.getAppToken(), null)
                         .createInstallation(installation)
                         .onErrorReturn(throwable -> null)
                         .subscribe(installationResponse -> {

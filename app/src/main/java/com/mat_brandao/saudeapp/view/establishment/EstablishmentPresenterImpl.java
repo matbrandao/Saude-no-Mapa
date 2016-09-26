@@ -8,9 +8,11 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -34,6 +37,7 @@ import com.google.gson.Gson;
 import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.mat_brandao.saudeapp.R;
+import com.mat_brandao.saudeapp.domain.model.Conteudo;
 import com.mat_brandao.saudeapp.domain.model.Error401;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
@@ -45,11 +49,13 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import okhttp3.ResponseBody;
 import retrofit2.Response;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 
 public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMapReadyCallback, OnLocationFound {
@@ -83,7 +89,6 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
 
     @Override
     public void onResume() {
-
     }
 
     @Override
@@ -112,7 +117,40 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         mActivity = activity;
         mView = view;
 
-        // TODO: 12/09/2016 add loading to first loading
+        requestLikedEstablishments();
+    }
+
+    private void requestLikedEstablishments() {
+        mSubscription.add(mInteractor.requestGetUserPosts()
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> null)
+                .subscribe(listResponse -> {
+                    if (listResponse != null && listResponse.isSuccessful()) {
+                        if (listResponse.body() != null && listResponse.body().size() > 0) {
+                            mInteractor.saveUserLikePostCode(listResponse.body().get(0).getCodPostagem());
+                            for (Conteudo conteudo : listResponse.body().get(0).getConteudos()) {
+                                mInteractor.requestGetPostContent(conteudo.getCodConteudoPostagem())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .onErrorReturn(throwable -> null)
+                                        .subscribe(postContentResponse -> {
+                                            if (postContentResponse != null && postContentResponse.isSuccessful()) {
+                                                mInteractor.addEstablishmentToLikedList(GenericUtil.getNumbersFromString(
+                                                        postContentResponse.body().getJSON()));
+                                            }
+                                        });
+                            }
+                        } else {
+                            mSubscription.add(mInteractor.requestCreateLikePost()
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .onErrorReturn(throwable -> null)
+                                    .subscribe(createPostResponse -> {
+                                        if (createPostResponse != null && createPostResponse.isSuccessful()) {
+                                            mInteractor.saveUserLikePostCode(GenericUtil.getNumbersFromString(createPostResponse.headers().get("location")));
+                                        }
+                                    }));
+                        }
+                    }
+                }));
     }
 
     @Override
@@ -158,7 +196,10 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                 });
     }
 
-    private void showMarkerBottomSheetDialog(Establishment establishment) {
+    private void showMarkerBottomSheetDialog(@Nullable Establishment establishment) {
+        if (establishment == null) {
+            return;
+        }
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
 
         View dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_bottom_sheet_marker, null);
@@ -185,8 +226,25 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
             showGoToAddressDialog(establishment.getLatitude(), establishment.getLongitude());
         });
 
-        bottomViews.phoneText.setOnClickListener(view -> {
+        bottomViews.phoneText.setOnClickListener(v -> {
             showCallToPhoneDialog(establishment.getTelefone());
+        });
+
+        if (mInteractor.isEstablishmentLiked(Long.valueOf(establishment.getCodUnidade()))) {
+            bottomViews.likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
+        }
+
+        bottomViews.likeImage.setOnClickListener(v -> {
+            mView.showProgressDialog(mContext.getString(R.string.progress_wait));
+            if (mInteractor.isEstablishmentLiked(Long.valueOf(establishment.getCodUnidade()))) {
+                Timber.i("Already liked");
+//                mSubscription.add(mInteractor.requestDisLikeEstablishment(establishment.getCodUnidade())
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe());
+            } else {
+                Timber.i("Not Liked yet");
+                requestLikeEstablishment(establishment.getCodUnidade(), bottomViews.likeImage);
+            }
         });
 
         bottomSheetDialog.setContentView(dialogView);
@@ -203,6 +261,47 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         });
 
         bottomSheetDialog.show();
+    }
+
+    private void requestLikeEstablishment(String codUnidade, ImageView likeImage) {
+        if (mInteractor.hasLikePostCode()) {
+            mSubscription.add(mInteractor.requestLikeEstablishment(codUnidade)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .onErrorReturn(throwable -> null)
+                    .subscribe(likeResponse -> {
+                        mView.dismissProgressDialog();
+                        if (likeResponse != null && likeResponse.isSuccessful()) {
+                            mInteractor.addEstablishmentToLikedList(Long.valueOf(codUnidade));
+                            likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
+                        } else {
+                            mView.showProgressDialog(mContext.getString(R.string.progress_wait));
+                        }
+                    }));
+        } else {
+            mSubscription.add(mInteractor.requestCreateLikePost()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .onErrorReturn(throwable -> null)
+                    .subscribe(createPostResponse -> {
+                        if (createPostResponse != null && createPostResponse.isSuccessful()) {
+                            mInteractor.saveUserLikePostCode(GenericUtil.getNumbersFromString(createPostResponse.headers().get("location")));
+                            mSubscription.add(mInteractor.requestLikeEstablishment(
+                                    GenericUtil.getNumbersFromString(createPostResponse.headers().get("location")), codUnidade)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .onErrorReturn(throwable -> null)
+                                    .subscribe(likeResponse -> {
+                                        mView.dismissProgressDialog();
+                                        if (likeResponse != null && likeResponse.isSuccessful()) {
+                                            mInteractor.addEstablishmentToLikedList(Long.valueOf(codUnidade));
+                                            likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
+                                        } else {
+                                            mView.showProgressDialog(mContext.getString(R.string.progress_wait));
+                                        }
+                                    }));
+                        } else {
+                            mView.showToast(mContext.getString(R.string.http_error_generic));
+                        }
+                    }));
+        }
     }
 
     private void showCallToPhoneDialog(String telefone) {
@@ -544,6 +643,23 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         }
     };
 
+    private Observer<Response<ResponseBody>> likeEstablishmentObserver = new Observer<Response<ResponseBody>>() {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onNext(Response<ResponseBody> responseBodyResponse) {
+
+        }
+    };
+
     class MarkerViews {
         @Bind(R.id.establishment_title)
         TextView establishmentTitle;
@@ -573,6 +689,8 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         NestedScrollView bottomSheet;
         @Bind(R.id.phone_layout)
         LinearLayout phoneLayout;
+        @Bind(R.id.establishment_like_image)
+        ImageView likeImage;
     }
 
     class FilterViews {

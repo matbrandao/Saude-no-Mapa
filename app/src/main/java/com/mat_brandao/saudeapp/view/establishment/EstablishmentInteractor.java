@@ -5,12 +5,17 @@ import android.location.Location;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
+import com.mat_brandao.saudeapp.domain.model.Post;
+import com.mat_brandao.saudeapp.domain.model.PostContent;
+import com.mat_brandao.saudeapp.domain.model.PostResponse;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Response;
 import rx.Observable;
+import rx.Subscription;
 
 public interface EstablishmentInteractor {
     boolean hasGps();
@@ -36,4 +41,24 @@ public interface EstablishmentInteractor {
     String getAddressText(String logradouro, String numero, String bairro, String cidade, String uf, String cep);
 
     String getServicesText(Establishment establishment);
+
+    boolean isEstablishmentLiked(Long codUnidade);
+
+    Observable<Response<ResponseBody>> requestLikeEstablishment(Long postCode, String codUnidade);
+
+    Observable<Response<ResponseBody>> requestLikeEstablishment(String codUnidade);
+
+    Observable<Response<ResponseBody>> requestDisLikeEstablishment(String codUnidade);
+
+    Observable<Response<ResponseBody>> requestCreateLikePost();
+
+    boolean hasLikePostCode();
+
+    void saveUserLikePostCode(Long likePostCode);
+
+    Observable<Response<List<PostResponse>>> requestGetUserPosts();
+
+    Observable<Response<PostContent>> requestGetPostContent(Long codConteudoPostagem);
+
+    void addEstablishmentToLikedList(Long establishmentCode);
 }

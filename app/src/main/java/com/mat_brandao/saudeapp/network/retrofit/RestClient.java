@@ -23,6 +23,7 @@ public class RestClient {
     private static RetrofitInterface REST_CLIENT_HEADER;
 
     private static String mToken;
+    private static String mAppId;
 
     private RestClient() {}
 
@@ -34,8 +35,9 @@ public class RestClient {
         return REST_CLIENT;
     }
 
-    public static RetrofitInterface getHeader(String token) {
+    public static RetrofitInterface getHeader(String token, String appId) {
         mToken = token;
+        mAppId = appId;
         setupRestClientHeader();
         return REST_CLIENT_HEADER;
     }
@@ -76,13 +78,24 @@ public class RestClient {
         builder.networkInterceptors().add(httpLoggingInterceptor);
 
         if (mToken != null) {
-            builder.addInterceptor(chain -> {
-                Request request = chain.request()
-                        .newBuilder()
-                        .addHeader("appToken", mToken)
-                        .build();
-                return chain.proceed(request);
-            });
+            if (mAppId != null) {
+                builder.addInterceptor(chain -> {
+                    Request request = chain.request()
+                            .newBuilder()
+                            .addHeader("appToken", mToken)
+                            .addHeader("appIdentifier", mAppId)
+                            .build();
+                    return chain.proceed(request);
+                });
+            } else {
+                builder.addInterceptor(chain -> {
+                    Request request = chain.request()
+                            .newBuilder()
+                            .addHeader("appToken", mToken)
+                            .build();
+                    return chain.proceed(request);
+                });
+            }
         }
 
         Gson gson = new GsonBuilder()

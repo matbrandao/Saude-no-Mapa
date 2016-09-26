@@ -267,6 +267,11 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 mView.goToActivity(intent);
                             });
+                } else {
+                    mView.dismissProgressDialog();
+                    Intent intent = new Intent(mContext, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mView.goToActivity(intent);
                 }
             }
         }

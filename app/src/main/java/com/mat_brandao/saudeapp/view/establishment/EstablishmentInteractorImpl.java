@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -15,18 +16,28 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.mat_brandao.saudeapp.R;
+import com.mat_brandao.saudeapp.SaudeApp;
+import com.mat_brandao.saudeapp.domain.model.Autor;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
+import com.mat_brandao.saudeapp.domain.model.Post;
+import com.mat_brandao.saudeapp.domain.model.PostContent;
+import com.mat_brandao.saudeapp.domain.model.PostResponse;
+import com.mat_brandao.saudeapp.domain.model.PostType;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.repository.UserRepositoryImpl;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 import com.mat_brandao.saudeapp.domain.util.MaskUtil;
+import com.mat_brandao.saudeapp.domain.util.MetaModelConstants;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
 import com.mat_brandao.saudeapp.network.retrofit.RestClient;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.realm.Realm;
+import okhttp3.ResponseBody;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import retrofit2.Response;
 import rx.Observable;
@@ -39,13 +50,14 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     private final UserRepositoryImpl mUserRepository;
     private User mUser;
     private HashMap<Establishment, Marker> mDeviceMarkerHash;
-
+    private List<Long> mLikedEstablishmentCodes;
 
     public EstablishmentInteractorImpl(Context context) {
         mContext = context;
         mUserRepository = new UserRepositoryImpl();
         mUser = mUserRepository.getUser();
         mDeviceMarkerHash = new HashMap<>();
+        mLikedEstablishmentCodes = new ArrayList<>();
     }
 
     @Override
@@ -70,7 +82,7 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
 
     @Override
     public Observable<Response<List<Establishment>>> requestEstablishmentsByLocation(Location location, int pagination) {
-        return RestClient.getHeader(mUser.getAppToken())
+        return RestClient.getHeader(mUser.getAppToken(), null)
                 .getEstablishmentsByGeoLocation(location.getLatitude(),
                         location.getLongitude(), SEARCH_RADIUS, pagination);
     }
@@ -140,13 +152,14 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     @Override
     public void animateMarketToTop(GoogleMap map, Marker marker, double mapHeight) {
         double dpPerdegree = 256.0 * Math.pow(2, 15) / 170.0;
-        double screen_height_30p = 25.0 * mapHeight / 100.0;
+        double screen_height_30p = 15.0 * mapHeight / 100.0;
         double degree_30p = screen_height_30p / dpPerdegree;
         LatLng latLng = marker.getPosition();
         LatLng centerlatlng = new LatLng(latLng.latitude - degree_30p, latLng.longitude);
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(centerlatlng, 15), 500, null);
     }
 
+    @Nullable
     @Override
     public Establishment getEstablishmentFromMarker(Marker marker) {
         for (Map.Entry entry : mDeviceMarkerHash.entrySet()) {
@@ -203,5 +216,87 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
         }
 
         return result.substring(0, result.length() - 3);
+    }
+
+    @Override
+    public boolean isEstablishmentLiked(Long codUnidade) {
+        if (mLikedEstablishmentCodes.isEmpty()) {
+            return false;
+        } else {
+            for (Long mLikedEstablishmentCode : mLikedEstablishmentCodes) {
+                if (mLikedEstablishmentCode.equals(codUnidade)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    @Override
+    public Observable<Response<ResponseBody>> requestLikeEstablishment(Long postCode, String codUnidade) {
+        return RestClient.getHeader(mUser.getAppToken(), null)
+                .likeEstablishment(postCode, assemblePostContent(codUnidade));
+    }
+
+    @Override
+    public Observable<Response<ResponseBody>> requestLikeEstablishment(String codUnidade) {
+        return RestClient.getHeader(mUser.getAppToken(), null)
+                .likeEstablishment(mUser.getLikePostCode(), assemblePostContent(codUnidade));
+    }
+
+    @Override
+    public Observable<Response<ResponseBody>> requestDisLikeEstablishment(String codUnidade) {
+        return null;
+    }
+
+    @Override
+    public Observable<Response<ResponseBody>> requestCreateLikePost() {
+        return RestClient.getHeader(mUser.getAppToken(), mContext.getString(R.string.app_id))
+                .createLikePost(assemblePost());
+    }
+
+    @Override
+    public boolean hasLikePostCode() {
+        return mUser.getLikePostCode() != null;
+    }
+
+    @Override
+    public void saveUserLikePostCode(Long likePostCode) {
+        Realm.getDefaultInstance().executeTransaction(realm -> {
+            mUser.setLikePostCode(likePostCode);
+        });
+    }
+
+    @Override
+    public Observable<Response<List<PostResponse>>> requestGetUserPosts() {
+        return RestClient.getHeader(mUser.getAppToken(), null)
+                .getLikePosts(Long.valueOf(mContext.getString(R.string.app_id)), mUser.getId(),
+                        Long.valueOf(String.valueOf(MetaModelConstants.COD_POST_ESTABLISHMENT)));
+    }
+
+    @Override
+    public Observable<Response<PostContent>> requestGetPostContent(Long codConteudoPostagem) {
+        return RestClient
+                .getHeader(mUser.getAppToken(), null)
+                .getPostContent(mUser.getLikePostCode(), codConteudoPostagem);
+    }
+
+    @Override
+    public void addEstablishmentToLikedList(Long establishmentCode) {
+        mLikedEstablishmentCodes.add(establishmentCode);
+    }
+
+    private Post assemblePost() {
+        return new Post(new Autor(mUser.getId()), MetaModelConstants.COD_POST_ESTABLISHMENT,
+                new PostType(MetaModelConstants.COD_OBJECT_ESTABLISHMENT));
+    }
+
+    private PostContent assemblePostContent(String codUnidade) {
+        PostContent postContent = new PostContent();
+        postContent.setJSON("{codEstabelecimento:" + codUnidade + "}");
+        postContent.setTexto("");
+        postContent.setLinks(null);
+        postContent.setValor(0L);
+        return postContent;
     }
 }

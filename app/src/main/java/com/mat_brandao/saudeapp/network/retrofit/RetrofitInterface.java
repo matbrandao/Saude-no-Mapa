@@ -2,6 +2,9 @@ package com.mat_brandao.saudeapp.network.retrofit;
 
 import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.model.Installation;
+import com.mat_brandao.saudeapp.domain.model.Post;
+import com.mat_brandao.saudeapp.domain.model.PostContent;
+import com.mat_brandao.saudeapp.domain.model.PostResponse;
 import com.mat_brandao.saudeapp.domain.model.Remedy;
 import com.mat_brandao.saudeapp.domain.model.User;
 
@@ -54,6 +57,19 @@ public interface RetrofitInterface {
 
     @GET("appCivicoRS/rest/pessoas/{userId}/fotoPerfil")
     Observable<Response<ResponseBody>> getProfilePhoto(@Path("userId") long userId);
+
+    @GET("appCivicoRS/rest/postagens")
+    Observable<Response<List<PostResponse>>> getLikePosts(@Query("codAplicativo") Long codAplicativo,
+                                                          @Query("codAutor") Long codAutor, @Query("codObjetoDestino") Long codObjetoDestino);
+
+    @GET("appCivicoRS/rest/postagens/{codPostagem}/conteudos/{codConteudo}")
+    Observable<Response<PostContent>> getPostContent(@Path("codPostagem") Long codPostagem, @Path("codConteudo") Long codConteudo);
+
+    @POST("appCivicoRS/rest/postagens")
+    Observable<Response<ResponseBody>> createLikePost(@Body Post post);
+
+    @POST("appCivicoRS/rest/postagens/{codPostagem}/conteudos")
+    Observable<Response<ResponseBody>> likeEstablishment(@Path("codPostagem") Long codPostagem, @Body PostContent content);
 
     @GET("mapa-da-saude/rest/estabelecimentos/latitude/{latitude}/longitude/{longitude}/raio/{raio}")
     Observable<Response<List<Establishment>>> getEstablishmentsByGeoLocation(

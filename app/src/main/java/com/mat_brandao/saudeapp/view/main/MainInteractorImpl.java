@@ -30,7 +30,7 @@ public class MainInteractorImpl implements MainInteractor {
 
     @Override
     public Observable<Response<ResponseBody>> requestUserImage() {
-        return RestClient.getHeader(mUser.getAppToken())
+        return RestClient.getHeader(mUser.getAppToken(), null)
                 .getProfilePhoto(mUser.getId());
     }
 

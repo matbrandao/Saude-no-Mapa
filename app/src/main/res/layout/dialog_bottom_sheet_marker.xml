@@ -47,6 +47,14 @@
                         android:layout_centerHorizontal="true"
                         tools:text="Hospital 012"/>
 
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentRight="true"
+                        android:id="@+id/establishment_like_image"
+                        android:src="@drawable/ic_like_empty"/>
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"

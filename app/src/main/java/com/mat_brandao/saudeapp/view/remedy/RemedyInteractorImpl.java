@@ -26,19 +26,15 @@ public class RemedyInteractorImpl implements RemedyInteractor {
 
     @Override
     public Observable<Response<List<Remedy>>> requestRemediesByName(String name) {
-        // TODO: 13/09/2016 add token
         return RestClient
-//                .getHeader(mUser.getAppToken())
-                .get()
+                .getHeader(mUser.getAppToken(), null)
                 .getRemedies(null, name);
     }
 
     @Override
     public Observable<Response<List<Remedy>>> requestRemediesByBarCode(String barcode) {
-        // TODO: 13/09/2016 add token
         return RestClient
-//                .getHeader(mUser.getAppToken())
-                .get()
+                .getHeader(mUser.getAppToken(), null)
                 .getRemedies(barcode, null);
     }
 }

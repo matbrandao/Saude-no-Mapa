@@ -66,7 +66,7 @@ public class RegisterInteractorImpl implements RegisterInteractor {
 
         MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", file.getName(), RequestBody.create(MediaType.parse("image/png"), file));
 
-        return RestClient.getHeader(user.getAppToken())
+        return RestClient.getHeader(user.getAppToken(), null)
                 .saveProfilePhoto(user.getId(), filePart);
     }
 
