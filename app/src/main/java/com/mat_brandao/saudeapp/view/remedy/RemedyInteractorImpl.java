@@ -60,8 +60,8 @@ public class RemedyInteractorImpl implements RemedyInteractor {
     @Override
     public Observable<Response<List<PostResponse>>> requestGetUserPosts() {
         return RestClient.getHeader(mUser.getAppToken(), null)
-                .getLikePosts(Long.valueOf(mContext.getString(R.string.app_id)), mUser.getId(),
-                        MetaModelConstants.COD_POST_REMEDY);
+                .getPosts(Long.valueOf(mContext.getString(R.string.app_id)), mUser.getId(),
+                        MetaModelConstants.COD_OBJECT_REMEDY);
     }
 
     @Override
@@ -85,10 +85,9 @@ public class RemedyInteractorImpl implements RemedyInteractor {
 
     @Override
     public Observable<Response<ResponseBody>> requestDisLikeRemedy(Long codRemedy) {
-        Long codUnidadeLong  = Long.valueOf(codRemedy);
         Long contentCode = 0L;
         for (Map.Entry<Long, Long> longLongEntry : mLikedRemedies.entrySet()) {
-            if (longLongEntry.getValue().equals(codUnidadeLong)) {
+            if (longLongEntry.getValue().equals(codRemedy)) {
                 contentCode = longLongEntry.getKey();
             }
         }
@@ -114,7 +113,7 @@ public class RemedyInteractorImpl implements RemedyInteractor {
     @Override
     public void saveUserLikePostCode(Long likePostCode) {
         Realm.getDefaultInstance().executeTransaction(realm -> {
-            mUser.setEstablishmentLikePost(likePostCode);
+            mUser.setRemedyLikePostCode(likePostCode);
         });
     }
 
@@ -134,8 +133,8 @@ public class RemedyInteractorImpl implements RemedyInteractor {
     }
 
     private Post assemblePost() {
-        return new Post(new Autor(mUser.getId()), MetaModelConstants.COD_POST_REMEDY,
-                new PostType(MetaModelConstants.COD_OBJECT_REMEDY));
+        return new Post(new Autor(mUser.getId()), MetaModelConstants.COD_OBJECT_REMEDY,
+                new PostType(MetaModelConstants.COD_POST_REMEDY));
     }
 
     private PostContent assemblePostContent(Long corRemedy) {

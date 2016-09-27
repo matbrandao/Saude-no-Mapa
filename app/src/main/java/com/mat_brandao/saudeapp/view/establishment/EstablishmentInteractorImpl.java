@@ -291,8 +291,8 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     @Override
     public Observable<Response<List<PostResponse>>> requestGetUserPosts() {
         return RestClient.getHeader(mUser.getAppToken(), null)
-                .getLikePosts(Long.valueOf(mContext.getString(R.string.app_id)), mUser.getId(),
-                        Long.valueOf(String.valueOf(MetaModelConstants.COD_POST_ESTABLISHMENT)));
+                .getPosts(Long.valueOf(mContext.getString(R.string.app_id)), mUser.getId(),
+                        Long.valueOf(String.valueOf(MetaModelConstants.COD_OBJECT_ESTABLISHMENT)));
     }
 
     @Override
@@ -308,8 +308,8 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     }
 
     private Post assemblePost() {
-        return new Post(new Autor(mUser.getId()), MetaModelConstants.COD_POST_ESTABLISHMENT,
-                new PostType(MetaModelConstants.COD_OBJECT_ESTABLISHMENT));
+        return new Post(new Autor(mUser.getId()), MetaModelConstants.COD_OBJECT_ESTABLISHMENT,
+                new PostType(MetaModelConstants.COD_POST_ESTABLISHMENT));
     }
 
     private PostContent assemblePostContent(String codUnidade) {
