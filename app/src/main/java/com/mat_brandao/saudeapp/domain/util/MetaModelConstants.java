@@ -5,6 +5,9 @@ package com.mat_brandao.saudeapp.domain.util;
  */
 
 public class MetaModelConstants {
-    public static final int COD_POST_ESTABLISHMENT = 118;
-    public static final int COD_OBJECT_ESTABLISHMENT = 100;
+    public static final Long COD_POST_ESTABLISHMENT = 118L;
+    public static final Long COD_OBJECT_ESTABLISHMENT = 100L;
+
+    public static final Long COD_OBJECT_REMEDY = 200L;
+    public static final Long COD_POST_REMEDY = 123L;
 }

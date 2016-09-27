@@ -66,7 +66,7 @@ public interface RetrofitInterface {
     Observable<Response<PostContent>> getPostContent(@Path("codPostagem") Long codPostagem, @Path("codConteudo") Long codConteudo);
 
     @POST("appCivicoRS/rest/postagens")
-    Observable<Response<ResponseBody>> createLikePost(@Body Post post);
+    Observable<Response<ResponseBody>> createPost(@Body Post post);
 
     @DELETE("appCivicoRS/rest/postagens/{codPostagem}/conteudos/{codConteudo}")
     Observable<Response<ResponseBody>> deleteContent(@Path("codPostagem") Long codPostagem, @Path("codConteudo") Long codConteudo);

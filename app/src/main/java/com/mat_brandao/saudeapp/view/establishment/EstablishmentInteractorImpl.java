@@ -39,7 +39,6 @@ import okhttp3.ResponseBody;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import retrofit2.Response;
 import rx.Observable;
-import timber.log.Timber;
 
 public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     private static final Double SEARCH_RADIUS = 10.0;
@@ -48,7 +47,7 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     private final UserRepositoryImpl mUserRepository;
     private User mUser;
     private HashMap<Establishment, Marker> mDeviceMarkerHash;
-//    private List<Long> mLikedEstablishmentCodes;
+    //    private List<Long> mLikedEstablishmentCodes;
     private HashMap<Long, Long> mLikedEstablishment;
 
     public EstablishmentInteractorImpl(Context context) {
@@ -254,7 +253,7 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     @Override
     public Observable<Response<ResponseBody>> requestLikeEstablishment(String codUnidade) {
         return RestClient.getHeader(mUser.getAppToken(), null)
-                .likeEstablishment(mUser.getLikePostCode(), assemblePostContent(codUnidade));
+                .likeEstablishment(mUser.getEstablishmentLikePost(), assemblePostContent(codUnidade));
     }
 
     @Override
@@ -268,24 +267,24 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
         }
 
         return RestClient.getHeader(mUser.getAppToken(), null)
-                .deleteContent(mUser.getLikePostCode(), contentCode);
+                .deleteContent(mUser.getEstablishmentLikePost(), contentCode);
     }
 
     @Override
     public Observable<Response<ResponseBody>> requestCreateLikePost() {
         return RestClient.getHeader(mUser.getAppToken(), mContext.getString(R.string.app_id))
-                .createLikePost(assemblePost());
+                .createPost(assemblePost());
     }
 
     @Override
     public boolean hasLikePostCode() {
-        return mUser.getLikePostCode() != null;
+        return mUser.getEstablishmentLikePost() != null;
     }
 
     @Override
     public void saveUserLikePostCode(Long likePostCode) {
         Realm.getDefaultInstance().executeTransaction(realm -> {
-            mUser.setLikePostCode(likePostCode);
+            mUser.setEstablishmentLikePost(likePostCode);
         });
     }
 
@@ -300,16 +299,12 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     public Observable<Response<PostContent>> requestGetPostContent(Long codConteudoPostagem) {
         return RestClient
                 .getHeader(mUser.getAppToken(), null)
-                .getPostContent(mUser.getLikePostCode(), codConteudoPostagem);
+                .getPostContent(mUser.getEstablishmentLikePost(), codConteudoPostagem);
     }
 
     @Override
     public void addEstablishmentToLikedList(Long code, Long establishmentCode) {
-        if (code == null) {
-            mLikedEstablishment.put(mUser.getLikePostCode(), establishmentCode);
-        } else {
-            mLikedEstablishment.put(code, establishmentCode);
-        }
+        mLikedEstablishment.put(code, establishmentCode);
     }
 
     private Post assemblePost() {
@@ -328,6 +323,6 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
 
     @Override
     public String getPostCode() {
-        return String.valueOf(mUser.getLikePostCode());
+        return String.valueOf(mUser.getEstablishmentLikePost());
     }
 }

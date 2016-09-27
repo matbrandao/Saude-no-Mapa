@@ -48,7 +48,8 @@ public class User extends RealmObject {
     private int passwordType;
     private String appToken;
     private Long installationId;
-    private Long likePostCode;
+    private Long establishmentLikePost;
+    private Long remedyLikePostCode;
 
     public User() {
     }
@@ -172,11 +173,19 @@ public class User extends RealmObject {
         this.installationId = installationId;
     }
 
-    public Long getLikePostCode() {
-        return likePostCode;
+    public Long getEstablishmentLikePost() {
+        return establishmentLikePost;
     }
 
-    public void setLikePostCode(Long likePostCode) {
-        this.likePostCode = likePostCode;
+    public void setEstablishmentLikePost(Long establishmentLikePost) {
+        this.establishmentLikePost = establishmentLikePost;
+    }
+
+    public Long getRemedyLikePostCode() {
+        return remedyLikePostCode;
+    }
+
+    public void setRemedyLikePostCode(Long remedyLikePostCode) {
+        this.remedyLikePostCode = remedyLikePostCode;
     }
 }
