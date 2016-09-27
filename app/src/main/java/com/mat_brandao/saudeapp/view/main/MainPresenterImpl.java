@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.view.establishment.EstablishmentFragment;
+import com.mat_brandao.saudeapp.view.favorites.FavoritesFragment;
 import com.mat_brandao.saudeapp.view.login.LoginActivity;
 import com.mat_brandao.saudeapp.view.remedy.RemedyFragment;
 
@@ -67,6 +68,8 @@ public class MainPresenterImpl implements MainPresenter, NavigationView.OnNaviga
             mView.showFragment(RemedyFragment.newInstance());
         } else if (item.getItemId() == R.id.menu_item_establishments) {
             mView.showFragment(EstablishmentFragment.newInstance());
+        } else if (item.getItemId() == R.id.menu_item_my_list) {
+            mView.showFragment(FavoritesFragment.newInstance());
         } else if (item.getItemId() == R.id.menu_item_logout) {
             mInteractor.logout();
             Intent intent = new Intent(mContext, LoginActivity.class);
