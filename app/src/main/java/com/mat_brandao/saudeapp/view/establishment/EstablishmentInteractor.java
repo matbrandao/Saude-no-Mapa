@@ -5,7 +5,6 @@ import android.location.Location;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
-import com.mat_brandao.saudeapp.domain.model.Post;
 import com.mat_brandao.saudeapp.domain.model.PostContent;
 import com.mat_brandao.saudeapp.domain.model.PostResponse;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
@@ -15,7 +14,6 @@ import java.util.List;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 import rx.Observable;
-import rx.Subscription;
 
 public interface EstablishmentInteractor {
     boolean hasGps();
@@ -60,5 +58,7 @@ public interface EstablishmentInteractor {
 
     Observable<Response<PostContent>> requestGetPostContent(Long codConteudoPostagem);
 
-    void addEstablishmentToLikedList(Long establishmentCode);
+    void addEstablishmentToLikedList(Long contentCode, Long establishmentCode);
+
+    String getPostCode();
 }

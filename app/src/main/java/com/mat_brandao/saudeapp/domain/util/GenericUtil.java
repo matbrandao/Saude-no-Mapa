@@ -31,4 +31,9 @@ public class GenericUtil {
         String numberString = original.replaceAll("\\D+","");
         return Long.valueOf(numberString);
     }
+
+    public static Long getContentIdFromUrl(String postCode, String original) {
+        String numberString = original.replaceAll("\\D+","");
+        return Long.valueOf(numberString.replace(postCode, ""));
+    }
 }

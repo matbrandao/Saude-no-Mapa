@@ -14,6 +14,7 @@ import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
@@ -22,7 +23,6 @@ import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import retrofit2.http.Streaming;
 import rx.Observable;
 
 /**
@@ -67,6 +67,9 @@ public interface RetrofitInterface {
 
     @POST("appCivicoRS/rest/postagens")
     Observable<Response<ResponseBody>> createLikePost(@Body Post post);
+
+    @DELETE("appCivicoRS/rest/postagens/{codPostagem}/conteudos/{codConteudo}")
+    Observable<Response<ResponseBody>> deleteContent(@Path("codPostagem") Long codPostagem, @Path("codConteudo") Long codConteudo);
 
     @POST("appCivicoRS/rest/postagens/{codPostagem}/conteudos")
     Observable<Response<ResponseBody>> likeEstablishment(@Path("codPostagem") Long codPostagem, @Body PostContent content);

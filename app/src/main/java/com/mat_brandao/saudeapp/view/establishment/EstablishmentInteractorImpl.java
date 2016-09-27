@@ -16,7 +16,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.mat_brandao.saudeapp.R;
-import com.mat_brandao.saudeapp.SaudeApp;
 import com.mat_brandao.saudeapp.domain.model.Autor;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.model.Post;
@@ -31,7 +30,6 @@ import com.mat_brandao.saudeapp.domain.util.MetaModelConstants;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
 import com.mat_brandao.saudeapp.network.retrofit.RestClient;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,14 +48,16 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     private final UserRepositoryImpl mUserRepository;
     private User mUser;
     private HashMap<Establishment, Marker> mDeviceMarkerHash;
-    private List<Long> mLikedEstablishmentCodes;
+//    private List<Long> mLikedEstablishmentCodes;
+    private HashMap<Long, Long> mLikedEstablishment;
 
     public EstablishmentInteractorImpl(Context context) {
         mContext = context;
         mUserRepository = new UserRepositoryImpl();
         mUser = mUserRepository.getUser();
         mDeviceMarkerHash = new HashMap<>();
-        mLikedEstablishmentCodes = new ArrayList<>();
+        mLikedEstablishment = new HashMap<>();
+//        mLikedEstablishmentCodes = new ArrayList<>();
     }
 
     @Override
@@ -101,7 +101,6 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     @Override
     public void drawEstablishment(GoogleMap map, Establishment establishment) {
         if (map != null) {
-            Timber.i("drawEstablishment() establishment type = [" + establishment.getCategoriaUnidade().toLowerCase() + "]");
             String categoria = establishment.getCategoriaUnidade().toLowerCase();
             mDeviceMarkerHash.put(establishment, map
                     .addMarker(new MarkerOptions()
@@ -218,13 +217,27 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
         return result.substring(0, result.length() - 3);
     }
 
+//    @Override
+//    public boolean isEstablishmentLiked(Long codUnidade) {
+//        if (mLikedEstablishmentCodes.isEmpty()) {
+//            return false;
+//        } else {
+//            for (Long mLikedEstablishmentCode : mLikedEstablishmentCodes) {
+//                if (mLikedEstablishmentCode.equals(codUnidade)) {
+//                    return true;
+//                }
+//            }
+//            return false;
+//        }
+//    }
+
     @Override
     public boolean isEstablishmentLiked(Long codUnidade) {
-        if (mLikedEstablishmentCodes.isEmpty()) {
+        if (mLikedEstablishment.isEmpty()) {
             return false;
         } else {
-            for (Long mLikedEstablishmentCode : mLikedEstablishmentCodes) {
-                if (mLikedEstablishmentCode.equals(codUnidade)) {
+            for (Long code : mLikedEstablishment.values()) {
+                if (code.equals(codUnidade)) {
                     return true;
                 }
             }
@@ -246,7 +259,16 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
 
     @Override
     public Observable<Response<ResponseBody>> requestDisLikeEstablishment(String codUnidade) {
-        return null;
+        Long codUnidadeLong  = Long.valueOf(codUnidade);
+        Long contentCode = 0L;
+        for (Map.Entry<Long, Long> longLongEntry : mLikedEstablishment.entrySet()) {
+            if (longLongEntry.getValue().equals(codUnidadeLong)) {
+                contentCode = longLongEntry.getKey();
+            }
+        }
+
+        return RestClient.getHeader(mUser.getAppToken(), null)
+                .deleteContent(mUser.getLikePostCode(), contentCode);
     }
 
     @Override
@@ -282,8 +304,12 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     }
 
     @Override
-    public void addEstablishmentToLikedList(Long establishmentCode) {
-        mLikedEstablishmentCodes.add(establishmentCode);
+    public void addEstablishmentToLikedList(Long code, Long establishmentCode) {
+        if (code == null) {
+            mLikedEstablishment.put(mUser.getLikePostCode(), establishmentCode);
+        } else {
+            mLikedEstablishment.put(code, establishmentCode);
+        }
     }
 
     private Post assemblePost() {
@@ -298,5 +324,10 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
         postContent.setLinks(null);
         postContent.setValor(0L);
         return postContent;
+    }
+
+    @Override
+    public String getPostCode() {
+        return String.valueOf(mUser.getLikePostCode());
     }
 }

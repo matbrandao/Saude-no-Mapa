@@ -43,16 +43,18 @@
                         android:textSize="18sp"
                         android:paddingLeft="5dp"
                         android:paddingRight="5dp"
+                        android:gravity="center"
                         android:fontFamily="sans-serif-light"
                         android:layout_centerHorizontal="true"
+                        android:layout_marginRight="25dp"
                         tools:text="Hospital 012"/>
 
                     <ImageView
                         android:layout_width="25dp"
                         android:layout_height="25dp"
+                        android:id="@+id/establishment_like_image"
                         android:layout_centerVertical="true"
                         android:layout_alignParentRight="true"
-                        android:id="@+id/establishment_like_image"
                         android:src="@drawable/ic_like_empty"/>
 
                     <View

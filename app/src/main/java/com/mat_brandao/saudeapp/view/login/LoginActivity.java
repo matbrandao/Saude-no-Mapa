@@ -164,7 +164,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     public void hideAccountLoginText() {
         accountLogin.animate().alpha(0).setDuration(500).withEndAction(() -> {
             accountLogin.setEnabled(false);
-            accountLogin.setVisibility(View.GONE);
+//            accountLogin.setVisibility(View.GONE);
         });
     }
 

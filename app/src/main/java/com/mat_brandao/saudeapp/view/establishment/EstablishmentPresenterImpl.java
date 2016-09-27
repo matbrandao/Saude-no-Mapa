@@ -134,8 +134,8 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                                         .onErrorReturn(throwable -> null)
                                         .subscribe(postContentResponse -> {
                                             if (postContentResponse != null && postContentResponse.isSuccessful()) {
-                                                mInteractor.addEstablishmentToLikedList(GenericUtil.getNumbersFromString(
-                                                        postContentResponse.body().getJSON()));
+                                                mInteractor.addEstablishmentToLikedList(postContentResponse.body().getCodConteudoPost(),
+                                                        GenericUtil.getNumbersFromString(postContentResponse.body().getJSON()));
                                             }
                                         });
                             }
@@ -238,9 +238,17 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
             mView.showProgressDialog(mContext.getString(R.string.progress_wait));
             if (mInteractor.isEstablishmentLiked(Long.valueOf(establishment.getCodUnidade()))) {
                 Timber.i("Already liked");
-//                mSubscription.add(mInteractor.requestDisLikeEstablishment(establishment.getCodUnidade())
-//                        .observeOn(AndroidSchedulers.mainThread())
-//                        .subscribe());
+                mSubscription.add(mInteractor.requestDisLikeEstablishment(establishment.getCodUnidade())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .onErrorReturn(throwable -> null)
+                        .subscribe(responseBodyResponse -> {
+                            mView.dismissProgressDialog();
+                            if (responseBodyResponse != null && responseBodyResponse.isSuccessful()) {
+                                bottomViews.likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_empty));
+                            } else {
+                                mView.showToast(mContext.getString(R.string.http_error_generic));
+                            }
+                        }));
             } else {
                 Timber.i("Not Liked yet");
                 requestLikeEstablishment(establishment.getCodUnidade(), bottomViews.likeImage);
@@ -271,7 +279,9 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                     .subscribe(likeResponse -> {
                         mView.dismissProgressDialog();
                         if (likeResponse != null && likeResponse.isSuccessful()) {
-                            mInteractor.addEstablishmentToLikedList(Long.valueOf(codUnidade));
+                            // TODO: 26-Sep-16
+                            mInteractor.addEstablishmentToLikedList(GenericUtil.getContentIdFromUrl(String.valueOf(mInteractor.getPostCode()),
+                                    likeResponse.headers().get("location")), Long.valueOf(codUnidade));
                             likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
                         } else {
                             mView.showProgressDialog(mContext.getString(R.string.progress_wait));
@@ -283,15 +293,15 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                     .onErrorReturn(throwable -> null)
                     .subscribe(createPostResponse -> {
                         if (createPostResponse != null && createPostResponse.isSuccessful()) {
-                            mInteractor.saveUserLikePostCode(GenericUtil.getNumbersFromString(createPostResponse.headers().get("location")));
-                            mSubscription.add(mInteractor.requestLikeEstablishment(
-                                    GenericUtil.getNumbersFromString(createPostResponse.headers().get("location")), codUnidade)
+                            Long postCode = GenericUtil.getNumbersFromString(createPostResponse.headers().get("location"));
+                            mInteractor.saveUserLikePostCode(postCode);
+                            mSubscription.add(mInteractor.requestLikeEstablishment(postCode, codUnidade)
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .onErrorReturn(throwable -> null)
                                     .subscribe(likeResponse -> {
                                         mView.dismissProgressDialog();
                                         if (likeResponse != null && likeResponse.isSuccessful()) {
-                                            mInteractor.addEstablishmentToLikedList(Long.valueOf(codUnidade));
+                                            mInteractor.addEstablishmentToLikedList(GenericUtil.getContentIdFromUrl(String.valueOf(postCode), likeResponse.headers().get("location")), Long.valueOf(codUnidade));
                                             likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
                                         } else {
                                             mView.showProgressDialog(mContext.getString(R.string.progress_wait));
