@@ -111,6 +111,11 @@ public class FavRemedyFragment extends BaseFragment implements FavRemedyView {
     }
 
     @Override
+    public int getRootHeight() {
+        return coordinatorLayout.getHeight();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);

@@ -7,6 +7,7 @@ import com.mat_brandao.saudeapp.domain.model.Remedy;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Response;
 import rx.Observable;
 
@@ -15,7 +16,23 @@ public interface FavRemedyInteractor {
 
     Observable<Response<PostContent>> requestGetPostContent(Long codConteudoPostagem);
 
+    Observable<Response<List<Remedy>>> requestGetRemedy(Long remedyCode);
+
+    Observable<Response<ResponseBody>> requestLikeRemedy(Long postCode, Long codRemedy);
+
+    Observable<Response<ResponseBody>> requestLikeRemedy(Long codRemedy);
+
+    Observable<Response<ResponseBody>> requestDisLikeRemedy(Long codRemedy);
+
+    void addRemedyToLikedList(Long contentCode, Long remedyCode);
+
     void saveUserLikePostCode(Long likePostCode);
 
-    Observable<Response<List<Remedy>>> requestGetRemedy(Long remedyCode);
+    void removeDislikedContentCode();
+
+    void clearLikedRemedies();
+
+    String getPostCode();
+
+    int getLikedRemedyCount();
 }

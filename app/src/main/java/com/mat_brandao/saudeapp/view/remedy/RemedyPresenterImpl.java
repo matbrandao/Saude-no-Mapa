@@ -197,7 +197,7 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
             bottomViews.possuiRestricaoText.setVisibility(View.VISIBLE);
         }
 
-        boolean isLiked = mInteractor.isRemedyLiked(remedy.getCod());
+        boolean isLiked = mInteractor.isRemedyLiked(Long.valueOf(remedy.getCodBarraEan()));
         if (isLiked) {
             bottomViews.likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
         }
