@@ -92,4 +92,10 @@
     <string name="menu_item_establishments">Estabelecimentos</string>
     <string name="app_id">261</string>
     <string name="device_os">Android</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="favorites_title">Minha Lista</string>
+    <string name="fav_establishment_empty">Nenhum estabelecimento favoritado</string>
+    <string name="fav_remedy_empty">Nenhum remédio favoritado</string>
 </resources>

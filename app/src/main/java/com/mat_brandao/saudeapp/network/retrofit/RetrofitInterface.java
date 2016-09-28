@@ -59,14 +59,14 @@ public interface RetrofitInterface {
     Observable<Response<ResponseBody>> getProfilePhoto(@Path("userId") long userId);
 
     @GET("appCivicoRS/rest/postagens")
-    Observable<Response<List<PostResponse>>> getLikePosts(@Query("codAplicativo") Long codAplicativo,
-                                                          @Query("codAutor") Long codAutor, @Query("codObjetoDestino") Long codObjetoDestino);
+    Observable<Response<List<PostResponse>>> getPosts(@Query("codAplicativo") Long codAplicativo,
+                                                      @Query("codAutor") Long codAutor, @Query("codObjetoDestino") Long codObjetoDestino);
 
     @GET("appCivicoRS/rest/postagens/{codPostagem}/conteudos/{codConteudo}")
     Observable<Response<PostContent>> getPostContent(@Path("codPostagem") Long codPostagem, @Path("codConteudo") Long codConteudo);
 
     @POST("appCivicoRS/rest/postagens")
-    Observable<Response<ResponseBody>> createLikePost(@Body Post post);
+    Observable<Response<ResponseBody>> createPost(@Body Post post);
 
     @DELETE("appCivicoRS/rest/postagens/{codPostagem}/conteudos/{codConteudo}")
     Observable<Response<ResponseBody>> deleteContent(@Path("codPostagem") Long codPostagem, @Path("codConteudo") Long codConteudo);

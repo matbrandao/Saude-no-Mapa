@@ -6,12 +6,15 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mat_brandao.saudeapp.R;
+import com.mat_brandao.saudeapp.domain.model.Conteudo;
 import com.mat_brandao.saudeapp.domain.model.Remedy;
 import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
@@ -26,6 +29,7 @@ import retrofit2.Response;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickListener<Remedy> {
     private static final String TAG = "RemedyPresenterImpl";
@@ -58,7 +62,7 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
 
     @Override
     public void onRetryClicked() {
-
+        // TODO: 27/09/2016
     }
 
     public RemedyPresenterImpl(RemedyView view, Context context) {
@@ -71,6 +75,43 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
             mView.dismissKeyboard();
         };
         setupSearchObservable();
+
+        requestLikedRemedies();
+    }
+
+    private void requestLikedRemedies() {
+        mSubscription.add(mInteractor.requestGetUserPosts()
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> null)
+                .subscribe(listResponse -> {
+                    if (listResponse != null && listResponse.isSuccessful()) {
+                        if (listResponse.body() != null && listResponse.body().size() > 0) {
+                            mInteractor.saveUserLikePostCode(listResponse.body().get(0).getCodPostagem());
+                            for (Conteudo conteudo : listResponse.body().get(0).getConteudos()) {
+                                mInteractor.requestGetPostContent(conteudo.getCodConteudoPostagem())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .onErrorReturn(throwable -> null)
+                                        .subscribe(postContentResponse -> {
+                                            if (postContentResponse != null && postContentResponse.isSuccessful()) {
+                                                mInteractor.addRemedyToLikedList(postContentResponse.body().getCodConteudoPost(),
+                                                        GenericUtil.getNumbersFromString(postContentResponse.body().getJSON()));
+                                            }
+                                        });
+                            }
+                        } else {
+                            mSubscription.add(mInteractor.requestCreateLikePost()
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .onErrorReturn(throwable -> null)
+                                    .subscribe(createPostResponse -> {
+                                        mView.dismissProgressDialog();
+                                        if (createPostResponse != null && createPostResponse.isSuccessful()) {
+                                            mInteractor.saveUserLikePostCode(GenericUtil.
+                                                    getNumbersFromString(createPostResponse.headers().get("location")));
+                                        }
+                                    }));
+                        }
+                    }
+                }));
     }
 
     private void setupSearchObservable() {
@@ -156,6 +197,32 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
             bottomViews.possuiRestricaoText.setVisibility(View.VISIBLE);
         }
 
+        boolean isLiked = mInteractor.isRemedyLiked(remedy.getCod());
+        if (isLiked) {
+            bottomViews.likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
+        }
+
+        bottomViews.likeImage.setOnClickListener(v -> {
+            mView.showProgressDialog(mContext.getString(R.string.progress_wait));
+            if (isLiked) {
+                Timber.i("Already liked");
+                mSubscription.add(mInteractor.requestDisLikeRemedy(remedy.getCod())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .onErrorReturn(throwable -> null)
+                        .subscribe(responseBodyResponse -> {
+                            mView.dismissProgressDialog();
+                            if (responseBodyResponse != null && responseBodyResponse.isSuccessful()) {
+                                bottomViews.likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_empty));
+                            } else {
+                                mView.showToast(mContext.getString(R.string.http_error_generic));
+                            }
+                        }));
+            } else {
+                Timber.i("Not Liked yet");
+                requestLikeRemedies(remedy.getCod(), bottomViews.likeImage);
+            }
+        });
+
         bottomSheetDialog.setContentView(dialogView);
         bottomSheetDialog.getWindow().findViewById(R.id.design_bottom_sheet)
                 .setBackgroundResource(R.color.default_dialog_background);
@@ -166,6 +233,50 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
         mBehavior.setPeekHeight(mView.getRootHeight() - 200);
 
         bottomSheetDialog.show();
+    }
+
+    private void requestLikeRemedies(Long codRemedy, ImageView likeImage) {
+        if (mInteractor.hasLikePostCode()) {
+            mSubscription.add(mInteractor.requestLikeRemedy(codRemedy)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .onErrorReturn(throwable -> null)
+                    .subscribe(likeResponse -> {
+                        mView.dismissProgressDialog();
+                        if (likeResponse != null && likeResponse.isSuccessful()) {
+                            mInteractor.addRemedyToLikedList(GenericUtil.getContentIdFromUrl(String.valueOf(mInteractor.getPostCode()),
+                                    likeResponse.headers().get("location")), codRemedy);
+                            likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
+                        } else {
+                            mView.showToast(mContext.getString(R.string.http_error_generic));
+                        }
+                    }));
+        } else {
+            mSubscription.add(mInteractor.requestCreateLikePost()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .onErrorReturn(throwable -> null)
+                    .subscribe(createPostResponse -> {
+                        if (createPostResponse != null && createPostResponse.isSuccessful()) {
+                            Long postCode = GenericUtil.getNumbersFromString(createPostResponse.headers().get("location"));
+                            mInteractor.saveUserLikePostCode(postCode);
+                            mSubscription.add(mInteractor.requestLikeRemedy(postCode, codRemedy)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .onErrorReturn(throwable -> null)
+                                    .subscribe(likeResponse -> {
+                                        mView.dismissProgressDialog();
+                                        if (likeResponse != null && likeResponse.isSuccessful()) {
+                                            mInteractor.addRemedyToLikedList(GenericUtil.getContentIdFromUrl(String.valueOf(postCode),
+                                                    likeResponse.headers().get("location")), codRemedy);
+                                            likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
+                                        } else {
+                                            mView.showToast(mContext.getString(R.string.http_error_generic));
+                                        }
+                                    }));
+                        } else {
+                            mView.dismissProgressDialog();
+                            mView.showToast(mContext.getString(R.string.http_error_generic));
+                        }
+                    }));
+        }
     }
 
     Observer<Response<List<Remedy>>> getRemediesObserver = new Observer<Response<List<Remedy>>>() {
@@ -219,5 +330,7 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
         TextView possuiRestricaoText;
         @Bind(R.id.bottom_sheet)
         NestedScrollView bottomSheet;
+        @Bind(R.id.remedy_like_image)
+        ImageView likeImage;
     }
 }

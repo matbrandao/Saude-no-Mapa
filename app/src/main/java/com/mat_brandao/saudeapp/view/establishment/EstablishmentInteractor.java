@@ -36,7 +36,8 @@ public interface EstablishmentInteractor {
 
     String getFluxoClientelaText(String fluxoClientela);
 
-    String getAddressText(String logradouro, String numero, String bairro, String cidade, String uf, String cep);
+    String getAddressText(String logradouro, String numero, String bairro,
+                          String cidade, String uf, String cep);
 
     String getServicesText(Establishment establishment);
 
@@ -50,13 +51,13 @@ public interface EstablishmentInteractor {
 
     Observable<Response<ResponseBody>> requestCreateLikePost();
 
-    boolean hasLikePostCode();
-
-    void saveUserLikePostCode(Long likePostCode);
-
     Observable<Response<List<PostResponse>>> requestGetUserPosts();
 
     Observable<Response<PostContent>> requestGetPostContent(Long codConteudoPostagem);
+
+    boolean hasLikePostCode();
+
+    void saveUserLikePostCode(Long likePostCode);
 
     void addEstablishmentToLikedList(Long contentCode, Long establishmentCode);
 

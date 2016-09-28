@@ -284,7 +284,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                                     likeResponse.headers().get("location")), Long.valueOf(codUnidade));
                             likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
                         } else {
-                            mView.showProgressDialog(mContext.getString(R.string.progress_wait));
+                            mView.showToast(mContext.getString(R.string.http_error_generic));
                         }
                     }));
         } else {
@@ -304,7 +304,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                                             mInteractor.addEstablishmentToLikedList(GenericUtil.getContentIdFromUrl(String.valueOf(postCode), likeResponse.headers().get("location")), Long.valueOf(codUnidade));
                                             likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
                                         } else {
-                                            mView.showProgressDialog(mContext.getString(R.string.progress_wait));
+                                            mView.showToast(mContext.getString(R.string.http_error_generic));
                                         }
                                     }));
                         } else {
