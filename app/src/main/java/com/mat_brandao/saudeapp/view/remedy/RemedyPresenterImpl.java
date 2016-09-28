@@ -219,7 +219,7 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
                         }));
             } else {
                 Timber.i("Not Liked yet");
-                requestLikeRemedies(remedy.getCod(), bottomViews.likeImage);
+                requestLikeRemedies(Long.valueOf(remedy.getCodBarraEan()), bottomViews.likeImage);
             }
         });
 

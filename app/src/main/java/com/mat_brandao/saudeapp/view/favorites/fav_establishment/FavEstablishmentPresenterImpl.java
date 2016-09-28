@@ -74,7 +74,6 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
         mLastObserver = postResponseObserver;
         mSubscription.add(mInteractor.requestGetUserPosts()
                 .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(throwable -> null)
                 .subscribe(postResponseObserver));
     }
 

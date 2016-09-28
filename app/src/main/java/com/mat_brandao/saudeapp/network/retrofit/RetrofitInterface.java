@@ -83,5 +83,8 @@ public interface RetrofitInterface {
     Observable<Response<List<Establishment>>> getEstablishmentByCod(@Path("codUnidade") Long establishmentCod);
 
     @GET("mapa-da-saude/rest/remedios")
+    Observable<Response<List<Remedy>>> getRemedyByCod(@Query("codBarraEan") Long codBarraEan);
+
+    @GET("mapa-da-saude/rest/remedios")
     Observable<Response<List<Remedy>>> getRemedies(@Query("codBarraEan") String barCode, @Query("produto") String name);
 }
