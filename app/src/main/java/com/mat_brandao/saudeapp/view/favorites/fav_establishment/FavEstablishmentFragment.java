@@ -3,6 +3,7 @@ package com.mat_brandao.saudeapp.view.favorites.fav_establishment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,6 +27,8 @@ public class FavEstablishmentFragment extends BaseFragment implements FavEstabli
     TextView emptyTextView;
     @Bind(R.id.progress_layout)
     LinearLayout progressLayout;
+    @Bind(R.id.coordinator_layout)
+    CoordinatorLayout coordinatorLayout;
     private FavEstablishmentPresenterImpl mPresenter;
 
     public static FavEstablishmentFragment newInstance() {
@@ -76,7 +79,9 @@ public class FavEstablishmentFragment extends BaseFragment implements FavEstabli
 
     @Override
     public void showNoConnectionSnackBar() {
-        // TODO: 27/09/2016
+        super.showConnectionError(coordinatorLayout, v -> {
+            mPresenter.onRetryClicked();
+        });
     }
 
     @Override

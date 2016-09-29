@@ -46,8 +46,9 @@ public class FavEstablishmentAdapter extends RecyclerView.Adapter<FavEstablishme
     @Override
     public void onBindViewHolder(FavEstablishmentViewHolder holder, int position) {
         Establishment establishment = mList.get(position);
+
         Picasso.with(mContext)
-                .load(getDrawableForCategory(establishment.getCategoriaUnidade()))
+                .load(getDrawableForCategory(establishment.getCategoriaUnidade().toLowerCase()))
                 .into(holder.establishmentImage);
 
         String address = getAddressText(establishment.getLogradouro(),
@@ -93,7 +94,7 @@ public class FavEstablishmentAdapter extends RecyclerView.Adapter<FavEstablishme
         return mList.size();
     }
 
-    public String getAddressText(String logradouro, String numero, String bairro, String cidade, String uf, String cep) {
+    private String getAddressText(String logradouro, String numero, String bairro, String cidade, String uf, String cep) {
         String address = logradouro + ", Número: " + numero + ". " + GenericUtil.capitalize(bairro) + ", " +
                 GenericUtil.capitalize(cidade) + ", " + uf + " - " + MaskUtil.mask("#####-###", cep);
         if (address.contains("null")) {
@@ -103,7 +104,7 @@ public class FavEstablishmentAdapter extends RecyclerView.Adapter<FavEstablishme
         }
     }
 
-    public class FavEstablishmentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class FavEstablishmentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final GenericObjectClickListener<Establishment> vListener;
 
         @Bind(R.id.establishment_image)

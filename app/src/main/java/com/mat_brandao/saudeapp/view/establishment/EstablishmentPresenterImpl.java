@@ -653,23 +653,6 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         }
     };
 
-    private Observer<Response<ResponseBody>> likeEstablishmentObserver = new Observer<Response<ResponseBody>>() {
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-
-        }
-
-        @Override
-        public void onNext(Response<ResponseBody> responseBodyResponse) {
-
-        }
-    };
-
     class MarkerViews {
         @Bind(R.id.establishment_title)
         TextView establishmentTitle;

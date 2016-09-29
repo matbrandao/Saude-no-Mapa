@@ -197,7 +197,7 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
             bottomViews.possuiRestricaoText.setVisibility(View.VISIBLE);
         }
 
-        boolean isLiked = mInteractor.isRemedyLiked(remedy.getCod());
+        boolean isLiked = mInteractor.isRemedyLiked(Long.valueOf(remedy.getCodBarraEan()));
         if (isLiked) {
             bottomViews.likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
         }
@@ -206,7 +206,7 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
             mView.showProgressDialog(mContext.getString(R.string.progress_wait));
             if (isLiked) {
                 Timber.i("Already liked");
-                mSubscription.add(mInteractor.requestDisLikeRemedy(remedy.getCod())
+                mSubscription.add(mInteractor.requestDisLikeRemedy(Long.valueOf(remedy.getCodBarraEan()))
                         .observeOn(AndroidSchedulers.mainThread())
                         .onErrorReturn(throwable -> null)
                         .subscribe(responseBodyResponse -> {
@@ -219,7 +219,7 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
                         }));
             } else {
                 Timber.i("Not Liked yet");
-                requestLikeRemedies(remedy.getCod(), bottomViews.likeImage);
+                requestLikeRemedies(Long.valueOf(remedy.getCodBarraEan()), bottomViews.likeImage);
             }
         });
 

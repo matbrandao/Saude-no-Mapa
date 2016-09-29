@@ -8,4 +8,6 @@ public interface FavRemedyView extends BaseView.BaseProgressView {
     void setProgressLayoutVisibility(int visibility);
 
     void setEmptyViewVisibility(int visibility);
+
+    int getRootHeight();
 }

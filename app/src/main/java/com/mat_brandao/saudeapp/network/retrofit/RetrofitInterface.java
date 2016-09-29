@@ -79,6 +79,12 @@ public interface RetrofitInterface {
             @Path("latitude") Double latitude, @Path("longitude") Double longitude,
             @Path("raio") Double radius, @Query("pagina") Integer pagination);
 
+    @GET("mapa-da-saude/rest/estabelecimentos/unidade/{codUnidade}")
+    Observable<Response<List<Establishment>>> getEstablishmentByCod(@Path("codUnidade") Long establishmentCod);
+
+    @GET("mapa-da-saude/rest/remedios")
+    Observable<Response<List<Remedy>>> getRemedyByCod(@Query("codBarraEan") Long codBarraEan);
+
     @GET("mapa-da-saude/rest/remedios")
     Observable<Response<List<Remedy>>> getRemedies(@Query("codBarraEan") String barCode, @Query("produto") String name);
 }
