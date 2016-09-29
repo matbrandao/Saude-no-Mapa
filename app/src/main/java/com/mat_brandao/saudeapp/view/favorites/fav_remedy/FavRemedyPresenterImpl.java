@@ -167,6 +167,7 @@ public class FavRemedyPresenterImpl implements FavRemedyPresenter, GenericObject
                 .subscribe(likeResponse -> {
                     mView.dismissProgressDialog();
                     if (likeResponse != null && likeResponse.isSuccessful()) {
+                        isLiked = true;
                         mInteractor.addRemedyToLikedList(GenericUtil.getContentIdFromUrl(String.valueOf(mInteractor.getPostCode()),
                                 likeResponse.headers().get("location")), codRemedy);
                         likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));

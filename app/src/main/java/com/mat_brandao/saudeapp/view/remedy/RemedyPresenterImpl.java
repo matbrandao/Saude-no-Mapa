@@ -206,7 +206,7 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
             mView.showProgressDialog(mContext.getString(R.string.progress_wait));
             if (isLiked) {
                 Timber.i("Already liked");
-                mSubscription.add(mInteractor.requestDisLikeRemedy(remedy.getCod())
+                mSubscription.add(mInteractor.requestDisLikeRemedy(Long.valueOf(remedy.getCodBarraEan()))
                         .observeOn(AndroidSchedulers.mainThread())
                         .onErrorReturn(throwable -> null)
                         .subscribe(responseBodyResponse -> {

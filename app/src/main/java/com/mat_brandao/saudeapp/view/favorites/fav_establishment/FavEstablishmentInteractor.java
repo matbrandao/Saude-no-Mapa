@@ -7,6 +7,7 @@ import com.mat_brandao.saudeapp.domain.model.PostResponse;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Response;
 import rx.Observable;
 
@@ -15,7 +16,30 @@ public interface FavEstablishmentInteractor {
 
     Observable<Response<PostContent>> requestGetPostContent(Long codConteudoPostagem);
 
+    Observable<Response<List<Establishment>>> requestGetEstablishment(Long establishmentCode);
+
+    Observable<Response<ResponseBody>> requestLikeEstablishment(Long postCode, Long codEstablishment);
+
+    Observable<Response<ResponseBody>> requestLikeEstablishment(Long codEstablishment);
+
+    Observable<Response<ResponseBody>> requestDislikeEstablishment(Long codEstablishment);
+
+    String getFluxoClientelaText(String fluxoClientela);
+
+    String getAddressText(String logradouro, String numero, String bairro,
+                          String cidade, String uf, String cep);
+
+    String getServicesText(Establishment establishment);
+
+    void addEstablishmentToLikedList(Long contentCode, Long establishmentCode);
+
     void saveUserLikePostCode(Long likePostCode);
 
-    Observable<Response<List<Establishment>>> requestGetEstablishment(Long establishmentCode);
+    void removeDislikedContentCode();
+
+    void clearLikedEstablishments();
+
+    String getPostCode();
+
+    int getLikedEstablishmentCount();
 }
