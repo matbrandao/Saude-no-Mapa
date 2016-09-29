@@ -34,6 +34,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.gson.Gson;
+import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.mat_brandao.saudeapp.R;
@@ -46,16 +47,18 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import okhttp3.ResponseBody;
 import retrofit2.Response;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
+
+import static com.google.android.gms.internal.zzng.fa;
 
 
 public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMapReadyCallback, OnLocationFound {
@@ -86,6 +89,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
 
     private boolean mIsFiltered;
     private TextView mCurrentFilterTitle;
+    private SimpleRatingBar mRatingView;
 
     @Override
     public void onResume() {
@@ -121,7 +125,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
     }
 
     private void requestLikedEstablishments() {
-        mSubscription.add(mInteractor.requestGetUserPosts()
+        mSubscription.add(mInteractor.requestGetUserLikePosts()
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> null)
                 .subscribe(listResponse -> {
@@ -185,15 +189,56 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                     }
 
                     mInteractor.animateMarketToTop(mMap, marker, mView.getMapContainerHeight());
+                    Establishment establishment = mInteractor.getEstablishmentFromMarker(marker);
                     new Handler().postDelayed(() -> {
                         mActivity.runOnUiThread(() -> {
-                            showMarkerBottomSheetDialog(mInteractor.getEstablishmentFromMarker(marker));
+                            showMarkerBottomSheetDialog(establishment);
+                            getEstablishmentRating(Long.valueOf(establishment.getCodUnidade()));
                         });
                     }, 500);
                     marker.showInfoWindow();
                     lastOpenned = marker;
                     return true;
                 });
+    }
+
+    private void getEstablishmentRating(Long codUnidade) {
+        mSubscription.add(mInteractor.requestGetEstablishmentRatingPost(codUnidade)
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> null)
+                .subscribe(listResponse -> {
+                    if (listResponse != null && listResponse.isSuccessful()) {
+                        if (listResponse.body() != null && listResponse.body().size() > 0) {
+                            mInteractor.addEstablishmentToRatingList(listResponse.body().get(0).getCodPostagem(), codUnidade);
+                            if (listResponse.body().get(0).getConteudos().size() > 0) {
+                                mInteractor.addEstablishmentToContentList(listResponse.body().
+                                        get(0).getConteudos().get(0).getCodConteudoPostagem()
+                                        , codUnidade);
+                            }
+                            mInteractor.requestEstablishmentRating(codUnidade)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .onErrorReturn(throwable -> null)
+                                    .subscribe(responseBodyResponse -> {
+                                        if (responseBodyResponse == null) {
+                                            mView.showToast(mContext.getString(R.string.error_get_establishment_review));
+                                        } else {
+                                            mRatingView.setIndicator(false);
+                                            if (responseBodyResponse.isSuccessful()) {
+                                                mRatingView.setRating(responseBodyResponse.body().getMedia());
+                                            }
+                                        }
+                                    });
+                        } else {
+                            mSubscription.add(mInteractor.requestCreateRatingPost(codUnidade)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .onErrorReturn(throwable -> null)
+                                    .retry(3)
+                                    .subscribe());
+                        }
+                    } else {
+                        mView.showToast(mContext.getString(R.string.error_get_establishment_review));
+                    }
+                }));
     }
 
     private void showMarkerBottomSheetDialog(@Nullable Establishment establishment) {
@@ -234,10 +279,29 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
             bottomViews.likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
         }
 
+        mRatingView = bottomViews.ratingView;
+        bottomViews.ratingView.setIndicator(true);
+        Observable<View> clickEventObservable = Observable.create(new Observable.OnSubscribe<View>() {
+            @Override
+            public void call(final Subscriber<? super View> subscriber) {
+                bottomViews.ratingView.setOnRatingBarChangeListener((simpleRatingBar, rating, fromUser) -> {
+                    if (subscriber.isUnsubscribed()) return;
+                    subscriber.onNext(simpleRatingBar);
+                });
+            }
+        });
+
+        clickEventObservable
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .skip(1)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view -> {
+                    requestRateEstablishment(Long.valueOf(establishment.getCodUnidade()), bottomViews.ratingView);
+                });
+
         bottomViews.likeImage.setOnClickListener(v -> {
             mView.showProgressDialog(mContext.getString(R.string.progress_wait));
             if (mInteractor.isEstablishmentLiked(Long.valueOf(establishment.getCodUnidade()))) {
-                Timber.i("Already liked");
                 mSubscription.add(mInteractor.requestDisLikeEstablishment(establishment.getCodUnidade())
                         .observeOn(AndroidSchedulers.mainThread())
                         .onErrorReturn(throwable -> null)
@@ -250,7 +314,6 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                             }
                         }));
             } else {
-                Timber.i("Not Liked yet");
                 requestLikeEstablishment(establishment.getCodUnidade(), bottomViews.likeImage);
             }
         });
@@ -269,6 +332,20 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         });
 
         bottomSheetDialog.show();
+    }
+
+    private void requestRateEstablishment(Long establishmentCode, SimpleRatingBar ratingView) {
+        ratingView.setIndicator(true);
+        mInteractor.requestRateEstablishment(establishmentCode, ratingView.getRating())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> null)
+                .subscribe(responseBodyResponse -> {
+                    ratingView.setIndicator(false);
+                    if (responseBodyResponse != null && responseBodyResponse.isSuccessful()) {
+                    } else {
+                        mView.showToast(mContext.getString(R.string.error_rating_establishment_try_again));
+                    }
+                });
     }
 
     private void requestLikeEstablishment(String codUnidade, ImageView likeImage) {
@@ -684,6 +761,8 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         LinearLayout phoneLayout;
         @Bind(R.id.establishment_like_image)
         ImageView likeImage;
+        @Bind(R.id.rating_view)
+        SimpleRatingBar ratingView;
     }
 
     class FilterViews {

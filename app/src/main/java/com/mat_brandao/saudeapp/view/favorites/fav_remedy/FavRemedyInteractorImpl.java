@@ -42,7 +42,7 @@ public class FavRemedyInteractorImpl implements FavRemedyInteractor {
     public Observable<Response<List<PostResponse>>> requestGetUserPosts() {
         return RestClient.getHeader(mUser.getAppToken(), null)
                 .getPosts(Long.valueOf(mContext.getString(R.string.app_id)), mUser.getId(),
-                        MetaModelConstants.COD_OBJECT_REMEDY);
+                        MetaModelConstants.COD_OBJECT_REMEDY, null, null);
     }
 
     @Override
@@ -78,13 +78,13 @@ public class FavRemedyInteractorImpl implements FavRemedyInteractor {
     @Override
     public Observable<Response<ResponseBody>> requestLikeRemedy(Long postCode, Long codRemedy) {
         return RestClient.getHeader(mUser.getAppToken(), null)
-                .likeEstablishment(postCode, assemblePostContent(codRemedy));
+                .createContent(postCode, assemblePostContent(codRemedy));
     }
 
     @Override
     public Observable<Response<ResponseBody>> requestLikeRemedy(Long codRemedy) {
         return RestClient.getHeader(mUser.getAppToken(), null)
-                .likeEstablishment(mUser.getRemedyLikePostCode(), assemblePostContent(codRemedy));
+                .createContent(mUser.getRemedyLikePostCode(), assemblePostContent(codRemedy));
     }
 
     @Override

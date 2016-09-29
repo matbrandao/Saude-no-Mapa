@@ -44,7 +44,7 @@ public class FavEstablishmentInteractorImpl implements FavEstablishmentInteracto
     public Observable<Response<List<PostResponse>>> requestGetUserPosts() {
         return RestClient.getHeader(mUser.getAppToken(), null)
                 .getPosts(Long.valueOf(mContext.getString(R.string.app_id)), mUser.getId(),
-                        MetaModelConstants.COD_OBJECT_ESTABLISHMENT);
+                        MetaModelConstants.COD_OBJECT_ESTABLISHMENT,  MetaModelConstants.COD_POST_ESTABLISHMENT_LIKE, null);
     }
 
     @Override
@@ -70,13 +70,13 @@ public class FavEstablishmentInteractorImpl implements FavEstablishmentInteracto
     @Override
     public Observable<Response<ResponseBody>> requestLikeEstablishment(Long postCode, Long codEstablishment) {
         return RestClient.getHeader(mUser.getAppToken(), null)
-                .likeEstablishment(postCode, assemblePostContent(codEstablishment));
+                .createContent(postCode, assemblePostContent(codEstablishment));
     }
 
     @Override
     public Observable<Response<ResponseBody>> requestLikeEstablishment(Long codEstablishment) {
         return RestClient.getHeader(mUser.getAppToken(), null)
-                .likeEstablishment(mUser.getEstablishmentLikePost(), assemblePostContent(codEstablishment));
+                .createContent(mUser.getEstablishmentLikePost(), assemblePostContent(codEstablishment));
     }
 
     @Override
@@ -169,7 +169,7 @@ public class FavEstablishmentInteractorImpl implements FavEstablishmentInteracto
 
     private Post assemblePost() {
         return new Post(new Autor(mUser.getId()), MetaModelConstants.COD_OBJECT_ESTABLISHMENT,
-                new PostType(MetaModelConstants.COD_POST_ESTABLISHMENT));
+                new PostType(MetaModelConstants.COD_POST_ESTABLISHMENT_LIKE));
     }
 
     private PostContent assemblePostContent(Long codUnidade) {

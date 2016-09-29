@@ -5,6 +5,7 @@ import com.mat_brandao.saudeapp.domain.model.Installation;
 import com.mat_brandao.saudeapp.domain.model.Post;
 import com.mat_brandao.saudeapp.domain.model.PostContent;
 import com.mat_brandao.saudeapp.domain.model.PostResponse;
+import com.mat_brandao.saudeapp.domain.model.Rating;
 import com.mat_brandao.saudeapp.domain.model.Remedy;
 import com.mat_brandao.saudeapp.domain.model.User;
 
@@ -58,9 +59,14 @@ public interface RetrofitInterface {
     @GET("appCivicoRS/rest/pessoas/{userId}/fotoPerfil")
     Observable<Response<ResponseBody>> getProfilePhoto(@Path("userId") long userId);
 
+    @GET("appCivicoRS/rest/postagens/tipopostagem/{codTipoPostagem}/tipoobjeto/{codTipoObjetoDestino}/objeto/{codObjetoDestino}")
+    Observable<Response<Rating>> getObjectRating(@Path("codTipoPostagem") Long codTipoPostagem, @Path("codTipoObjetoDestino") Long codTipoObjetoDestino,
+                                                 @Path("codObjetoDestino") Long codObjetoDestino);
+
     @GET("appCivicoRS/rest/postagens")
     Observable<Response<List<PostResponse>>> getPosts(@Query("codAplicativo") Long codAplicativo,
-                                                      @Query("codAutor") Long codAutor, @Query("codObjetoDestino") Long codObjetoDestino);
+                                                      @Query("codAutor") Long codAutor, @Query("codTipoObjetoDestino") Long codTipoObjetoDestino,
+                                                      @Query("codTiposPostagem") Long codTipoPostagem, @Query("codObjetoDestino") Long codObjetoDestino);
 
     @GET("appCivicoRS/rest/postagens/{codPostagem}/conteudos/{codConteudo}")
     Observable<Response<PostContent>> getPostContent(@Path("codPostagem") Long codPostagem, @Path("codConteudo") Long codConteudo);
@@ -72,7 +78,11 @@ public interface RetrofitInterface {
     Observable<Response<ResponseBody>> deleteContent(@Path("codPostagem") Long codPostagem, @Path("codConteudo") Long codConteudo);
 
     @POST("appCivicoRS/rest/postagens/{codPostagem}/conteudos")
-    Observable<Response<ResponseBody>> likeEstablishment(@Path("codPostagem") Long codPostagem, @Body PostContent content);
+    Observable<Response<ResponseBody>> createContent(@Path("codPostagem") Long codPostagem, @Body PostContent content);
+
+    @PUT("appCivicoRS/rest/postagens/{codPostagem}/conteudos/{codConteudo}")
+    Observable<Response<ResponseBody>> updateContent(@Path("codPostagem") Long codPostagem, @Path("codConteudo") Long codConteudo,
+                                                     @Body PostContent content);
 
     @GET("mapa-da-saude/rest/estabelecimentos/latitude/{latitude}/longitude/{longitude}/raio/{raio}")
     Observable<Response<List<Establishment>>> getEstablishmentsByGeoLocation(
