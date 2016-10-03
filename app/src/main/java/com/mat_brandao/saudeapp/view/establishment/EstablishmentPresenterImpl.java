@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -90,6 +91,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
     private boolean mIsFiltered;
     private TextView mCurrentFilterTitle;
     private SimpleRatingBar mRatingView;
+    private ProgressBar mEstablishmentProgressBar;
 
     @Override
     public void onResume() {
@@ -219,6 +221,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .onErrorReturn(throwable -> null)
                                     .subscribe(responseBodyResponse -> {
+                                        mEstablishmentProgressBar.setVisibility(View.GONE);
                                         if (responseBodyResponse == null) {
                                             mView.showToast(mContext.getString(R.string.error_get_establishment_review));
                                         } else {
@@ -229,6 +232,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                                         }
                                     });
                         } else {
+                            mEstablishmentProgressBar.setVisibility(View.GONE);
                             mSubscription.add(mInteractor.requestCreateRatingPost(codUnidade)
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .onErrorReturn(throwable -> null)
@@ -250,6 +254,9 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         View dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_bottom_sheet_marker, null);
         MarkerViews bottomViews = new MarkerViews();
         ButterKnife.bind(bottomViews, dialogView);
+
+        mEstablishmentProgressBar = bottomViews.establishmentProgress;
+        mEstablishmentProgressBar.setVisibility(View.VISIBLE);
 
         bottomViews.establishmentTitle.setText(GenericUtil.capitalize(establishment.getNomeFantasia().toLowerCase()));
         bottomViews.descricaoCompletaText.setText(GenericUtil.capitalize(establishment.getDescricaoCompleta().toLowerCase()));
@@ -296,18 +303,20 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                 .skip(1)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view -> {
+                    mEstablishmentProgressBar.setVisibility(View.VISIBLE);
                     requestRateEstablishment(Long.valueOf(establishment.getCodUnidade()), bottomViews.ratingView);
                 });
 
         bottomViews.likeImage.setOnClickListener(v -> {
-            mView.showProgressDialog(mContext.getString(R.string.progress_wait));
+            mEstablishmentProgressBar.setVisibility(View.VISIBLE);
             if (mInteractor.isEstablishmentLiked(Long.valueOf(establishment.getCodUnidade()))) {
                 mSubscription.add(mInteractor.requestDisLikeEstablishment(establishment.getCodUnidade())
                         .observeOn(AndroidSchedulers.mainThread())
                         .onErrorReturn(throwable -> null)
                         .subscribe(responseBodyResponse -> {
-                            mView.dismissProgressDialog();
+                            mEstablishmentProgressBar.setVisibility(View.GONE);
                             if (responseBodyResponse != null && responseBodyResponse.isSuccessful()) {
+                                mInteractor.removeEstablishmentFromLikedList(establishment.getCodUnidade());
                                 bottomViews.likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_empty));
                             } else {
                                 mView.showToast(mContext.getString(R.string.http_error_generic));
@@ -340,6 +349,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> null)
                 .subscribe(responseBodyResponse -> {
+                    mEstablishmentProgressBar.setVisibility(View.GONE);
                     ratingView.setIndicator(false);
                     if (responseBodyResponse != null && responseBodyResponse.isSuccessful()) {
                     } else {
@@ -354,9 +364,8 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                     .observeOn(AndroidSchedulers.mainThread())
                     .onErrorReturn(throwable -> null)
                     .subscribe(likeResponse -> {
-                        mView.dismissProgressDialog();
+                        mEstablishmentProgressBar.setVisibility(View.GONE);
                         if (likeResponse != null && likeResponse.isSuccessful()) {
-                            // TODO: 26-Sep-16
                             mInteractor.addEstablishmentToLikedList(GenericUtil.getContentIdFromUrl(String.valueOf(mInteractor.getPostCode()),
                                     likeResponse.headers().get("location")), Long.valueOf(codUnidade));
                             likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
@@ -376,7 +385,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .onErrorReturn(throwable -> null)
                                     .subscribe(likeResponse -> {
-                                        mView.dismissProgressDialog();
+                                        mEstablishmentProgressBar.setVisibility(View.GONE);
                                         if (likeResponse != null && likeResponse.isSuccessful()) {
                                             mInteractor.addEstablishmentToLikedList(GenericUtil.getContentIdFromUrl(String.valueOf(postCode), likeResponse.headers().get("location")), Long.valueOf(codUnidade));
                                             likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
@@ -763,6 +772,8 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         ImageView likeImage;
         @Bind(R.id.rating_view)
         SimpleRatingBar ratingView;
+        @Bind(R.id.establishment_progress)
+        ProgressBar establishmentProgress;
     }
 
     class FilterViews {

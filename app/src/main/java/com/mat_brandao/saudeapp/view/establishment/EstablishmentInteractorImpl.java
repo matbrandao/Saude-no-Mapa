@@ -353,6 +353,17 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
         mContentCodeEstablishment.put(contentCode, codUnidade);
     }
 
+    @Override
+    public void removeEstablishmentFromLikedList(String codUnidade) {
+        Long key = 12312312312L;
+        for (Long code : mLikedEstablishment.keySet()) {
+            if (mLikedEstablishment.get(code).equals(Long.valueOf(codUnidade))) {
+                key = code;
+            }
+        }
+        mLikedEstablishment.remove(key);
+    }
+
     private Long getEstablishmentRatingPostCode(Long establishmentCode) {
         Long contentCode = 0L;
         for (Map.Entry<Long, Long> longLongEntry : mRatedEstablishment.entrySet()) {
@@ -363,11 +374,6 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
 
         return contentCode;
     }
-
-//    @Override
-//    public void addRatingToEstablishmentList(Long codUnidade, Long valor) {
-//        mEstablishmentRating.put(codUnidade, valor);
-//    }
 
     @Override
     public Observable<Response<Rating>> requestEstablishmentRating(Long codUnidade) {

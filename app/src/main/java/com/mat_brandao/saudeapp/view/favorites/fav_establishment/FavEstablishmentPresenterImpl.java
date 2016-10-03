@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mat_brandao.saudeapp.R;
@@ -56,6 +57,7 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
 
     private CompositeSubscription mSubscription = new CompositeSubscription();
     private boolean isLiked;
+    private ProgressBar mEstablishmentProgress;
 
     @Override
     public void onResume() {
@@ -116,6 +118,9 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
         MarkerViews bottomViews = new MarkerViews();
         ButterKnife.bind(bottomViews, dialogView);
 
+        mEstablishmentProgress = bottomViews.establishmentProgress;
+//        mEstablishmentProgress.setVisibility(View.VISIBLE);
+
         bottomViews.establishmentTitle.setText(GenericUtil.capitalize(establishment.getNomeFantasia().toLowerCase()));
         bottomViews.descricaoCompletaText.setText(GenericUtil.capitalize(establishment.getDescricaoCompleta().toLowerCase()));
         bottomViews.enderecoText.setText(mInteractor.getAddressText(establishment.getLogradouro(), establishment.getNumero(),
@@ -143,13 +148,13 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
         isLiked = true;
         bottomViews.likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
         bottomViews.likeImage.setOnClickListener(v -> {
-            mView.showProgressDialog(mContext.getString(R.string.progress_wait));
+            mEstablishmentProgress.setVisibility(View.VISIBLE);
             if (isLiked) {
                 mSubscription.add(mInteractor.requestDislikeEstablishment(Long.valueOf(establishment.getCodUnidade()))
                         .observeOn(AndroidSchedulers.mainThread())
                         .onErrorReturn(throwable -> null)
                         .subscribe(responseBodyResponse -> {
-                            mView.dismissProgressDialog();
+                            mEstablishmentProgress.setVisibility(View.GONE);
                             if (responseBodyResponse != null && responseBodyResponse.isSuccessful()) {
                                 isLiked = false;
                                 mInteractor.removeDislikedContentCode();
@@ -182,11 +187,12 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
     }
 
     private void requestLikeEstablishment(Long codUnidade, ImageView likeImage) {
+        mEstablishmentProgress.setVisibility(View.VISIBLE);
         mSubscription.add(mInteractor.requestLikeEstablishment(codUnidade)
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> null)
                 .subscribe(likeResponse -> {
-                    mView.dismissProgressDialog();
+                    mEstablishmentProgress.setVisibility(View.GONE);
                     if (likeResponse != null && likeResponse.isSuccessful()) {
                         isLiked = true;
                         mInteractor.addEstablishmentToLikedList(GenericUtil.getContentIdFromUrl(String.valueOf(mInteractor.getPostCode()),
@@ -373,5 +379,7 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
         LinearLayout phoneLayout;
         @Bind(R.id.establishment_like_image)
         ImageView likeImage;
+        @Bind(R.id.establishment_progress)
+        ProgressBar establishmentProgress;
     }
 }

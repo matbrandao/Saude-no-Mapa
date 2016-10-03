@@ -76,4 +76,6 @@ public interface EstablishmentInteractor {
     Observable<Response<ResponseBody>> requestRateEstablishment(Long establishmentCode, float rating);
 
     void addEstablishmentToContentList(Long contentCode, Long codUnidade);
+
+    void removeEstablishmentFromLikedList(String codUnidade);
 }

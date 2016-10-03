@@ -49,6 +49,12 @@
                         android:layout_marginRight="25dp"
                         tools:text="Hospital 012"/>
 
+                    <ProgressBar
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:id="@+id/establishment_progress"
+                        android:visibility="gone"/>
+
                     <ImageView
                         android:layout_width="25dp"
                         android:layout_height="25dp"
