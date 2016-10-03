@@ -36,4 +36,6 @@ public interface RemedyInteractor {
     boolean hasLikePostCode();
 
     String getPostCode();
+
+    void removeRemedyFromLikedList(Long codBarraEan);
 }

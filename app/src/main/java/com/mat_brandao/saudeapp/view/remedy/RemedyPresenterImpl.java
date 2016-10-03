@@ -11,6 +11,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mat_brandao.saudeapp.R;
@@ -43,6 +44,9 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
     private CompositeSubscription mSubscription = new CompositeSubscription();
     private Handler mHandler;
     private Runnable mDismissKeyboardRunnable;
+
+    private ProgressBar mRemedyProgress;
+    private boolean isLiked;
 
     @Override
     public void onResume() {
@@ -185,6 +189,8 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
         BottomViews bottomViews = new BottomViews();
         ButterKnife.bind(bottomViews, dialogView);
 
+        mRemedyProgress = bottomViews.remedyProgress;
+
         bottomViews.establishmentTitle.setText(GenericUtil.capitalize(remedy.getProduto().toLowerCase()));
         bottomViews.apresentacaoText.setText(GenericUtil.capitalize(remedy.getApresentacao().toLowerCase()));
         bottomViews.classeTerapeuticaText.setText(GenericUtil.capitalize(remedy.getClasseTerapeutica().toLowerCase()));
@@ -197,21 +203,22 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
             bottomViews.possuiRestricaoText.setVisibility(View.VISIBLE);
         }
 
-        boolean isLiked = mInteractor.isRemedyLiked(Long.valueOf(remedy.getCodBarraEan()));
-        if (isLiked) {
+        if (mInteractor.isRemedyLiked(Long.valueOf(remedy.getCodBarraEan()))) {
             bottomViews.likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
         }
 
         bottomViews.likeImage.setOnClickListener(v -> {
-            mView.showProgressDialog(mContext.getString(R.string.progress_wait));
-            if (isLiked) {
+            mRemedyProgress.setVisibility(View.VISIBLE);
+            if (mInteractor.isRemedyLiked(Long.valueOf(remedy.getCodBarraEan()))) {
                 Timber.i("Already liked");
                 mSubscription.add(mInteractor.requestDisLikeRemedy(Long.valueOf(remedy.getCodBarraEan()))
                         .observeOn(AndroidSchedulers.mainThread())
                         .onErrorReturn(throwable -> null)
                         .subscribe(responseBodyResponse -> {
-                            mView.dismissProgressDialog();
+                            mRemedyProgress.setVisibility(View.GONE);
+                            mInteractor.removeRemedyFromLikedList(Long.valueOf(remedy.getCodBarraEan()));
                             if (responseBodyResponse != null && responseBodyResponse.isSuccessful()) {
+                                isLiked = false;
                                 bottomViews.likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_empty));
                             } else {
                                 mView.showToast(mContext.getString(R.string.http_error_generic));
@@ -241,7 +248,7 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
                     .observeOn(AndroidSchedulers.mainThread())
                     .onErrorReturn(throwable -> null)
                     .subscribe(likeResponse -> {
-                        mView.dismissProgressDialog();
+                        mRemedyProgress.setVisibility(View.GONE);
                         if (likeResponse != null && likeResponse.isSuccessful()) {
                             mInteractor.addRemedyToLikedList(GenericUtil.getContentIdFromUrl(String.valueOf(mInteractor.getPostCode()),
                                     likeResponse.headers().get("location")), codRemedy);
@@ -262,7 +269,7 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .onErrorReturn(throwable -> null)
                                     .subscribe(likeResponse -> {
-                                        mView.dismissProgressDialog();
+                                        mRemedyProgress.setVisibility(View.GONE);
                                         if (likeResponse != null && likeResponse.isSuccessful()) {
                                             mInteractor.addRemedyToLikedList(GenericUtil.getContentIdFromUrl(String.valueOf(postCode),
                                                     likeResponse.headers().get("location")), codRemedy);
@@ -272,7 +279,7 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
                                         }
                                     }));
                         } else {
-                            mView.dismissProgressDialog();
+                            mRemedyProgress.setVisibility(View.GONE);
                             mView.showToast(mContext.getString(R.string.http_error_generic));
                         }
                     }));
@@ -332,5 +339,7 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
         NestedScrollView bottomSheet;
         @Bind(R.id.remedy_like_image)
         ImageView likeImage;
+        @Bind(R.id.establishment_progress)
+        ProgressBar remedyProgress;
     }
 }

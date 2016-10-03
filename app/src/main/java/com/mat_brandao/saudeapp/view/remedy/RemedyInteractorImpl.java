@@ -132,6 +132,17 @@ public class RemedyInteractorImpl implements RemedyInteractor {
         return String.valueOf(mUser.getRemedyLikePostCode());
     }
 
+    @Override
+    public void removeRemedyFromLikedList(Long codBarraEan) {
+        Long key = 12312312312L;
+        for (Long code : mLikedRemedies.keySet()) {
+            if (mLikedRemedies.get(code).equals(Long.valueOf(codBarraEan))) {
+                key = code;
+            }
+        }
+        mLikedRemedies.remove(key);
+    }
+
     private Post assemblePost() {
         return new Post(new Autor(mUser.getId()), MetaModelConstants.COD_OBJECT_REMEDY,
                 new PostType(MetaModelConstants.COD_POST_REMEDY));
