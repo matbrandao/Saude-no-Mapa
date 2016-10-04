@@ -238,6 +238,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
         @Override
         public void onNext(Response<User> userResponse) {
             if (!userResponse.isSuccessful()) {
+                mView.dismissProgressDialog();
                 if (userResponse.code() == 401) {
                     if (isFacebook) {
                         mView.goToActivity(RegisterActivity.class);
@@ -292,8 +293,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
             GoogleSignInAccount acct = result.getSignInAccount();
             User user = new User();
             user.setName(acct.getDisplayName());
-            // FIXME: 09/09/2016
-            user.setEmail("2" + acct.getEmail());
+            user.setEmail(acct.getEmail());
             user.setPassword(acct.zzahf());
             user.setPasswordType(User.GOOGLE_LOGIN_TYPE);
             mInteractor.saveUserToRealm(user);
@@ -308,7 +308,6 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
 
     @Override
     public void onRetryClicked() {
-        // TODO: 07-Sep-16
     }
 
     @Override

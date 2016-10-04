@@ -1,24 +1,17 @@
 package com.mat_brandao.saudeapp.view.register;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Environment;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.repository.UserRepositoryImpl;
 import com.mat_brandao.saudeapp.network.retrofit.RestClient;
-import com.mat_brandao.saudeapp.view.login.LoginActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -41,21 +34,21 @@ public class RegisterInteractorImpl implements RegisterInteractor {
     public Observable<Response<ResponseBody>> requestCreateNormalUser(String name, String email, String sex,
                                                                       String cep, long birthDate, String password) {
         return RestClient.get()
-                .createUser(new User(name, email, name.toLowerCase().replace(" ", ""), password, null, null, cep, sex));
+                .createUser(new User(name, email, email, password, null, null, cep, sex));
     }
 
     @Override
     public Observable<Response<ResponseBody>> requestCreateFacebookUser(String name, String email, String sex,
                                                                         String cep, long birthDate, String password) {
         return RestClient.get()
-                .createUser(new User(name, email, name.toLowerCase().replace(" ", ""), null, password, null, cep, sex));
+                .createUser(new User(name, email, email, null, password, null, cep, sex));
     }
 
     @Override
     public Observable<Response<ResponseBody>> requestCreateGoogleUser(String name, String email, String sex,
                                                                       String cep, long birthDate, String password) {
         return RestClient.get()
-                .createUser(new User(name, email, name.toLowerCase().replace(" ", ""), null, null, password, cep, sex));
+                .createUser(new User(name, email, email, null, null, password, cep, sex));
     }
 
     @Override
