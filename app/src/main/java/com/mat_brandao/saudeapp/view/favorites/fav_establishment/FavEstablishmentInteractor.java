@@ -1,9 +1,9 @@
 package com.mat_brandao.saudeapp.view.favorites.fav_establishment;
 
-import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.model.PostContent;
 import com.mat_brandao.saudeapp.domain.model.PostResponse;
+import com.mat_brandao.saudeapp.domain.model.Rating;
 
 import java.util.List;
 
@@ -23,6 +23,12 @@ public interface FavEstablishmentInteractor {
     Observable<Response<ResponseBody>> requestLikeEstablishment(Long codEstablishment);
 
     Observable<Response<ResponseBody>> requestDislikeEstablishment(Long codEstablishment);
+
+    Observable<Response<List<PostResponse>>> requestGetEstablishmentRatingPost(Long codUnidade);
+
+    Observable<Response<Rating>> requestEstablishmentRating(Long codUnidade);
+
+    Observable<Response<ResponseBody>> requestCreateRatingPost(Long codUnidade);
 
     String getFluxoClientelaText(String fluxoClientela);
 

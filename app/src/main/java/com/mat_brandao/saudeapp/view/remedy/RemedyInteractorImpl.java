@@ -61,7 +61,7 @@ public class RemedyInteractorImpl implements RemedyInteractor {
     public Observable<Response<List<PostResponse>>> requestGetUserPosts() {
         return RestClient.getHeader(mUser.getAppToken(), null)
                 .getPosts(Long.valueOf(mContext.getString(R.string.app_id)), mUser.getId(),
-                        MetaModelConstants.COD_OBJECT_REMEDY);
+                        MetaModelConstants.COD_OBJECT_REMEDY, null, null);
     }
 
     @Override
@@ -74,13 +74,13 @@ public class RemedyInteractorImpl implements RemedyInteractor {
     @Override
     public Observable<Response<ResponseBody>> requestLikeRemedy(Long postCode, Long codRemedy) {
         return RestClient.getHeader(mUser.getAppToken(), null)
-                .likeEstablishment(postCode, assemblePostContent(codRemedy));
+                .createContent(postCode, assemblePostContent(codRemedy));
     }
 
     @Override
     public Observable<Response<ResponseBody>> requestLikeRemedy(Long codRemedy) {
         return RestClient.getHeader(mUser.getAppToken(), null)
-                .likeEstablishment(mUser.getRemedyLikePostCode(), assemblePostContent(codRemedy));
+                .createContent(mUser.getRemedyLikePostCode(), assemblePostContent(codRemedy));
     }
 
     @Override
@@ -130,6 +130,17 @@ public class RemedyInteractorImpl implements RemedyInteractor {
     @Override
     public String getPostCode() {
         return String.valueOf(mUser.getRemedyLikePostCode());
+    }
+
+    @Override
+    public void removeRemedyFromLikedList(Long codBarraEan) {
+        Long key = 12312312312L;
+        for (Long code : mLikedRemedies.keySet()) {
+            if (mLikedRemedies.get(code).equals(Long.valueOf(codBarraEan))) {
+                key = code;
+            }
+        }
+        mLikedRemedies.remove(key);
     }
 
     private Post assemblePost() {

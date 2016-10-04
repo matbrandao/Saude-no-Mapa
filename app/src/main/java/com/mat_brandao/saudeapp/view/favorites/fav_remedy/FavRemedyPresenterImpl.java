@@ -8,6 +8,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mat_brandao.saudeapp.R;
@@ -51,6 +52,7 @@ public class FavRemedyPresenterImpl implements FavRemedyPresenter, GenericObject
     private int mAdapterCountAfterFetching;
 
     private boolean isLiked;
+    private ProgressBar mRemedyProgress;
 
     @Override
     public void onResume() {
@@ -107,6 +109,8 @@ public class FavRemedyPresenterImpl implements FavRemedyPresenter, GenericObject
         BottomViews bottomViews = new BottomViews();
         ButterKnife.bind(bottomViews, dialogView);
 
+        mRemedyProgress = bottomViews.remedyProgress;
+
         bottomViews.establishmentTitle.setText(GenericUtil.capitalize(remedy.getProduto().toLowerCase()));
         bottomViews.apresentacaoText.setText(GenericUtil.capitalize(remedy.getApresentacao().toLowerCase()));
         bottomViews.classeTerapeuticaText.setText(GenericUtil.capitalize(remedy.getClasseTerapeutica().toLowerCase()));
@@ -122,13 +126,13 @@ public class FavRemedyPresenterImpl implements FavRemedyPresenter, GenericObject
         bottomViews.likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
         isLiked = true;
         bottomViews.likeImage.setOnClickListener(v -> {
-            mView.showProgressDialog(mContext.getString(R.string.progress_wait));
+            mRemedyProgress.setVisibility(View.VISIBLE);
             if (isLiked) {
                 mSubscription.add(mInteractor.requestDisLikeRemedy(Long.valueOf(remedy.getCodBarraEan()))
                         .observeOn(AndroidSchedulers.mainThread())
                         .onErrorReturn(throwable -> null)
                         .subscribe(responseBodyResponse -> {
-                            mView.dismissProgressDialog();
+                            mRemedyProgress.setVisibility(View.GONE);
                             if (responseBodyResponse != null && responseBodyResponse.isSuccessful()) {
                                 isLiked = false;
                                 mInteractor.removeDislikedContentCode();
@@ -165,7 +169,7 @@ public class FavRemedyPresenterImpl implements FavRemedyPresenter, GenericObject
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> null)
                 .subscribe(likeResponse -> {
-                    mView.dismissProgressDialog();
+                    mRemedyProgress.setVisibility(View.GONE);
                     if (likeResponse != null && likeResponse.isSuccessful()) {
                         isLiked = true;
                         mInteractor.addRemedyToLikedList(GenericUtil.getContentIdFromUrl(String.valueOf(mInteractor.getPostCode()),
@@ -309,5 +313,7 @@ public class FavRemedyPresenterImpl implements FavRemedyPresenter, GenericObject
         NestedScrollView bottomSheet;
         @Bind(R.id.remedy_like_image)
         ImageView likeImage;
+        @Bind(R.id.establishment_progress)
+        ProgressBar remedyProgress;
     }
 }

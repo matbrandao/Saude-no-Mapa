@@ -43,7 +43,13 @@
                         android:fontFamily="sans-serif-light"
                         android:layout_centerHorizontal="true"
                         android:gravity="center_horizontal"
-                        android:text="@string/filter_dialog_title"/>
+                        tools:text="@string/filter_dialog_title"/>
+
+                    <ProgressBar
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:id="@+id/establishment_progress"
+                        android:visibility="gone"/>
 
                     <ImageView
                         android:layout_width="25dp"

@@ -4,9 +4,11 @@ import android.location.Location;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
+import com.mat_brandao.saudeapp.domain.model.Conteudo;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.model.PostContent;
 import com.mat_brandao.saudeapp.domain.model.PostResponse;
+import com.mat_brandao.saudeapp.domain.model.Rating;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
 
 import java.util.List;
@@ -51,9 +53,17 @@ public interface EstablishmentInteractor {
 
     Observable<Response<ResponseBody>> requestCreateLikePost();
 
-    Observable<Response<List<PostResponse>>> requestGetUserPosts();
+    Observable<Response<ResponseBody>> requestCreateRatingPost(Long codUnidade);
+
+    Observable<Response<List<PostResponse>>> requestGetUserLikePosts();
+
+    Observable<Response<List<PostResponse>>> requestGetEstablishmentRatingPost(Long codUnidade);
 
     Observable<Response<PostContent>> requestGetPostContent(Long codConteudoPostagem);
+
+    Observable<Response<Rating>> requestEstablishmentRating(Long codUnidade);
+
+    String getPostCode();
 
     boolean hasLikePostCode();
 
@@ -61,5 +71,11 @@ public interface EstablishmentInteractor {
 
     void addEstablishmentToLikedList(Long contentCode, Long establishmentCode);
 
-    String getPostCode();
+    void addEstablishmentToRatingList(Long contentCode, Long establishmentCode);
+
+    Observable<Response<ResponseBody>> requestRateEstablishment(Long establishmentCode, float rating);
+
+    void addEstablishmentToContentList(Long contentCode, Long codUnidade);
+
+    void removeEstablishmentFromLikedList(String codUnidade);
 }

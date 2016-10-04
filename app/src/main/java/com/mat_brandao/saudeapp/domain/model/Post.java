@@ -9,12 +9,21 @@ public class Post {
     @Expose
     private Autor autor;
     @Expose
+    private long codTipoObjetoDestino;
+    @Expose
     private long codObjetoDestino;
     @Expose
     private PostType tipo;
 
-    public Post(Autor autor, long codObjetoDestino, PostType tipo) {
+    public Post(Autor autor, long codTipoObjetoDestino, PostType tipo) {
         this.autor = autor;
+        this.codTipoObjetoDestino = codTipoObjetoDestino;
+        this.tipo = tipo;
+    }
+
+    public Post(Autor autor, long codTipoObjetoDestino, PostType tipo, long codObjetoDestino) {
+        this.autor = autor;
+        this.codTipoObjetoDestino = codTipoObjetoDestino;
         this.codObjetoDestino = codObjetoDestino;
         this.tipo = tipo;
     }
@@ -27,12 +36,12 @@ public class Post {
         this.autor = autor;
     }
 
-    public long getCodObjetoDestino() {
-        return codObjetoDestino;
+    public long getCodTipoObjetoDestino() {
+        return codTipoObjetoDestino;
     }
 
-    public void setCodObjetoDestino(long codObjetoDestino) {
-        this.codObjetoDestino = codObjetoDestino;
+    public void setCodTipoObjetoDestino(long codTipoObjetoDestino) {
+        this.codTipoObjetoDestino = codTipoObjetoDestino;
     }
 
     public PostType getTipo() {
@@ -41,5 +50,13 @@ public class Post {
 
     public void setTipo(PostType tipo) {
         this.tipo = tipo;
+    }
+
+    public long getCodObjetoDestino() {
+        return codObjetoDestino;
+    }
+
+    public void setCodObjetoDestino(long codObjetoDestino) {
+        this.codObjetoDestino = codObjetoDestino;
     }
 }

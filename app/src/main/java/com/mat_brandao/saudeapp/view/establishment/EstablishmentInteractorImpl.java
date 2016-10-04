@@ -22,6 +22,7 @@ import com.mat_brandao.saudeapp.domain.model.Post;
 import com.mat_brandao.saudeapp.domain.model.PostContent;
 import com.mat_brandao.saudeapp.domain.model.PostResponse;
 import com.mat_brandao.saudeapp.domain.model.PostType;
+import com.mat_brandao.saudeapp.domain.model.Rating;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.repository.UserRepositoryImpl;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
@@ -47,8 +48,9 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     private final UserRepositoryImpl mUserRepository;
     private User mUser;
     private HashMap<Establishment, Marker> mDeviceMarkerHash;
-    //    private List<Long> mLikedEstablishmentCodes;
     private HashMap<Long, Long> mLikedEstablishment;
+    private HashMap<Long, Long> mRatedEstablishment;
+    private HashMap<Long, Long> mContentCodeEstablishment;
 
     public EstablishmentInteractorImpl(Context context) {
         mContext = context;
@@ -56,7 +58,8 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
         mUser = mUserRepository.getUser();
         mDeviceMarkerHash = new HashMap<>();
         mLikedEstablishment = new HashMap<>();
-//        mLikedEstablishmentCodes = new ArrayList<>();
+        mRatedEstablishment = new HashMap<>();
+        mContentCodeEstablishment = new HashMap<>();
     }
 
     @Override
@@ -247,13 +250,13 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     @Override
     public Observable<Response<ResponseBody>> requestLikeEstablishment(Long postCode, String codUnidade) {
         return RestClient.getHeader(mUser.getAppToken(), null)
-                .likeEstablishment(postCode, assemblePostContent(codUnidade));
+                .createContent(postCode, assemblePostContent(codUnidade));
     }
 
     @Override
     public Observable<Response<ResponseBody>> requestLikeEstablishment(String codUnidade) {
         return RestClient.getHeader(mUser.getAppToken(), null)
-                .likeEstablishment(mUser.getEstablishmentLikePost(), assemblePostContent(codUnidade));
+                .createContent(mUser.getEstablishmentLikePost(), assemblePostContent(codUnidade));
     }
 
     @Override
@@ -277,6 +280,12 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     }
 
     @Override
+    public Observable<Response<ResponseBody>> requestCreateRatingPost(Long codUnidade) {
+        return RestClient.getHeader(mUser.getAppToken(), mContext.getString(R.string.app_id))
+                .createPost(assembleRatingPost(codUnidade));
+    }
+
+    @Override
     public boolean hasLikePostCode() {
         return mUser.getEstablishmentLikePost() != null;
     }
@@ -289,10 +298,19 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     }
 
     @Override
-    public Observable<Response<List<PostResponse>>> requestGetUserPosts() {
+    public Observable<Response<List<PostResponse>>> requestGetUserLikePosts() {
         return RestClient.getHeader(mUser.getAppToken(), null)
                 .getPosts(Long.valueOf(mContext.getString(R.string.app_id)), mUser.getId(),
-                        Long.valueOf(String.valueOf(MetaModelConstants.COD_OBJECT_ESTABLISHMENT)));
+                        Long.valueOf(String.valueOf(MetaModelConstants.COD_OBJECT_ESTABLISHMENT)),
+                        MetaModelConstants.COD_POST_ESTABLISHMENT_LIKE, null);
+    }
+
+    @Override
+    public Observable<Response<List<PostResponse>>> requestGetEstablishmentRatingPost(Long codUnidade) {
+        return RestClient.getHeader(mUser.getAppToken(), null)
+                .getPosts(Long.valueOf(mContext.getString(R.string.app_id)), mUser.getId(),
+                        MetaModelConstants.COD_OBJECT_ESTABLISHMENT, MetaModelConstants.COD_POST_ESTABLISHMENT_RATING,
+                        codUnidade);
     }
 
     @Override
@@ -307,9 +325,70 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
         mLikedEstablishment.put(code, establishmentCode);
     }
 
+    @Override
+    public void addEstablishmentToRatingList(Long contentCode, Long establishmentCode) {
+        mRatedEstablishment.put(contentCode, establishmentCode);
+    }
+
+    @Override
+    public Observable<Response<ResponseBody>> requestRateEstablishment(Long establishmentCode, float rating) {
+        Long contentCode = 0L;
+        for (Map.Entry<Long, Long> longLongEntry : mContentCodeEstablishment.entrySet()) {
+            if (longLongEntry.getValue().equals(establishmentCode)) {
+                contentCode = longLongEntry.getKey();
+            }
+        }
+        if (contentCode == 0) {
+            return RestClient.getHeader(mUser.getAppToken(), null)
+                    .createContent(getEstablishmentRatingPostCode(establishmentCode), assembleRatingPostContent(rating));
+        } else {
+            return RestClient.getHeader(mUser.getAppToken(), null)
+                    .updateContent(getEstablishmentRatingPostCode(establishmentCode), contentCode,
+                            assembleRatingPostContent(rating));
+        }
+    }
+
+    @Override
+    public void addEstablishmentToContentList(Long contentCode, Long codUnidade) {
+        mContentCodeEstablishment.put(contentCode, codUnidade);
+    }
+
+    @Override
+    public void removeEstablishmentFromLikedList(String codUnidade) {
+        Long key = 12312312312L;
+        for (Long code : mLikedEstablishment.keySet()) {
+            if (mLikedEstablishment.get(code).equals(Long.valueOf(codUnidade))) {
+                key = code;
+            }
+        }
+        mLikedEstablishment.remove(key);
+    }
+
+    private Long getEstablishmentRatingPostCode(Long establishmentCode) {
+        Long contentCode = 0L;
+        for (Map.Entry<Long, Long> longLongEntry : mRatedEstablishment.entrySet()) {
+            if (longLongEntry.getValue().equals(establishmentCode)) {
+                contentCode = longLongEntry.getKey();
+            }
+        }
+
+        return contentCode;
+    }
+
+    @Override
+    public Observable<Response<Rating>> requestEstablishmentRating(Long codUnidade) {
+        return RestClient.getHeader(mUser.getAppToken(), null)
+                .getObjectRating(MetaModelConstants.COD_POST_ESTABLISHMENT_RATING, MetaModelConstants.COD_OBJECT_ESTABLISHMENT, codUnidade);
+    }
+
     private Post assemblePost() {
         return new Post(new Autor(mUser.getId()), MetaModelConstants.COD_OBJECT_ESTABLISHMENT,
-                new PostType(MetaModelConstants.COD_POST_ESTABLISHMENT));
+                new PostType(MetaModelConstants.COD_POST_ESTABLISHMENT_LIKE));
+    }
+
+    private Post assembleRatingPost(Long codUnidade) {
+        return new Post(new Autor(mUser.getId()), MetaModelConstants.COD_OBJECT_ESTABLISHMENT,
+                new PostType(MetaModelConstants.COD_POST_ESTABLISHMENT_RATING), codUnidade);
     }
 
     private PostContent assemblePostContent(String codUnidade) {
@@ -318,6 +397,15 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
         postContent.setTexto("");
         postContent.setLinks(null);
         postContent.setValor(0L);
+        return postContent;
+    }
+
+    private PostContent assembleRatingPostContent(float value) {
+        PostContent postContent = new PostContent();
+        postContent.setJSON("");
+        postContent.setTexto("");
+        postContent.setLinks(null);
+        postContent.setValor((long) value);
         return postContent;
     }
 

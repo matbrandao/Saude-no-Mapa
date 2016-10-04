@@ -98,4 +98,6 @@
     <string name="favorites_title">Minha Lista</string>
     <string name="fav_establishment_empty">Nenhum estabelecimento favoritado</string>
     <string name="fav_remedy_empty">Nenhum remédio favoritado</string>
+    <string name="error_get_establishment_review">Erro ao tentar buscar a avaliação deste estabelecimento.</string>
+    <string name="error_rating_establishment_try_again">Erro ao tentar avaliar este estabelecimento. Tente novamente.</string>
 </resources>
