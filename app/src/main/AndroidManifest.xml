@@ -45,10 +45,10 @@
             android:name=".view.main.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <!--<activity-->
-            <!--android:name=".view.establishment.EstablishmentFragment"-->
-            <!--android:theme="@style/AppTheme.NoActionBar">-->
-        <!--</activity>-->
+        <activity
+            android:name=".view.edit_profile.EditProfileActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity
             android:name=".view.splash.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar">
