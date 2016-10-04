@@ -22,6 +22,8 @@ public interface EditProfileInteractor {
     Observable<Response<ResponseBody>> requestUpdateGoogleUser(String name, String email, String sex,
                                                                String bio, String cep, long birthDate);
 
+    Observable<Response<ResponseBody>> requestSaveProfilePhoto(Integer avatarDrawable);
+
     void updateRealmUser(String mName, String mEmail, String mSelectedSex,
                          String date, String mCep, String mBio);
 }

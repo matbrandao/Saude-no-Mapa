@@ -2,6 +2,7 @@ package com.mat_brandao.saudeapp.view.edit_profile;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,7 +18,9 @@ import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.util.DateUtil;
 import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
 import com.mat_brandao.saudeapp.domain.util.MaskUtil;
+import com.mat_brandao.saudeapp.view.main.MainActivity;
 import com.mat_brandao.saudeapp.view.register.AvatarAdapter;
+import com.squareup.picasso.Picasso;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.IOException;
@@ -32,6 +35,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class EditProfilePresenterImpl implements EditProfilePresenter, GenericObjectClickListener<Integer> {
 
@@ -115,10 +119,6 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
                 .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .subscribe(isGranted -> {
                     if (isGranted) {
-                        if (mAvatarUrl != R.drawable.avatar_placeholder) {
-                            // TODO: 04/10/2016 save picture too;
-                        }
-
                         if (mUser.getPasswordType() == User.FACEBOOK_LOGIN_TYPE) {
                             requestCreateFacebookUser();
                         } else if (mUser.getPasswordType() == User.GOOGLE_LOGIN_TYPE) {
@@ -246,11 +246,18 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
                 .map(inputText -> {
                     boolean result;
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                    SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("ddMMyyyy");
                     try {
                         mBirthDate = simpleDateFormat.parse(inputText.toString()).getTime();
                         result = true;
                     } catch (Exception e) {
                         result = false;
+                        try {
+                            mBirthDate = simpleDateFormat2.parse(inputText.toString()).getTime();
+                            result = true;
+                        } catch (Exception e1) {
+                            result = false;
+                        }
                     }
 
                     return result;
@@ -324,8 +331,6 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
 
         @Override
         public void onNext(Response<ResponseBody> response) {
-            mView.dismissProgressDialog();
-
             if (response.isSuccessful()) {
                 try {
                     mView.showToast(response.body().string().replace("\"", ""));
@@ -334,7 +339,16 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
                 }
 
                 mInteractor.updateRealmUser(mName, mEmail, mSelectedSex, DateUtil.getDate(mBirthDate), mCep, mBio);
+
+                if (mAvatarUrl != R.drawable.avatar_placeholder) {
+                    mSubscription.add(mInteractor.requestSaveProfilePhoto(mAvatarUrl)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(saveProfilePhotoObserver));
+                } else {
+                    mView.dismissProgressDialog();
+                }
             } else {
+                mView.dismissProgressDialog();
                 if (response.code() == 400) {
                     try {
                         mView.showToast(response.errorBody().string().replace("\"", ""));
@@ -345,6 +359,24 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
                     mView.showToast(mContext.getString(R.string.http_error_500));
                 }
             }
+        }
+    };
+
+    private Observer<Response<ResponseBody>> saveProfilePhotoObserver = new Observer<Response<ResponseBody>>() {
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            mView.dismissProgressDialog();
+        }
+
+        @Override
+        public void onNext(Response<ResponseBody> responseBody) {
+            mView.dismissProgressDialog();
+            Picasso.with(mContext)
+                    .invalidate(mInteractor.getProfilePhotoUrl());
         }
     };
 }
