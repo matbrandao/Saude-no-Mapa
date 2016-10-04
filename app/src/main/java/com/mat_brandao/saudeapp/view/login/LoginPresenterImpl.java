@@ -294,7 +294,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
             user.setName(acct.getDisplayName());
             // FIXME: 09/09/2016
             user.setEmail("2" + acct.getEmail());
-            user.setPassword(acct.zzafm());
+            user.setPassword(acct.zzahf());
             user.setPasswordType(User.GOOGLE_LOGIN_TYPE);
             mInteractor.saveUserToRealm(user);
             isFacebook = true;

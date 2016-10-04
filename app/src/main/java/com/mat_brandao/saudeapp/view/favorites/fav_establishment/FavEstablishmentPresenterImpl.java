@@ -10,7 +10,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Conteudo;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
@@ -25,7 +25,6 @@ import com.mat_brandao.saudeapp.domain.model.PostContent;
 import com.mat_brandao.saudeapp.domain.model.PostResponse;
 import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
-import com.mat_brandao.saudeapp.view.establishment.EstablishmentPresenterImpl;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.util.ArrayList;
@@ -38,7 +37,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 
 public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter, GenericObjectClickListener<Establishment> {
@@ -58,6 +56,7 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
     private CompositeSubscription mSubscription = new CompositeSubscription();
     private boolean isLiked;
     private ProgressBar mEstablishmentProgress;
+    private SimpleRatingBar mRatingView;
 
     @Override
     public void onResume() {
@@ -106,6 +105,7 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
     @Override
     public void onItemClick(Establishment establishment) {
         showEstablishmentBottomDialog(establishment);
+        requestEstablishmentRating(Long.valueOf(establishment.getCodUnidade()));
     }
 
     private void showEstablishmentBottomDialog(Establishment establishment) {
@@ -118,6 +118,8 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
         MarkerViews bottomViews = new MarkerViews();
         ButterKnife.bind(bottomViews, dialogView);
 
+        mRatingView = bottomViews.ratingView;
+        mRatingView.setIndicator(true);
         mEstablishmentProgress = bottomViews.establishmentProgress;
 //        mEstablishmentProgress.setVisibility(View.VISIBLE);
 
@@ -200,6 +202,45 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
                         likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
                     } else {
                         mView.showToast(mContext.getString(R.string.http_error_generic));
+                    }
+                }));
+    }
+
+    private void requestEstablishmentRating(Long codUnidade) {
+        mEstablishmentProgress.setVisibility(View.VISIBLE);
+        mSubscription.add(mInteractor.requestGetEstablishmentRatingPost(codUnidade)
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> null)
+                .subscribe(listResponse -> {
+                    if (listResponse != null && listResponse.isSuccessful()) {
+                        if (listResponse.body() != null && listResponse.body().size() > 0) {
+                            if (listResponse.body().get(0).getConteudos().size() > 0) {
+                                mInteractor.requestEstablishmentRating(codUnidade)
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .onErrorReturn(throwable -> null)
+                                        .subscribe(responseBodyResponse -> {
+                                            mEstablishmentProgress.setVisibility(View.GONE);
+                                            if (responseBodyResponse == null) {
+                                                mView.showToast(mContext.getString(R.string.error_get_establishment_review));
+                                            } else {
+                                                if (responseBodyResponse.isSuccessful()) {
+                                                    mRatingView.setRating(responseBodyResponse.body().getMedia());
+                                                }
+                                            }
+                                        });
+                            } else {
+                                mEstablishmentProgress.setVisibility(View.GONE);
+                            }
+                        } else {
+                            mEstablishmentProgress.setVisibility(View.GONE);
+                            mSubscription.add(mInteractor.requestCreateRatingPost(codUnidade)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .onErrorReturn(throwable -> null)
+                                    .retry(3)
+                                    .subscribe());
+                        }
+                    } else {
+                        mView.showToast(mContext.getString(R.string.error_get_establishment_review));
                     }
                 }));
     }
@@ -381,5 +422,7 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
         ImageView likeImage;
         @Bind(R.id.establishment_progress)
         ProgressBar establishmentProgress;
+        @Bind(R.id.rating_view)
+        SimpleRatingBar ratingView;
     }
 }

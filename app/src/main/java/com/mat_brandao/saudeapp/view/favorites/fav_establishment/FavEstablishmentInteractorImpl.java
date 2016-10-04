@@ -9,6 +9,7 @@ import com.mat_brandao.saudeapp.domain.model.Post;
 import com.mat_brandao.saudeapp.domain.model.PostContent;
 import com.mat_brandao.saudeapp.domain.model.PostResponse;
 import com.mat_brandao.saudeapp.domain.model.PostType;
+import com.mat_brandao.saudeapp.domain.model.Rating;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.repository.UserRepositoryImpl;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
@@ -95,6 +96,26 @@ public class FavEstablishmentInteractorImpl implements FavEstablishmentInteracto
     }
 
     @Override
+    public Observable<Response<List<PostResponse>>> requestGetEstablishmentRatingPost(Long codUnidade) {
+        return RestClient.getHeader(mUser.getAppToken(), null)
+                .getPosts(Long.valueOf(mContext.getString(R.string.app_id)), mUser.getId(),
+                        MetaModelConstants.COD_OBJECT_ESTABLISHMENT, MetaModelConstants.COD_POST_ESTABLISHMENT_RATING,
+                        codUnidade);
+    }
+
+    @Override
+    public Observable<Response<Rating>> requestEstablishmentRating(Long codUnidade) {
+        return RestClient.getHeader(mUser.getAppToken(), null)
+                .getObjectRating(MetaModelConstants.COD_POST_ESTABLISHMENT_RATING, MetaModelConstants.COD_OBJECT_ESTABLISHMENT, codUnidade);
+    }
+
+    @Override
+    public Observable<Response<ResponseBody>> requestCreateRatingPost(Long codUnidade) {
+        return RestClient.getHeader(mUser.getAppToken(), mContext.getString(R.string.app_id))
+                .createPost(assembleRatingPost(codUnidade));
+    }
+
+    @Override
     public String getFluxoClientelaText(String fluxoClientela) {
         if (fluxoClientela.toLowerCase().contains("espontânea") && fluxoClientela.toLowerCase().contains("referenciada")) {
             return "Atendimento espontâneo e referenciado";
@@ -170,6 +191,11 @@ public class FavEstablishmentInteractorImpl implements FavEstablishmentInteracto
     private Post assemblePost() {
         return new Post(new Autor(mUser.getId()), MetaModelConstants.COD_OBJECT_ESTABLISHMENT,
                 new PostType(MetaModelConstants.COD_POST_ESTABLISHMENT_LIKE));
+    }
+
+    private Post assembleRatingPost(Long codUnidade) {
+        return new Post(new Autor(mUser.getId()), MetaModelConstants.COD_OBJECT_ESTABLISHMENT,
+                new PostType(MetaModelConstants.COD_POST_ESTABLISHMENT_RATING), codUnidade);
     }
 
     private PostContent assemblePostContent(Long codUnidade) {

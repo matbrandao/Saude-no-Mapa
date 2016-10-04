@@ -59,7 +59,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static com.google.android.gms.internal.zzng.fa;
 
 
 public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMapReadyCallback, OnLocationFound {
