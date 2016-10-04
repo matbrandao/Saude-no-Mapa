@@ -5,6 +5,7 @@ import android.os.Environment;
 
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.repository.UserRepositoryImpl;
+import com.mat_brandao.saudeapp.domain.util.DateUtil;
 import com.mat_brandao.saudeapp.network.retrofit.RestClient;
 
 import java.io.File;
@@ -28,27 +29,28 @@ public class RegisterInteractorImpl implements RegisterInteractor {
     public RegisterInteractorImpl(Context context) {
         mContext = context;
         mUserRepository = new UserRepositoryImpl();
+
     }
 
     @Override
     public Observable<Response<ResponseBody>> requestCreateNormalUser(String name, String email, String sex,
                                                                       String cep, long birthDate, String password) {
         return RestClient.get()
-                .createUser(new User(name, email, email, password, null, null, cep, sex));
+                .createUser(new User(name, email, email, password, null, null, cep, sex, DateUtil.getDate(birthDate)));
     }
 
     @Override
     public Observable<Response<ResponseBody>> requestCreateFacebookUser(String name, String email, String sex,
                                                                         String cep, long birthDate, String password) {
         return RestClient.get()
-                .createUser(new User(name, email, email, null, password, null, cep, sex));
+                .createUser(new User(name, email, email, null, password, null, cep, sex, DateUtil.getDate(birthDate)));
     }
 
     @Override
     public Observable<Response<ResponseBody>> requestCreateGoogleUser(String name, String email, String sex,
                                                                       String cep, long birthDate, String password) {
         return RestClient.get()
-                .createUser(new User(name, email, email, null, null, password, cep, sex));
+                .createUser(new User(name, email, email, null, null, password, cep, sex, DateUtil.getDate(birthDate)));
     }
 
     @Override

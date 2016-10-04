@@ -30,6 +30,8 @@ public class MainActivity extends BaseActivity implements MainView {
     @Bind(R.id.drawer_layout)
     DrawerLayout drawerLayout;
 
+    private ImageView avatarImageView;
+
     private MainPresenterImpl mPresenter;
 
     @Override
@@ -46,9 +48,14 @@ public class MainActivity extends BaseActivity implements MainView {
         toolbar.setNavigationIcon(R.drawable.ic_menu);
         toolbar.setNavigationOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
+        avatarImageView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.profile_image);
+
         mPresenter = new MainPresenterImpl(this, this);
 
         navigationView.setNavigationItemSelectedListener(mPresenter);
+        avatarImageView.setOnClickListener(v -> {
+            mPresenter.onAvatarImageClick();
+        });
     }
 
     @Override
@@ -119,7 +126,7 @@ public class MainActivity extends BaseActivity implements MainView {
                 .load(profilePhotoUrl)
                 .placeholder(R.drawable.avatar_placeholder)
                 .error(R.drawable.avatar_placeholder)
-                .into(((ImageView) navigationView.getHeaderView(0).findViewById(R.id.profile_image)));
+                .into(avatarImageView);
     }
 
     @Override

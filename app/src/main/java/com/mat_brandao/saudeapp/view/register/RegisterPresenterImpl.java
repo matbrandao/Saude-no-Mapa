@@ -86,6 +86,7 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
 
         if (mUser != null) {
             showFacebookData();
+            mView.disableFields();
         }
     }
 
@@ -97,7 +98,6 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
         mView.setEmailText(mUser.getEmail());
         mView.setPasswordText(mUser.getPassword());
         mView.setPasswordConfirmationText(mUser.getPassword());
-        mView.disableFields();
     }
 
     private void setupObservables() {
@@ -269,7 +269,7 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
     public void onDateSet(int yy, int mm, int dd) {
         Calendar mCalendar = Calendar.getInstance();
         mCalendar.set(yy, mm, dd);
-        String date = String.format("%02d", dd) + "/" + String.format("%02d", mm) + "/" + yy;
+        String date = String.format("%02d", dd) + "/" + String.format("%02d", mm + 1) + "/" + yy;
         mView.setBirthDateText(date);
     }
 

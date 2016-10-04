@@ -8,6 +8,7 @@ import android.view.MenuItem;
 
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.User;
+import com.mat_brandao.saudeapp.view.edit_profile.EditProfileActivity;
 import com.mat_brandao.saudeapp.view.establishment.EstablishmentFragment;
 import com.mat_brandao.saudeapp.view.favorites.FavoritesFragment;
 import com.mat_brandao.saudeapp.view.login.LoginActivity;
@@ -77,5 +78,11 @@ public class MainPresenterImpl implements MainPresenter, NavigationView.OnNaviga
             mView.goToActivity(intent);
         }
         return false;
+    }
+
+    @Override
+    public void onAvatarImageClick() {
+        mView.closeDrawer();
+        mView.goToActivity(EditProfileActivity.class);
     }
 }

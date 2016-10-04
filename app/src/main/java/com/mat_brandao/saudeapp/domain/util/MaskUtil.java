@@ -9,14 +9,14 @@ import android.widget.EditText;
  * Created by fabioestrela on 26/02/15.
  */
 public class MaskUtil {
-    private static final String maskCNPJ = "##.###.###/####-##";
-    private static final String maskCPF = "###.###.###-##";
+    public static final String maskCNPJ = "##.###.###/####-##";
+    public static final String maskCPF = "###.###.###-##";
 
-    private static final String phoneSmall = "(##) ####-####";
-    private static final String phoneBig   = "(##) #####-####";
+    public static final String phoneSmall = "(##) ####-####";
+    public static final String phoneBig   = "(##) #####-####";
 
-    private static final String dateMask   = "##/##/####";
-    private static final String cepMask = "#####-###";
+    public static final String dateMask   = "##/##/####";
+    public static final String cepMask = "#####-###";
 
 
     public static String unmask(String s) {

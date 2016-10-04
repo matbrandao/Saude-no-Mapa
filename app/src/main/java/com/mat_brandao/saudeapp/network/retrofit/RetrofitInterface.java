@@ -97,4 +97,7 @@ public interface RetrofitInterface {
 
     @GET("mapa-da-saude/rest/remedios")
     Observable<Response<List<Remedy>>> getRemedies(@Query("codBarraEan") String barCode, @Query("produto") String name);
+
+    @PUT("appCivicoRS/rest/pessoas/{codPessoa}")
+    Observable<Response<User>> updateUser(@Path("codPessoa") Long userId);
 }

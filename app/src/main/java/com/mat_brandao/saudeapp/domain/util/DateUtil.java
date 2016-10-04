@@ -10,9 +10,16 @@ import timber.log.Timber;
  */
 
 public class DateUtil {
+    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'");
+
     public static String getNowDate() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'");
         Timber.i("timeString = " + simpleDateFormat.format(new Date()));
         return simpleDateFormat.format(new Date());
+    }
+
+    public static String getDate(long longDate) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'");
+        Timber.i("timeString = " + simpleDateFormat.format(new Date(longDate)));
+        return simpleDateFormat.format(new Date(longDate));
     }
 }

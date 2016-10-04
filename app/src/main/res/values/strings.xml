@@ -101,4 +101,5 @@
     <string name="error_get_establishment_review">Erro ao tentar buscar a avaliação deste estabelecimento.</string>
     <string name="error_rating_establishment_try_again">Erro ao tentar avaliar este estabelecimento. Tente novamente.</string>
     <string name="title_activity_edit_profile">Editar Perfil</string>
+    <string name="about_hint">Fale nos um pouco sobre você</string>
 </resources>

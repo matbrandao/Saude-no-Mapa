@@ -44,6 +44,12 @@ public class User extends RealmObject {
     @SerializedName("avatarUrl")
     @Expose
     private String avatarUrl;
+    @SerializedName("dataNascimento")
+    @Expose
+    private String birthDate;
+    @SerializedName("biografia")
+    @Expose
+    private String bio;
 
     private int passwordType;
     private String appToken;
@@ -54,7 +60,8 @@ public class User extends RealmObject {
     public User() {
     }
 
-    public User(String name, String email, String username, String password, String facebookToken, String googleToken, String cep, String sex, String avatarUrl) {
+    public User(String name, String email, String username, String password, String facebookToken,
+                String googleToken, String cep, String sex, String avatarUrl, String birthDate) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -64,9 +71,11 @@ public class User extends RealmObject {
         this.cep = cep;
         this.sex = sex;
         this.avatarUrl = avatarUrl;
+        this.birthDate = birthDate;
     }
 
-    public User(String name, String email, String username, String password, String facebookToken, String googleToken, String cep, String sex) {
+    public User(String name, String email, String username, String password, String facebookToken,
+                String googleToken, String cep, String sex, String birthDate) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -75,6 +84,7 @@ public class User extends RealmObject {
         this.username = username;
         this.cep = cep;
         this.sex = sex;
+        this.birthDate = birthDate;
     }
 
     public String getName() {
@@ -187,5 +197,29 @@ public class User extends RealmObject {
 
     public void setRemedyLikePostCode(Long remedyLikePostCode) {
         this.remedyLikePostCode = remedyLikePostCode;
+    }
+
+    public String getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(String birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 }
