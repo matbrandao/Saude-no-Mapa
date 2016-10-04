@@ -27,7 +27,6 @@ import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.util.MaskUtil;
 import com.mat_brandao.saudeapp.view.base.BaseActivity;
 import com.mat_brandao.saudeapp.view.base.BasePresenter;
-import com.mat_brandao.saudeapp.view.register.RegisterActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
@@ -70,14 +69,6 @@ public class EditProfileActivity extends BaseActivity implements EditProfileView
     TextInputEditText aboutEditText;
     @Bind(R.id.about_input_layout)
     TextInputLayout aboutInputLayout;
-    @Bind(R.id.password_edit_text)
-    TextInputEditText passwordEditText;
-    @Bind(R.id.password_text_input_layout)
-    TextInputLayout passwordTextInputLayout;
-    @Bind(R.id.confirm_password_edit_text)
-    TextInputEditText confirmPasswordEditText;
-    @Bind(R.id.confirm_password_text_input_layout)
-    TextInputLayout confirmPasswordTextInputLayout;
 
     private static EditProfilePresenterImpl mPresenter;
 
@@ -167,12 +158,6 @@ public class EditProfileActivity extends BaseActivity implements EditProfileView
     }
 
     @Override
-    public void disablePasswordFields() {
-        passwordEditText.setEnabled(false);
-        confirmPasswordEditText.setEnabled(false);
-    }
-
-    @Override
     public void setSexSelecion(int selection) {
         sexSpinner.setSelection(selection);
     }
@@ -203,18 +188,13 @@ public class EditProfileActivity extends BaseActivity implements EditProfileView
     }
 
     @Override
-    public Observable<CharSequence> registerPasswordObservable() {
-        return RxTextView.textChanges(passwordEditText);
-    }
-
-    @Override
-    public Observable<CharSequence> registerRePasswordObservable() {
-        return RxTextView.textChanges(confirmPasswordEditText);
-    }
-
-    @Override
     public Observable<Integer> registerSexSpinnerObservable() {
         return RxAdapterView.itemSelections(sexSpinner);
+    }
+
+    @Override
+    public Observable<CharSequence> registerBioObservable() {
+        return RxTextView.textChanges(aboutEditText);
     }
 
     @Override
@@ -258,26 +238,6 @@ public class EditProfileActivity extends BaseActivity implements EditProfileView
     }
 
     @Override
-    public void togglePasswordError(boolean isValid) {
-        if (isValid) {
-            passwordTextInputLayout.setError(null);
-        } else {
-            passwordTextInputLayout.setError(getString(R.string.invalid_password));
-        }
-        passwordTextInputLayout.setErrorEnabled(!isValid);
-    }
-
-    @Override
-    public void toggleRePasswordError(boolean isValid) {
-        if (isValid) {
-            confirmPasswordTextInputLayout.setError(null);
-        } else {
-            confirmPasswordTextInputLayout.setError(getString(R.string.invalid_re_password));
-        }
-        confirmPasswordTextInputLayout.setErrorEnabled(!isValid);
-    }
-
-    @Override
     public void toggleFabButton(boolean enabled) {
         if (enabled) {
             saveFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorAccent)));
@@ -299,21 +259,8 @@ public class EditProfileActivity extends BaseActivity implements EditProfileView
     }
 
     @Override
-    public void setPasswordText(String password) {
-        passwordEditText.setText(password);
-    }
-
-    @Override
-    public void setPasswordConfirmationText(String passwordConfirmation) {
-        confirmPasswordEditText.setText(passwordConfirmation);
-    }
-
-    @Override
     public void disableFields() {
-        nameEditText.setEnabled(false);
         emailEditText.setEnabled(false);
-        passwordEditText.setEnabled(false);
-        confirmPasswordEditText.setEnabled(false);
     }
 
     @Override

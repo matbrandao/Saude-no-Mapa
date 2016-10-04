@@ -25,7 +25,7 @@ public class MainPresenterImpl implements MainPresenter, NavigationView.OnNaviga
 
     @Override
     public void onResume() {
-
+        showUserData();
     }
 
     @Override
@@ -49,7 +49,6 @@ public class MainPresenterImpl implements MainPresenter, NavigationView.OnNaviga
         mView = view;
 
         mUser = mInteractor.getUser();
-        showUserData();
 
         mView.showFragment(EstablishmentFragment.newInstance());
         mView.setNavigationItemChecked(R.id.menu_item_establishments);

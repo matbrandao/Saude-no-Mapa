@@ -1,5 +1,6 @@
 package com.mat_brandao.saudeapp.view.edit_profile;
 
+import android.Manifest;
 import android.content.Context;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
@@ -13,16 +14,23 @@ import android.widget.ArrayAdapter;
 
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.User;
+import com.mat_brandao.saudeapp.domain.util.DateUtil;
 import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
 import com.mat_brandao.saudeapp.domain.util.MaskUtil;
 import com.mat_brandao.saudeapp.view.register.AvatarAdapter;
+import com.tbruyelle.rxpermissions.RxPermissions;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class EditProfilePresenterImpl implements EditProfilePresenter, GenericObjectClickListener<Integer> {
@@ -32,9 +40,11 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
     private Context mContext;
     private EditProfileView mView;
 
+    private Observable mLastObservable;
+    private Observer mLastObserver;
     private CompositeSubscription mSubscription = new CompositeSubscription();
 
-    private String mName, mEmail, mSelectedSex, mCep, mPassword;
+    private String mName, mEmail, mSelectedSex, mCep;
     private long mBirthDate;
 
     private BottomSheetDialog mBottomSheetDialog;
@@ -60,7 +70,10 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
 
     @Override
     public void onRetryClicked() {
-        // TODO: 03-Oct-16
+        mView.showProgressDialog(mContext.getString(R.string.progress_updating_user));
+        mSubscription.add(mLastObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(mLastObserver));
     }
 
     public EditProfilePresenterImpl(EditProfileView view, Context context) {
@@ -73,27 +86,19 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
         setupSpinners();
         setupObservables();
 
+        mView.disableFields();
+
         showUserData();
     }
 
     private void showUserData() {
-        if (!TextUtils.isEmpty(mUser.getGoogleToken())) {
-            mPassword = mUser.getGoogleToken();
-            mView.disablePasswordFields();
-        } else if (!TextUtils.isEmpty(mUser.getFacebookToken())) {
-            mPassword = mUser.getFacebookToken();
-            mView.disablePasswordFields();
-        } else {
-            mPassword = "";
-        }
-
         mName = mUser.getName();
         mEmail = mUser.getEmail();
         mSelectedSex = mUser.getSex();
 
         mView.setNameText(mUser.getName());
         mView.setEmailText(mUser.getEmail());
-        mView.setCepText(MaskUtil.mask(MaskUtil.cepMask, mUser.getCep()));
+        mView.setCepText(MaskUtil.mask(MaskUtil.cepMask, MaskUtil.unmask(mUser.getCep())));
         mView.setBioText(mUser.getBio());
         mView.setBirthDateText(mInteractor.parseDate(mUser.getBirthDate()));
         if (mUser.getSex().equals("M")) {
@@ -101,14 +106,63 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
         } else {
             mView.setSexSelecion(mSexList.indexOf(mContext.getString(R.string.female)));
         }
-        mView.setPasswordText(mPassword);
-        mView.setPasswordConfirmationText(mPassword);
         mView.loadImageToAvatar(mInteractor.getProfilePhotoUrl());
     }
 
     @Override
     public void onSaveFabClicked() {
-        // TODO: 04/10/2016
+        RxPermissions.getInstance(mContext)
+                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .subscribe(isGranted -> {
+                    if (isGranted) {
+                        if (mAvatarUrl != R.drawable.avatar_placeholder) {
+                            // TODO: 04/10/2016 save picture too;
+                        }
+
+                        if (mUser.getPasswordType() == User.FACEBOOK_LOGIN_TYPE) {
+                            requestCreateFacebookUser();
+                        } else if (mUser.getPasswordType() == User.GOOGLE_LOGIN_TYPE) {
+                            requestCreateGoogleUser();
+                        } else {
+                            requestCreateNormalUser();
+                        }
+                    } else {
+                        mView.showToast(mContext.getString(R.string.needed_permission_to_update_user));
+                    }
+                });
+    }
+
+    private void requestCreateNormalUser() {
+        mLastObservable = mInteractor.requestUpdateNormalUser(mName, mEmail, mSelectedSex, mBio,
+                MaskUtil.unmask(mCep), mBirthDate);
+        mLastObserver = updateUserObserver;
+
+        mView.showProgressDialog(mContext.getString(R.string.progress_creating_user));
+        mSubscription.add(mInteractor.requestUpdateNormalUser(mName, mEmail, mSelectedSex, mBio, MaskUtil.unmask(mCep), mBirthDate)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(updateUserObserver));
+    }
+
+    private void requestCreateFacebookUser() {
+        mLastObservable = mInteractor.requestUpdateFacebookUser(mName, mEmail, mSelectedSex, mBio,
+                MaskUtil.unmask(mCep), mBirthDate);
+        mLastObserver = updateUserObserver;
+
+        mView.showProgressDialog(mContext.getString(R.string.progress_creating_user));
+        mSubscription.add(mInteractor.requestUpdateFacebookUser(mName, mEmail, mSelectedSex, mBio, MaskUtil.unmask(mCep), mBirthDate)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(updateUserObserver));
+    }
+
+    private void requestCreateGoogleUser() {
+        mLastObservable = mInteractor.requestUpdateGoogleUser(mName, mEmail, mSelectedSex, mBio,
+                MaskUtil.unmask(mCep), mBirthDate);
+        mLastObserver = updateUserObserver;
+
+        mView.showProgressDialog(mContext.getString(R.string.progress_creating_user));
+        mSubscription.add(mInteractor.requestUpdateGoogleUser(mName, mEmail, mSelectedSex, mBio, MaskUtil.unmask(mCep), mBirthDate)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(updateUserObserver));
     }
 
     @Override
@@ -167,7 +221,7 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
                 .skip(1)
                 .distinctUntilChanged();
 
-        Observable<Boolean> bioObservable = mView.registerNameObservable()
+        Observable<Boolean> bioObservable = mView.registerBioObservable()
                 .map(inputText -> {
                     if (inputText.toString().length() > 0 && inputText.toString().trim().length() > 3) {
                         mBio = inputText.toString();
@@ -198,21 +252,9 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
                     } catch (Exception e) {
                         result = false;
                     }
+
                     return result;
                 })
-                .skip(1)
-                .distinctUntilChanged();
-
-        Observable<Boolean> passwordObservable = mView.registerPasswordObservable()
-                .map(inputText -> {
-                    mPassword = inputText.toString();
-                    return inputText.toString().length() < 6;
-                })
-                .skip(2)
-                .distinctUntilChanged();
-
-        Observable<Boolean> rePasswordObservable = mView.registerRePasswordObservable()
-                .map(inputText -> !inputText.toString().equals(mPassword))
                 .skip(1)
                 .distinctUntilChanged();
 
@@ -231,14 +273,6 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
             mView.toggleCepError(isValid);
         }));
 
-        mSubscription.add(passwordObservable.subscribe(isValid -> {
-            mView.togglePasswordError(!isValid);
-        }));
-
-        mSubscription.add(rePasswordObservable.subscribe(isValid -> {
-            mView.toggleRePasswordError(!isValid);
-        }));
-
         mSubscription.add(bioObservable.subscribe());
 
         mSubscription.add(sexSpinnerObservable.subscribe(integer -> {
@@ -254,10 +288,8 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
                 birthDateObservable,
                 cepObservable,
                 emailObservable,
-                passwordObservable,
-                rePasswordObservable,
-                (nameValid, ageIsValid, cepValid, emailValid, passValid, rePassValid) -> nameValid && ageIsValid
-                        && cepValid && emailValid && !passValid && !rePassValid)
+                (nameValid, ageIsValid, cepValid, emailValid) -> nameValid && ageIsValid
+                        && cepValid && emailValid)
                 .distinctUntilChanged()
                 .subscribe(enabled -> {
                     mView.toggleFabButton(enabled);
@@ -279,4 +311,40 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
         mAvatarUrl = avatarDrawable;
         mBottomSheetDialog.dismiss();
     }
+
+    private Observer<Response<ResponseBody>> updateUserObserver = new Observer<Response<ResponseBody>>() {
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            mView.showNoConnectionSnackBar();
+        }
+
+        @Override
+        public void onNext(Response<ResponseBody> response) {
+            mView.dismissProgressDialog();
+
+            if (response.isSuccessful()) {
+                try {
+                    mView.showToast(response.body().string().replace("\"", ""));
+                } catch (Exception e) {
+                    mView.showToast(mContext.getString(R.string.http_success_update_user));
+                }
+
+                mInteractor.updateRealmUser(mName, mEmail, mSelectedSex, DateUtil.getDate(mBirthDate), mCep, mBio);
+            } else {
+                if (response.code() == 400) {
+                    try {
+                        mView.showToast(response.errorBody().string().replace("\"", ""));
+                    } catch (IOException e) {
+                        mView.showToast(mContext.getString(R.string.http_error_generic));
+                    }
+                } else {
+                    mView.showToast(mContext.getString(R.string.http_error_500));
+                }
+            }
+        }
+    };
 }

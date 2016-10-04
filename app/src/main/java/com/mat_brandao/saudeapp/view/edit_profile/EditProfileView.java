@@ -15,9 +15,7 @@ public interface EditProfileView extends BaseView.BaseProgressView {
 
     Observable<CharSequence> registerCepObservable();
 
-    Observable<CharSequence> registerPasswordObservable();
-
-    Observable<CharSequence> registerRePasswordObservable();
+    Observable<CharSequence> registerBioObservable();
 
     Observable<Integer> registerSexSpinnerObservable();
 
@@ -29,19 +27,11 @@ public interface EditProfileView extends BaseView.BaseProgressView {
 
     void toggleCepError(boolean isValid);
 
-    void togglePasswordError(boolean isValid);
-
-    void toggleRePasswordError(boolean isValid);
-
     void toggleFabButton(boolean enabled);
 
     void setNameText(String name);
 
     void setEmailText(String email);
-
-    void setPasswordText(String password);
-
-    void setPasswordConfirmationText(String passwordConfirmation);
 
     void disableFields();
 
@@ -54,8 +44,6 @@ public interface EditProfileView extends BaseView.BaseProgressView {
     void loadImageToAvatar(Integer url);
 
     void loadImageToAvatar(String profilePhotoUrl);
-
-    void disablePasswordFields();
 
     void setSexSelecion(int selection);
 

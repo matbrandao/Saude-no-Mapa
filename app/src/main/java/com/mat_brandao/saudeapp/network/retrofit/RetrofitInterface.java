@@ -99,5 +99,5 @@ public interface RetrofitInterface {
     Observable<Response<List<Remedy>>> getRemedies(@Query("codBarraEan") String barCode, @Query("produto") String name);
 
     @PUT("appCivicoRS/rest/pessoas/{codPessoa}")
-    Observable<Response<User>> updateUser(@Path("codPessoa") Long userId);
+    Observable<Response<ResponseBody>> updateUser(@Path("codPessoa") Long userId, @Body User user);
 }

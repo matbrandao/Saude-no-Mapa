@@ -229,7 +229,7 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
 
     private void requestCreateNormalUser() {
         mLastObservable = mInteractor.requestCreateNormalUser(mName, mEmail, mSelectedSex,
-                mCep, mBirthDate, mPassword);
+                MaskUtil.unmask(mCep), mBirthDate, mPassword);
         mLastObserver = createUserObserver;
 
         mView.showProgressDialog(mContext.getString(R.string.progress_creating_user));
@@ -240,7 +240,7 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
 
     private void requestCreateFacebookUser() {
         mLastObservable = mInteractor.requestCreateFacebookUser(mName, mEmail, mSelectedSex,
-                mCep, mBirthDate, mPassword);
+                MaskUtil.unmask(mCep), mBirthDate, mPassword);
         mLastObserver = createUserObserver;
 
         mView.showProgressDialog(mContext.getString(R.string.progress_creating_user));
@@ -251,7 +251,7 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
 
     private void requestCreateGoogleUser() {
         mLastObservable = mInteractor.requestCreateGoogleUser(mName, mEmail, mSelectedSex,
-                mCep, mBirthDate, mPassword);
+                MaskUtil.unmask(mCep), mBirthDate, mPassword);
         mLastObserver = createUserObserver;
 
         mView.showProgressDialog(mContext.getString(R.string.progress_creating_user));

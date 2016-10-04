@@ -14,6 +14,7 @@
     <string name="http_error_generic">Erro ao efetuar transação, tente novamente.</string>
     <string name="http_error_500">Erro de conexão com os servidores. Tente novamente em instantes.</string>
     <string name="http_success_register_user">Usuário criado com sucesso</string>
+    <string name="http_success_update_user">Usuário atualizado com sucesso</string>
     <string name="http_error_no_connection">Verifique sua conexão com a internet e tente novamente.</string>
     <string name="connection_error_snack">Erro de conexão</string>
     <string name="connection_retry">Tentar novamente</string>
@@ -41,6 +42,7 @@
     <string name="remember_password_email_sent">Um e-mail com instruções foi enviado ao endereço informado.</string>
     <string name="progress_logging_in">Efetuando Login</string>
     <string name="needed_permission_to_create_user">Para criar o seu usuário é necessário a seguinte permissão.</string>
+    <string name="needed_permission_to_update_user">Para atualizar o seu usuário é necessário a seguinte permissão.</string>
     <string name="needed_location_permission">Para o melhor funcionamento do aplicativo, é necessária a permissão de localização.</string>
     <string name="dialog_gps_title">Acionar GPS</string>
     <string name="dialog_gps_message">Para o melhor funcionamento do aplicativo, por favor, ligue o GPS</string>
@@ -102,4 +104,5 @@
     <string name="error_rating_establishment_try_again">Erro ao tentar avaliar este estabelecimento. Tente novamente.</string>
     <string name="title_activity_edit_profile">Editar Perfil</string>
     <string name="about_hint">Fale nos um pouco sobre você</string>
+    <string name="progress_updating_user">Atualizando usuário</string>
 </resources>

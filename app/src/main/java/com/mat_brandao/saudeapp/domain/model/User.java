@@ -16,7 +16,7 @@ public class User extends RealmObject {
 
     @SerializedName("cod")
     @Expose
-    private long id;
+    private Long id;
     @SerializedName("nomeCompleto")
     @Expose
     private String name;
@@ -72,6 +72,21 @@ public class User extends RealmObject {
         this.sex = sex;
         this.avatarUrl = avatarUrl;
         this.birthDate = birthDate;
+    }
+
+    public User(String name, String email, String username, String password, String facebookToken,
+                String googleToken, String cep, String sex, String avatarUrl, String birthDate, String bio) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.facebookToken = facebookToken;
+        this.googleToken = googleToken;
+        this.username = username;
+        this.cep = cep;
+        this.sex = sex;
+        this.avatarUrl = avatarUrl;
+        this.birthDate = birthDate;
+        this.bio = bio;
     }
 
     public User(String name, String email, String username, String password, String facebookToken,
