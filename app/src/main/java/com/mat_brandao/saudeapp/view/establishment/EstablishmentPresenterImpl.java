@@ -33,6 +33,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.gson.Gson;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
@@ -59,6 +60,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
+import static com.mat_brandao.saudeapp.R.id.map;
 
 
 public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMapReadyCallback, OnLocationFound {
@@ -161,6 +163,8 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(mContext, R.raw.map_style);
+        mMap.setMapStyle(style);
         checkPermissions();
         configureMapClickListener();
     }
