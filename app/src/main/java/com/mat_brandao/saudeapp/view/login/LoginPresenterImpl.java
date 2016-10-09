@@ -4,8 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.TextInputLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.facebook.AccessToken;
@@ -33,6 +40,8 @@ import org.json.JSONException;
 
 import java.util.Arrays;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import retrofit2.Response;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -49,6 +58,8 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
 
     private CompositeSubscription mSubscription = new CompositeSubscription();
     private GoogleApiClient mGoogleApiClient;
+    private boolean mIsValidationFromDialog;
+    private ReactivateViews mBottomViews;
 
     @Override
     public void onResume() {
@@ -57,8 +68,8 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
 
     @Override
     public void onPause() {
-
     }
+
 
     @Override
     public void onDestroy() {
@@ -73,7 +84,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
         mView.toggleLoginButton(false);
         EditText emailEdit = mView.getEmailEditText();
         EditText passEdit = mView.getPasswordEditText();
-        mInteractor.validateForms(emailEdit, passEdit, this);
+        mInteractor.validateLoginForms(emailEdit, passEdit, this);
 
         configureGoogleClient();
     }
@@ -90,6 +101,54 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
                 .build();
 
         mView.setGoogleButtonScope(gso);
+    }
+
+    @Override
+    public void onReactivateAccountClicked() {
+        mIsValidationFromDialog = true;
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
+
+        View dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_bottom_sheet_reactivate_account, null);
+        mBottomViews = new ReactivateViews();
+        ButterKnife.bind(mBottomViews, dialogView);
+
+        mInteractor.validateReactivateForms(mBottomViews.loginEmailEdit, mBottomViews.loginPasswordEdit, this);
+
+        mBottomViews.filterButton.setOnClickListener(v -> {
+            mView.showProgressDialog(mContext.getString(R.string.progress_wait));
+            mSubscription.add(mInteractor.requestReactivateNormalAccount(mBottomViews.loginEmailEdit.getText().toString(),
+                    mBottomViews.loginPasswordEdit.getText().toString())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .onErrorReturn(throwable -> null)
+                    .subscribe(responseBodyResponse -> {
+                        mView.dismissProgressDialog();
+                        if (responseBodyResponse == null) {
+                            mView.showToast(mContext.getString(R.string.http_error_no_connection));
+                        } else {
+                            if (responseBodyResponse.isSuccessful()) {
+                                bottomSheetDialog.dismiss();
+                                mView.showToast(mContext.getString(R.string.account_reactivated));
+                            } else {
+                                mView.showToast(mContext.getString(R.string.http_error_500));
+                            }
+                        }
+                    }));
+        });
+
+        bottomSheetDialog.setContentView(dialogView);
+        bottomSheetDialog.getWindow().findViewById(R.id.design_bottom_sheet)
+                .setBackgroundResource(R.color.default_dialog_background);
+
+        mBottomViews.bottomSheet.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+
+        BottomSheetBehavior mBehavior = BottomSheetBehavior.from((View) dialogView.getParent());
+        mBehavior.setPeekHeight(mBottomViews.bottomSheet.getMeasuredHeight() + 115);
+
+        bottomSheetDialog.setOnDismissListener(dialog -> {
+            mIsValidationFromDialog = false;
+        });
+
+        bottomSheetDialog.show();
     }
 
     @Override
@@ -148,17 +207,43 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
 
     @Override
     public void buttonChanged(Boolean isEnabled) {
-        mView.toggleLoginButton(isEnabled);
+        if (mIsValidationFromDialog) {
+            toggleReactivateButton(isEnabled);
+        } else {
+            mView.toggleLoginButton(isEnabled);
+        }
     }
 
     @Override
     public void emailOnNext(Boolean isValid) {
-        mView.toggleEmailError(isValid);
+        if (mIsValidationFromDialog) {
+            toggleEmailError(isValid);
+        } else {
+            mView.toggleEmailError(isValid);
+        }
     }
 
     @Override
     public void passwordOnNext(Boolean isValid) {
-        mView.togglePasswordError(isValid);
+        if (mIsValidationFromDialog) {
+            togglePasswordError(isValid);
+        } else {
+            mView.togglePasswordError(isValid);
+        }
+    }
+
+    private void toggleReactivateButton(Boolean isEnabled) {
+        mBottomViews.filterButton.setEnabled(isEnabled);
+    }
+
+    private void toggleEmailError(Boolean isValid) {
+        mBottomViews.loginEmailInput.setError(mContext.getString(R.string.invalid_email));
+        mBottomViews.loginEmailInput.setErrorEnabled(!isValid);
+    }
+
+    private void togglePasswordError(Boolean isValid) {
+        mBottomViews.loginPasswordInput.setError(mContext.getString(R.string.invalid_password));
+        mBottomViews.loginPasswordInput.setErrorEnabled(isValid);
     }
 
     @Override
@@ -313,5 +398,20 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         mView.showToast(mContext.getString(R.string.http_error_generic));
+    }
+
+    public class ReactivateViews {
+        @Bind(R.id.bottom_sheet)
+        NestedScrollView bottomSheet;
+        @Bind(R.id.login_email_edit)
+        EditText loginEmailEdit;
+        @Bind(R.id.login_email_input)
+        TextInputLayout loginEmailInput;
+        @Bind(R.id.login_password_edit)
+        EditText loginPasswordEdit;
+        @Bind(R.id.login_password_input)
+        TextInputLayout loginPasswordInput;
+        @Bind(R.id.filter_button)
+        Button filterButton;
     }
 }

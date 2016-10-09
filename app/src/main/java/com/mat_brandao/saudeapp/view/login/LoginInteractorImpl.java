@@ -39,7 +39,32 @@ public class LoginInteractorImpl implements LoginInteractor {
     }
 
     @Override
-    public void validateForms(EditText emailEdit, EditText passEdit, OnFormEmitted listener) {
+    public void validateLoginForms(EditText emailEdit, EditText passEdit, OnFormEmitted listener) {
+        Observable<Boolean> emailObservable = RxTextView.textChanges(emailEdit)
+                .map(inputText -> inputText.toString().matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"))
+                .skip(1)
+                .distinctUntilChanged();
+
+        Observable<Boolean> passwordObservable = RxTextView.textChanges(passEdit)
+                .map(inputText -> inputText.toString().length() < 6)
+                .skip(1)
+                .distinctUntilChanged();
+
+        emailObservable.subscribe(listener::emailOnNext);
+
+        passwordObservable.subscribe(listener::passwordOnNext);
+
+        Observable.combineLatest(
+                emailObservable,
+                passwordObservable,
+                (emailValid, passValid) -> emailValid && !passValid)
+                .distinctUntilChanged()
+                .subscribe(listener::buttonChanged);
+    }
+
+    @Override
+    public void validateReactivateForms(EditText emailEdit, EditText passEdit, OnFormEmitted listener) {
         Observable<Boolean> emailObservable = RxTextView.textChanges(emailEdit)
                 .map(inputText -> inputText.toString().matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
                         + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"))
@@ -87,6 +112,12 @@ public class LoginInteractorImpl implements LoginInteractor {
     public Observable<Response<ResponseBody>> requestRememberPassword(String email) {
         // TODO: 07-Sep-16
         return null;
+    }
+
+    @Override
+    public Observable<Response<ResponseBody>> requestReactivateNormalAccount(String email, String password) {
+        return RestClient.get()
+                .reactivateNormalAccount(email, password);
     }
 
     @Override

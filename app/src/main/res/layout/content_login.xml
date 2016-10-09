@@ -158,17 +158,34 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/account_login"
-                android:textColor="@color/icons"
-                android:layout_gravity="right"
-                android:fontFamily="sans-serif-light"
-                android:textStyle="italic"
-                android:textSize="16sp"
-                android:layout_marginBottom="16dp"
-                android:text="@string/account_login"/>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/account_login"
+                    android:textColor="@color/icons"
+                    android:layout_gravity="right"
+                    android:fontFamily="sans-serif-light"
+                    android:textStyle="italic"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/account_login"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/reactivate_account"
+                    android:textColor="@color/icons"
+                    android:layout_gravity="left"
+                    android:fontFamily="sans-serif-light"
+                    android:textStyle="italic"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/reactivate_account"/>
+            </FrameLayout>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

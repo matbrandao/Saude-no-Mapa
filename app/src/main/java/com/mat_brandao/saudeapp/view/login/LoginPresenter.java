@@ -5,6 +5,8 @@ import android.content.Intent;
 import com.mat_brandao.saudeapp.view.base.BasePresenter;
 
 public interface LoginPresenter extends BasePresenter {
+    void onReactivateAccountClicked();
+
     void forgotPasswordClicked();
 
     void onLoginWithAccountTextClicked();

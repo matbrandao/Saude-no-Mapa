@@ -111,7 +111,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
 
     @Override
     public void showNoConnectionSnackBar() {
-// TODO: 07-Sep-16
+        // TODO: 07-Sep-16
     }
 
     @Override
@@ -122,6 +122,11 @@ public class LoginActivity extends BaseActivity implements LoginView {
     @Override
     public void dismissProgressDialog() {
         super.dismissProgressDialog();
+    }
+
+    @OnClick(R.id.reactivate_account)
+    void onReactivateAccountClicked() {
+        mPresenter.onReactivateAccountClicked();
     }
 
     @OnClick(R.id.forgot_password)

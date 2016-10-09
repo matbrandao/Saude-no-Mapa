@@ -103,4 +103,7 @@ public interface RetrofitInterface {
 
     @DELETE("/appCivicoRS/rest/pessoas/{codPessoa}")
     Observable<Response<ResponseBody>> removeAccount(@Path("codPessoa") long userId);
+
+    @PUT("/appCivicoRS/rest/pessoas/reativar")
+    Observable<Response<ResponseBody>> reactivateNormalAccount(@Header("email") String email, @Header("senha") String password);
 }
