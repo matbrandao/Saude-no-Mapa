@@ -18,6 +18,7 @@ import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.util.DateUtil;
 import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
 import com.mat_brandao.saudeapp.domain.util.MaskUtil;
+import com.mat_brandao.saudeapp.view.login.LoginActivity;
 import com.mat_brandao.saudeapp.view.main.MainActivity;
 import com.mat_brandao.saudeapp.view.register.AvatarAdapter;
 import com.squareup.picasso.Picasso;
@@ -202,6 +203,31 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
     @Override
     public void onBirthDateTouchListener() {
         mView.showDateDialog();
+    }
+
+    @Override
+    public void onRemoveAccountClick() {
+        mView.showRemoveAccountDialog(() -> {
+            mView.showProgressDialog(mContext.getString(R.string.progress_wait));
+            mSubscription.add(mInteractor.requestRemoveAccount()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .onErrorReturn(throwable -> null)
+                    .subscribe(responseBodyResponse -> {
+                        if (responseBodyResponse == null) {
+                            mView.showToast(mContext.getString(R.string.http_error_no_connection));
+                        } else {
+                            if (responseBodyResponse.isSuccessful()) {
+                                mView.showToast(mContext.getString(R.string.account_removed));
+                                mInteractor.logout();
+                                Intent intent = new Intent(mContext, LoginActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                mView.goToActivity(intent);
+                            } else {
+                                mView.showToast(mContext.getString(R.string.http_error_generic));
+                            }
+                        }
+                    }));
+        });
     }
 
     private void setupObservables() {

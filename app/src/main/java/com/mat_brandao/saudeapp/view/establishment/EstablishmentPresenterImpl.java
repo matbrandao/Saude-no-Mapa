@@ -163,8 +163,8 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(mContext, R.raw.map_style);
-        mMap.setMapStyle(style);
+//        MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(mContext, R.raw.map_style);
+//        mMap.setMapStyle(style);
         checkPermissions();
         configureMapClickListener();
     }

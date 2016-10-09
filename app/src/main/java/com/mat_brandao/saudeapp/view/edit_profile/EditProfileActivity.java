@@ -14,6 +14,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.inputmethod.InputMethodManager;
@@ -24,6 +25,7 @@ import android.widget.Spinner;
 import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.mat_brandao.saudeapp.R;
+import com.mat_brandao.saudeapp.domain.util.GenericActionListener;
 import com.mat_brandao.saudeapp.domain.util.MaskUtil;
 import com.mat_brandao.saudeapp.view.base.BaseActivity;
 import com.mat_brandao.saudeapp.view.base.BasePresenter;
@@ -96,6 +98,13 @@ public class EditProfileActivity extends BaseActivity implements EditProfileView
             InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             return true;
+        });
+
+        toolbar.inflateMenu(R.menu.menu_edit_profile);
+        toolbar.setOnMenuItemClickListener(item -> {
+            mPresenter.onRemoveAccountClick();
+            return true;
+
         });
 
         mPresenter = new EditProfilePresenterImpl(this, this);
@@ -282,6 +291,18 @@ public class EditProfileActivity extends BaseActivity implements EditProfileView
     @Override
     public void setBioText(String bio) {
         aboutEditText.setText(bio);
+    }
+
+    @Override
+    public void showRemoveAccountDialog(GenericActionListener listener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.dialog_remove_account_title);
+        builder.setMessage(R.string.dialog_remove_account_message);
+        builder.setPositiveButton(R.string.dialog_remove_account_positive, (dialog, which) -> {
+            listener.onAction();
+        });
+        builder.setNegativeButton(R.string.dialog_remove_account_negative, (dialog, which) -> {});
+        builder.create().show();
     }
 
     @Override

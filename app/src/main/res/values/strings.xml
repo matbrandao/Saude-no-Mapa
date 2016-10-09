@@ -105,4 +105,10 @@
     <string name="title_activity_edit_profile">Editar Perfil</string>
     <string name="about_hint">Fale nos um pouco sobre você</string>
     <string name="progress_updating_user">Atualizando usuário</string>
+    <string name="action_remove_account">Excluir conta</string>
+    <string name="dialog_remove_account_title">Remover Conta</string>
+    <string name="dialog_remove_account_message">Tem certeza que deseja remover sua conta? Ela poderá ser recuperada posteriormente.</string>
+    <string name="dialog_remove_account_positive">Remover</string>
+    <string name="dialog_remove_account_negative">Cancelar</string>
+    <string name="account_removed">Conta removida com sucesso.</string>
 </resources>

@@ -100,4 +100,7 @@ public interface RetrofitInterface {
 
     @PUT("appCivicoRS/rest/pessoas/{codPessoa}")
     Observable<Response<ResponseBody>> updateUser(@Path("codPessoa") Long userId, @Body User user);
+
+    @DELETE("/appCivicoRS/rest/pessoas/{codPessoa}")
+    Observable<Response<ResponseBody>> removeAccount(@Path("codPessoa") long userId);
 }

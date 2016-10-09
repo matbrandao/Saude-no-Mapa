@@ -113,4 +113,17 @@ public class EditProfileInteractorImpl implements EditProfileInteractor {
             mUser.setBio(mBio);
         });
     }
+
+    @Override
+    public Observable<Response<ResponseBody>> requestRemoveAccount() {
+        return RestClient.getHeader(mUser.getAppToken(), null)
+                .removeAccount(mUser.getId());
+    }
+
+    @Override
+    public void logout() {
+        Realm.getDefaultInstance().executeTransaction(realm -> {
+            realm.delete(User.class);
+        });
+    }
 }

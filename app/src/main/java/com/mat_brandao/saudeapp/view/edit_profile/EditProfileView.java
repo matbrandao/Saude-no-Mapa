@@ -2,6 +2,7 @@ package com.mat_brandao.saudeapp.view.edit_profile;
 
 import android.widget.ArrayAdapter;
 
+import com.mat_brandao.saudeapp.domain.util.GenericActionListener;
 import com.mat_brandao.saudeapp.view.base.BaseView;
 
 import rx.Observable;
@@ -50,4 +51,6 @@ public interface EditProfileView extends BaseView.BaseProgressView {
     void setCepText(String cep);
 
     void setBioText(String bio);
+
+    void showRemoveAccountDialog(GenericActionListener listener);
 }

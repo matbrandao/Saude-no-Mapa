@@ -10,4 +10,6 @@ public interface EditProfilePresenter extends BasePresenter {
     void onDateSet(int yy, int mm, int dd);
 
     void onBirthDateTouchListener();
+
+    void onRemoveAccountClick();
 }

@@ -26,4 +26,8 @@ public interface EditProfileInteractor {
 
     void updateRealmUser(String mName, String mEmail, String mSelectedSex,
                          String date, String mCep, String mBio);
+
+    Observable<Response<ResponseBody>> requestRemoveAccount();
+
+    void logout();
 }
