@@ -62,7 +62,12 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
 
     @Override
     public void onDestroy() {
+        mSubscription.unsubscribe();
         mView = null;
+    }
+
+    @Override
+    public void onRetryClicked() {
     }
 
     public LoginPresenterImpl(LoginView view, Context context) {
@@ -304,10 +309,6 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
         } else {
             mView.showToast(mContext.getString(R.string.login_error_try_again));
         }
-    }
-
-    @Override
-    public void onRetryClicked() {
     }
 
     @Override

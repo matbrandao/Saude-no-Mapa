@@ -85,8 +85,8 @@ public class LoginInteractorImpl implements LoginInteractor {
 
     @Override
     public Observable<Response<ResponseBody>> requestRememberPassword(String email) {
-        // TODO: 07-Sep-16
-        return null;
+        return RestClient.get()
+                .redefinePassword(email);
     }
 
     @Override
