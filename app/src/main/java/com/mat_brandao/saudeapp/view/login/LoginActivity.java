@@ -82,11 +82,6 @@ public class LoginActivity extends BaseActivity implements LoginView {
         } else {
             ViewCompat.setBackgroundTintList(loginFacebookButton, getResources().getColorStateList(R.color.facebook_blue));
         }
-
-//        ViewFilter.getInstance(LoginActivity.this)
-//                .setRenderer(new BlurRenderer(16))
-//                .applyFilterOnView(loginBackgroundImage,
-//                        rootRelativeLayout);
     }
 
     @Override
