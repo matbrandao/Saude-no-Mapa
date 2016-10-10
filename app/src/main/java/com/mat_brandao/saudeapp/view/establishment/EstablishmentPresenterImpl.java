@@ -45,6 +45,7 @@ import com.mat_brandao.saudeapp.domain.model.Error401;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
+import com.mat_brandao.saudeapp.view.group.GroupActivity;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.util.ArrayList;
@@ -67,6 +68,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
     private static final String TAG = "MainPresenterImpl";
     private static final float DEFAULT_ZOOM = 14f;
     private static final int ESTABLISHMENT_SEARCH_LIMIT = 30;
+    public static final String ESTABLISHMENT_INTENT_KEY = "establishment_intent_key";
 
     private Activity mActivity;
 
@@ -283,6 +285,12 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
 
         bottomViews.phoneText.setOnClickListener(v -> {
             showCallToPhoneDialog(establishment.getTelefone());
+        });
+
+        bottomViews.groupImage.setOnClickListener(v -> {
+            Intent intent = new Intent(mContext, GroupActivity.class);
+            intent.putExtra(ESTABLISHMENT_INTENT_KEY, establishment);
+            mView.goToActivity(intent);
         });
 
         if (mInteractor.isEstablishmentLiked(Long.valueOf(establishment.getCodUnidade()))) {
@@ -773,6 +781,8 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         LinearLayout phoneLayout;
         @Bind(R.id.establishment_like_image)
         ImageView likeImage;
+        @Bind(R.id.group_image)
+        ImageView groupImage;
         @Bind(R.id.rating_view)
         SimpleRatingBar ratingView;
         @Bind(R.id.establishment_progress)

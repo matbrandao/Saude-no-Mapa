@@ -1,6 +1,8 @@
 package com.mat_brandao.saudeapp.network.retrofit;
 
+import com.mat_brandao.saudeapp.domain.model.CreateGroup;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
+import com.mat_brandao.saudeapp.domain.model.Grupo;
 import com.mat_brandao.saudeapp.domain.model.Installation;
 import com.mat_brandao.saudeapp.domain.model.Post;
 import com.mat_brandao.saudeapp.domain.model.PostContent;
@@ -118,4 +120,11 @@ public interface RetrofitInterface {
 
     @PUT("/appCivicoRS/rest/pessoas/reativar")
     Observable<Response<ResponseBody>> reactivateGoogleAccount(@Header("googleToken") String googleToken);
+
+    @GET("/appCivicoRS/rest/grupos")
+    Observable<Response<List<Grupo>>> getGroups(@Query("codAplicativo") String codAplicativo,
+                                                @Query("descricao") String descricao);
+
+    @POST("/appCivicoRS/rest/grupos")
+    Observable<Response<ResponseBody>> createGroup(@Body CreateGroup createGroup);
 }
