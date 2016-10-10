@@ -16,6 +16,8 @@ import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
@@ -44,6 +46,10 @@ public interface RetrofitInterface {
 
     @POST("appCivicoRS/rest/pessoas")
     Observable<Response<ResponseBody>> createUser(@Body User user);
+
+    @FormUrlEncoded
+    @POST("appCivicoRS/rest/pessoas/redefinirSenha")
+    Observable<Response<ResponseBody>> redefinePassword(@Field("email") String email);
 
     @GET("appCivicoRS/rest/pessoas/autenticar")
     Observable<Response<User>> loginWithFacebook(@Header("email") String email, @Header("facebookToken") String token);
