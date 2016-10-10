@@ -106,4 +106,10 @@ public interface RetrofitInterface {
 
     @PUT("/appCivicoRS/rest/pessoas/reativar")
     Observable<Response<ResponseBody>> reactivateNormalAccount(@Header("email") String email, @Header("senha") String password);
+
+    @PUT("/appCivicoRS/rest/pessoas/reativar")
+    Observable<Response<ResponseBody>> reactivateFacebookAccount(@Header("facebookToken") String facebookToken);
+
+    @PUT("/appCivicoRS/rest/pessoas/reativar")
+    Observable<Response<ResponseBody>> reactivateGoogleAccount(@Header("googleToken") String googleToken);
 }

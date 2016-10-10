@@ -121,6 +121,18 @@ public class LoginInteractorImpl implements LoginInteractor {
     }
 
     @Override
+    public Observable<Response<ResponseBody>> requestReactivateFacebookAccount(String facebookToken) {
+        return RestClient.get()
+                .reactivateFacebookAccount(facebookToken);
+    }
+
+    @Override
+    public Observable<Response<ResponseBody>> requestReactivateGoogleAccount(String googleToken) {
+        return RestClient.get()
+                .reactivateGoogleAccount(googleToken);
+    }
+
+    @Override
     public Observable<Response<Installation>> requestCreateInstallation() {
         User user = mUserRepository.getUser();
         Installation installation = new Installation();

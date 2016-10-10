@@ -114,4 +114,6 @@
     <string name="reactivate_account">Reativar conta</string>
     <string name="reactivate_button_text">Reativar</string>
     <string name="account_reactivated">Conta reativada com sucesso</string>
+    <string name="facebook_reactivate">Reativar com facebook</string>
+    <string name="user_not_found">Usuário não encontrado</string>
 </resources>

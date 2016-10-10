@@ -34,6 +34,10 @@ public interface LoginInteractor {
 
     Observable<Response<ResponseBody>> requestReactivateNormalAccount(String email, String password);
 
+    Observable<Response<ResponseBody>> requestReactivateFacebookAccount(String facebookToken);
+
+    Observable<Response<ResponseBody>> requestReactivateGoogleAccount(String googleToken);
+
     Observable<Response<Installation>> requestCreateInstallation();
 
     boolean isFirstUse();

@@ -26,6 +26,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.gson.Gson;
@@ -42,6 +43,7 @@ import java.util.Arrays;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import okhttp3.ResponseBody;
 import retrofit2.Response;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -60,6 +62,8 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
     private GoogleApiClient mGoogleApiClient;
     private boolean mIsValidationFromDialog;
     private ReactivateViews mBottomViews;
+    private BottomSheetDialog mBottomSheetDialog;
+    private GoogleSignInOptions mGso;
 
     @Override
     public void onResume() {
@@ -90,23 +94,23 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
     }
 
     private void configureGoogleClient() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        mGso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(new Scope(Scopes.PLUS_LOGIN))
                 .requestEmail()
                 .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(mContext)
                 .enableAutoManage((LoginActivity) mContext, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, mGso)
                 .build();
 
-        mView.setGoogleButtonScope(gso);
+        mView.setGoogleButtonScope(mGso);
     }
 
     @Override
     public void onReactivateAccountClicked() {
         mIsValidationFromDialog = true;
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
+        mBottomSheetDialog = new BottomSheetDialog(mContext);
 
         View dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_bottom_sheet_reactivate_account, null);
         mBottomViews = new ReactivateViews();
@@ -114,41 +118,41 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
 
         mInteractor.validateReactivateForms(mBottomViews.loginEmailEdit, mBottomViews.loginPasswordEdit, this);
 
+        mBottomViews.loginGoogleButton.setSize(SignInButton.SIZE_STANDARD);
+        mBottomViews.loginGoogleButton.setScopes(mGso.getScopeArray());
+
         mBottomViews.filterButton.setOnClickListener(v -> {
-            mView.showProgressDialog(mContext.getString(R.string.progress_wait));
-            mSubscription.add(mInteractor.requestReactivateNormalAccount(mBottomViews.loginEmailEdit.getText().toString(),
-                    mBottomViews.loginPasswordEdit.getText().toString())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .onErrorReturn(throwable -> null)
-                    .subscribe(responseBodyResponse -> {
-                        mView.dismissProgressDialog();
-                        if (responseBodyResponse == null) {
-                            mView.showToast(mContext.getString(R.string.http_error_no_connection));
-                        } else {
-                            if (responseBodyResponse.isSuccessful()) {
-                                bottomSheetDialog.dismiss();
-                                mView.showToast(mContext.getString(R.string.account_reactivated));
-                            } else {
-                                mView.showToast(mContext.getString(R.string.http_error_500));
-                            }
-                        }
-                    }));
+            requestReactivateNormalAccount();
         });
 
-        bottomSheetDialog.setContentView(dialogView);
-        bottomSheetDialog.getWindow().findViewById(R.id.design_bottom_sheet)
-                .setBackgroundResource(R.color.default_dialog_background);
+        mBottomViews.loginGoogleButton.setOnClickListener(v -> {
+            googleLoginClicked();
+        });
+
+        mBottomViews.loginFacebookButton.setOnClickListener(v -> {
+            facebookLoginClicked();
+        });
+
+        mBottomSheetDialog.setContentView(dialogView);
 
         mBottomViews.bottomSheet.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
         BottomSheetBehavior mBehavior = BottomSheetBehavior.from((View) dialogView.getParent());
-        mBehavior.setPeekHeight(mBottomViews.bottomSheet.getMeasuredHeight() + 115);
+        mBehavior.setPeekHeight(mBottomViews.bottomSheet.getMeasuredHeight() + 200);
 
-        bottomSheetDialog.setOnDismissListener(dialog -> {
+        mBottomSheetDialog.setOnDismissListener(dialog -> {
             mIsValidationFromDialog = false;
         });
 
-        bottomSheetDialog.show();
+        mBottomSheetDialog.show();
+    }
+
+    private void requestReactivateNormalAccount() {
+        mView.showProgressDialog(mContext.getString(R.string.progress_wait));
+        mSubscription.add(mInteractor.requestReactivateNormalAccount(mBottomViews.loginEmailEdit.getText().toString(),
+                mBottomViews.loginPasswordEdit.getText().toString())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(reactivateObserver));
     }
 
     @Override
@@ -177,14 +181,14 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
 
     @Override
     public void googleLoginClicked() {
-        mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
+        mView.showProgressDialog(mContext.getString(R.string.progress_wait));
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         mView.startActivityForResult(signInIntent);
     }
 
     @Override
     public void facebookLoginClicked() {
-        mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
+        mView.showProgressDialog(mContext.getString(R.string.progress_wait));
         mInteractor.requestLoginToFacebook(Arrays.asList("email", "public_profile"), facebookCallback);
     }
 
@@ -275,19 +279,25 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
                         if (TextUtils.isEmpty(email)) {
                             // TODO: 28-Jul-16
                         } else {
-                            User user = new User();
-                            user.setName(name);
-                            // FIXME: 08-Sep-16
+                            if (mIsValidationFromDialog) {
+                                mSubscription.add(mInteractor.requestReactivateFacebookAccount(AccessToken.getCurrentAccessToken().getApplicationId() +
+                                        AccessToken.getCurrentAccessToken().getUserId())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(reactivateObserver));
+                            } else {
+                                User user = new User();
+                                user.setName(name);
 //                            Log.d(TAG, "onSuccess: " + loginResult.getAccessToken().getToken());
-                            user.setEmail("x" + email);
-                            user.setPassword(AccessToken.getCurrentAccessToken().getApplicationId() +
-                                    AccessToken.getCurrentAccessToken().getUserId() + "x");
-                            user.setPasswordType(User.FACEBOOK_LOGIN_TYPE);
-                            mInteractor.saveUserToRealm(user);
-                            isFacebook = true;
-                            mSubscription.add(mInteractor.requestLoginWithFacebook(user.getEmail(), user.getPassword())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(loginObserver));
+                                user.setEmail(email);
+                                user.setPassword(AccessToken.getCurrentAccessToken().getApplicationId() +
+                                        AccessToken.getCurrentAccessToken().getUserId());
+                                user.setPasswordType(User.FACEBOOK_LOGIN_TYPE);
+                                mInteractor.saveUserToRealm(user);
+                                isFacebook = true;
+                                mSubscription.add(mInteractor.requestLoginWithFacebook(user.getEmail(), user.getPassword())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(loginObserver));
+                            }
                         }
                     });
             Bundle parameters = new Bundle();
@@ -375,17 +385,24 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
 
     private void handleSignInResult(GoogleSignInResult result) {
         if (result.isSuccess()) {
-            GoogleSignInAccount acct = result.getSignInAccount();
-            User user = new User();
-            user.setName(acct.getDisplayName());
-            user.setEmail(acct.getEmail());
-            user.setPassword(acct.zzahf());
-            user.setPasswordType(User.GOOGLE_LOGIN_TYPE);
-            mInteractor.saveUserToRealm(user);
-            isFacebook = true;
-            mSubscription.add(mInteractor.requestLoginWithGoogle(user.getEmail(), user.getPassword())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(loginObserver));
+            if (mIsValidationFromDialog) {
+                GoogleSignInAccount acct = result.getSignInAccount();
+                mSubscription.add(mInteractor.requestReactivateGoogleAccount(acct.zzahf())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(reactivateObserver));
+            } else {
+                GoogleSignInAccount acct = result.getSignInAccount();
+                User user = new User();
+                user.setName(acct.getDisplayName());
+                user.setEmail(acct.getEmail());
+                user.setPassword(acct.zzahf());
+                user.setPasswordType(User.GOOGLE_LOGIN_TYPE);
+                mInteractor.saveUserToRealm(user);
+                isFacebook = true;
+                mSubscription.add(mInteractor.requestLoginWithGoogle(user.getEmail(), user.getPassword())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(loginObserver));
+            }
         } else {
             mView.showToast(mContext.getString(R.string.login_error_try_again));
         }
@@ -400,6 +417,34 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
         mView.showToast(mContext.getString(R.string.http_error_generic));
     }
 
+    private Observer<Response<ResponseBody>> reactivateObserver = new Observer<Response<ResponseBody>>() {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            mView.dismissProgressDialog();
+            mView.showToast(mContext.getString(R.string.http_error_no_connection));
+        }
+
+        @Override
+        public void onNext(Response<ResponseBody> responseBodyResponse) {
+            mView.dismissProgressDialog();
+            if (responseBodyResponse.isSuccessful()) {
+                mBottomSheetDialog.dismiss();
+                mView.showToast(mContext.getString(R.string.account_reactivated));
+            } else {
+                if (responseBodyResponse.code() == 404) {
+                    mView.showToast(mContext.getString(R.string.user_not_found));
+                } else {
+                    mView.showToast(mContext.getString(R.string.http_error_500));
+                }
+            }
+        }
+    };
+
     public class ReactivateViews {
         @Bind(R.id.bottom_sheet)
         NestedScrollView bottomSheet;
@@ -413,5 +458,9 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
         TextInputLayout loginPasswordInput;
         @Bind(R.id.filter_button)
         Button filterButton;
+        @Bind(R.id.login_facebook_button)
+        Button loginFacebookButton;
+        @Bind(R.id.login_google_button)
+        SignInButton loginGoogleButton;
     }
 }
