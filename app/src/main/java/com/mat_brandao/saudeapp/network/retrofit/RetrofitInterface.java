@@ -135,5 +135,8 @@ public interface RetrofitInterface {
     @GET("/appCivicoRS/rest/grupos/{codGrupo}/membros")
     Observable<Response<List<MembroGrupo>>> getGroupMembers(@Path("codGrupo") Integer groupId);
 
+    @DELETE("/appCivicoRS/rest/grupos/{codGrupo}/membros/{codMembro}")
+    Observable<Response<ResponseBody>> leaveGroup(@Path("codGrupo") Integer groupId, @Path("codMembro") Long memberId);
+
 
 }

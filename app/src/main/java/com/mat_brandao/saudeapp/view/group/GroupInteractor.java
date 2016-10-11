@@ -18,4 +18,8 @@ public interface GroupInteractor {
     Observable<Response<List<MembroGrupo>>> requestGroupMembers(int groupId);
 
     Observable<Response<User>> requestUser(Long userId);
+
+    Observable<Response<ResponseBody>> requestLeaveGroup(Integer codGrupo, Long membroId);
+
+    User getUser();
 }

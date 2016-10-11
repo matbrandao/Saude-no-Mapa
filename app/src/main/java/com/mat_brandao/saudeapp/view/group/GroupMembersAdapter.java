@@ -53,22 +53,24 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<GroupMembersAdapte
                 .load("http://mobile-aceite.tcu.gov.br/appCivicoRS/rest/pessoas/" + membroGrupo.getUsuarioId() + "/fotoPerfil.png")
                 .error(R.drawable.avatar_placeholder)
                 .into(holder.memberAvatarImg);
-
-        holder.lastInteractionDateText.setText(DateUtil.getFormattedDate(membroGrupo.getDataHoraAtivo()));
-
-        mIteractor.requestUser(membroGrupo.getUsuarioId())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(throwable -> null)
-                .retry(3)
-                .subscribe(userResponse -> {
-                    if (userResponse != null) {
-                        if (userResponse.isSuccessful()) {
-                            holder.memberNameText.setText(userResponse.body().getName());
-                        } else {
-                            // TODO: 11/10/2016
+        holder.lastInteractionDateText.setText("Entrou em: " + DateUtil.getFormattedDate(membroGrupo.getDataHoraAtivo()));
+        if (membroGrupo.getUsuarioId() == mIteractor.getUser().getId()) {
+            holder.memberNameText.setText("Você");
+        } else {
+            mIteractor.requestUser(membroGrupo.getUsuarioId())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .onErrorReturn(throwable -> null)
+                    .retry(3)
+                    .subscribe(userResponse -> {
+                        if (userResponse != null) {
+                            if (userResponse.isSuccessful()) {
+                                holder.memberNameText.setText(userResponse.body().getName());
+                            } else {
+                                // TODO: 11/10/2016
+                            }
                         }
-                    }
-                });
+                    });
+        }
     }
 
     @Override

@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
+import com.mat_brandao.saudeapp.domain.util.GenericActionListener;
 import com.mat_brandao.saudeapp.view.base.BaseActivity;
 import com.mat_brandao.saudeapp.view.base.BasePresenter;
 import com.mat_brandao.saudeapp.view.establishment.EstablishmentPresenterImpl;
@@ -102,5 +104,17 @@ public class GroupActivity extends BaseActivity implements GroupView {
     @Override
     public void setGroupMembersAdapter(GroupMembersAdapter adapter) {
         groupMembersRecycler.setAdapter(adapter);
+    }
+
+    @Override
+    public void showLeaveGroupDialog(GenericActionListener listener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.dialog_leave_group_title);
+        builder.setMessage(R.string.dialog_leave_group_message);
+        builder.setPositiveButton(R.string.dialog_leave_group_positive, (dialog, which) -> {
+            listener.onAction();
+        });
+        builder.setNegativeButton(R.string.dialog_leave_group_negative, null);
+        builder.create().show();
     }
 }

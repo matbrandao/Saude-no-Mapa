@@ -83,6 +83,22 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
                 .subscribe(groupMemberObserver));
     }
 
+    @Override
+    public void onItemClick(MembroGrupo membroGrupo) {
+        if (membroGrupo.getUsuarioId() == mInteractor.getUser().getId()) {
+            mView.showLeaveGroupDialog(() -> {
+                requestLeaveGroup(membroGrupo);
+            });
+        }
+    }
+
+    private void requestLeaveGroup(MembroGrupo membroGrupo) {
+        mView.showProgressDialog(mContext.getString(R.string.progress_wait));
+        mSubscription.add(mInteractor.requestLeaveGroup(mGroup.getCodGrupo(), membroGrupo.getMembroId())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(leaveGroupObserver));
+    }
+
     private Observer<Response<List<Grupo>>> getGroupsObserver = new Observer<Response<List<Grupo>>>() {
         @Override
         public void onCompleted() {
@@ -161,9 +177,9 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
                     mGroupMember.setUsuarioId(GenericUtil
                             .getNumbersFromString(mGroupMember.getLinks().get(1).getHref()));
                 }
-                if (mGroupMembers.size() > 0) {
-                    mView.setGroupMembersAdapter(new GroupMembersAdapter(mContext, mGroupMembers, GroupPresenterImpl.this));
-                } else {
+
+                mView.setGroupMembersAdapter(new GroupMembersAdapter(mContext, mGroupMembers, GroupPresenterImpl.this));
+                if (mGroupMembers.isEmpty()) {
                     // TODO: 11/10/2016 show empty view here;
                 }
             } else {
@@ -173,8 +189,27 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
         }
     };
 
-    @Override
-    public void onItemClick(MembroGrupo membroGrupo) {
-        // TODO: 11/10/2016
-    }
+    private Observer<Response<ResponseBody>> leaveGroupObserver = new Observer<Response<ResponseBody>>() {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            mView.dismissProgressDialog();
+            mView.showNoConnectionSnackBar();
+            Log.d(TAG, "onError() called with: e = [" + e + "]");
+        }
+
+        @Override
+        public void onNext(Response<ResponseBody> responseBodyResponse) {
+            if (responseBodyResponse.isSuccessful()) {
+                requestGroupMembers();
+            } else {
+                mView.dismissProgressDialog();
+                mView.showNoConnectionSnackBar();
+            }
+        }
+    };
 }

@@ -52,4 +52,15 @@ public class GroupInteractorImpl implements GroupInteractor {
         return RestClient.getHeader(mUser.getAppToken(), null)
                 .getUser(userId);
     }
+
+    @Override
+    public Observable<Response<ResponseBody>> requestLeaveGroup(Integer codGrupo, Long membroId) {
+        return RestClient.getHeader(mUser.getAppToken(), null)
+                .leaveGroup(codGrupo, membroId);
+    }
+
+    @Override
+    public User getUser() {
+        return mUserRepository.getUser();
+    }
 }

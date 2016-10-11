@@ -116,4 +116,8 @@
     <string name="account_reactivated">Conta reativada com sucesso</string>
     <string name="facebook_reactivate">Reativar com facebook</string>
     <string name="user_not_found">Usuário não encontrado</string>
+    <string name="dialog_leave_group_message">"Você deixará de receber mensagens postadas neste grupo. Tem certeza que deseja sair? "</string>
+    <string name="dialog_leave_group_title">Sair do Grupo</string>
+    <string name="dialog_leave_group_positive">Sair</string>
+    <string name="dialog_leave_group_negative">Cancelar</string>
 </resources>
