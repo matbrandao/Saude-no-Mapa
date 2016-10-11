@@ -6,6 +6,9 @@ import android.util.Log;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.model.Grupo;
+import com.mat_brandao.saudeapp.domain.model.MembroGrupo;
+import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
+import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 
 import java.util.List;
 
@@ -13,9 +16,10 @@ import okhttp3.ResponseBody;
 import retrofit2.Response;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.CompositeSubscription;
 
 
-public class GroupPresenterImpl implements GroupPresenter {
+public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickListener<MembroGrupo> {
     private static final String TAG = "GroupPresenterImpl";
 
     private GroupInteractorImpl mInteractor;
@@ -23,7 +27,10 @@ public class GroupPresenterImpl implements GroupPresenter {
     private GroupView mView;
 
     private Grupo mGroup;
+    private List<MembroGrupo> mGroupMembers;
     private final Establishment mEstablishment;
+
+    private CompositeSubscription mSubscription = new CompositeSubscription();
 
     @Override
     public void onResume() {
@@ -37,6 +44,7 @@ public class GroupPresenterImpl implements GroupPresenter {
 
     @Override
     public void onDestroy() {
+        mSubscription.unsubscribe();
         mView = null;
     }
 
@@ -58,15 +66,21 @@ public class GroupPresenterImpl implements GroupPresenter {
 
     private void requestGroup() {
         mView.showProgressDialog(mContext.getString(R.string.progress_wait));
-        mInteractor.requestGroup(mEstablishment.getNomeFantasia())
+        mSubscription.add(mInteractor.requestGroup(mEstablishment.getNomeFantasia())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getGroupsObserver);
+                .subscribe(getGroupsObserver));
     }
 
     private void requestCreateGroup() {
-        mInteractor.requestCreateGroup(mEstablishment.getNomeFantasia())
+        mSubscription.add(mInteractor.requestCreateGroup(mEstablishment.getNomeFantasia())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(createGroupObserver);
+                .subscribe(createGroupObserver));
+    }
+
+    private void requestGroupMembers() {
+        mSubscription.add(mInteractor.requestGroupMembers(mGroup.getCodGrupo())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(groupMemberObserver));
     }
 
     private Observer<Response<List<Grupo>>> getGroupsObserver = new Observer<Response<List<Grupo>>>() {
@@ -88,8 +102,8 @@ public class GroupPresenterImpl implements GroupPresenter {
                 if (listResponse.body().isEmpty()) {
                     requestCreateGroup();
                 } else {
-                    mView.dismissProgressDialog();
                     mGroup = listResponse.body().get(0);
+                    requestGroupMembers();
                 }
             } else {
                 mView.dismissProgressDialog();
@@ -121,4 +135,46 @@ public class GroupPresenterImpl implements GroupPresenter {
             }
         }
     };
+
+    private Observer<Response<List<MembroGrupo>>> groupMemberObserver = new Observer<Response<List<MembroGrupo>>>() {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            mView.dismissProgressDialog();
+            mView.showNoConnectionSnackBar();
+            Log.d(TAG, "onError() called with: e = [" + e + "]");
+        }
+
+        @Override
+        public void onNext(Response<List<MembroGrupo>> responseBodyResponse) {
+            if (responseBodyResponse.isSuccessful()) {
+                mView.dismissProgressDialog();
+                mGroupMembers = responseBodyResponse.body();
+                for (MembroGrupo mGroupMember : mGroupMembers) {
+                    mGroupMember.setMembroId(GenericUtil
+                            .getContentIdFromUrl(String.valueOf(mGroup.getCodGrupo()),
+                                    mGroupMember.getLinks().get(0).getHref()));
+                    mGroupMember.setUsuarioId(GenericUtil
+                            .getNumbersFromString(mGroupMember.getLinks().get(1).getHref()));
+                }
+                if (mGroupMembers.size() > 0) {
+                    mView.setGroupMembersAdapter(new GroupMembersAdapter(mContext, mGroupMembers, GroupPresenterImpl.this));
+                } else {
+                    // TODO: 11/10/2016 show empty view here;
+                }
+            } else {
+                mView.dismissProgressDialog();
+                mView.showNoConnectionSnackBar();
+            }
+        }
+    };
+
+    @Override
+    public void onItemClick(MembroGrupo membroGrupo) {
+        // TODO: 11/10/2016
+    }
 }

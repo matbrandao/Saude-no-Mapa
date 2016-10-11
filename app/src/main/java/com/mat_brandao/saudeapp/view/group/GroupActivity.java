@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import com.mat_brandao.saudeapp.R;
@@ -23,6 +25,8 @@ public class GroupActivity extends BaseActivity implements GroupView {
     FloatingActionButton fab;
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
+    @Bind(R.id.group_members_recycler)
+    RecyclerView groupMembersRecycler;
 
     private GroupPresenterImpl mPresenter;
 
@@ -41,6 +45,9 @@ public class GroupActivity extends BaseActivity implements GroupView {
         toolbar.setNavigationOnClickListener(v -> {
             finishActivity();
         });
+
+        groupMembersRecycler.setHasFixedSize(true);
+        groupMembersRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         mPresenter = new GroupPresenterImpl(this, this);
     }
@@ -90,5 +97,10 @@ public class GroupActivity extends BaseActivity implements GroupView {
     @Override
     public void setToolbarTitle(String title) {
         toolbar.setTitle(title);
+    }
+
+    @Override
+    public void setGroupMembersAdapter(GroupMembersAdapter adapter) {
+        groupMembersRecycler.setAdapter(adapter);
     }
 }

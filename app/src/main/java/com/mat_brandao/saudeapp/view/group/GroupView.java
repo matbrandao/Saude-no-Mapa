@@ -7,4 +7,6 @@ public interface GroupView extends BaseView.BaseProgressView {
     Establishment getIntentEstablishment();
 
     void setToolbarTitle(String title);
+
+    void setGroupMembersAdapter(GroupMembersAdapter adapter);
 }

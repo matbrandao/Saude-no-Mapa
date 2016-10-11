@@ -5,6 +5,7 @@ import android.content.Context;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.CreateGroup;
 import com.mat_brandao.saudeapp.domain.model.Grupo;
+import com.mat_brandao.saudeapp.domain.model.MembroGrupo;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.repository.UserRepositoryImpl;
 import com.mat_brandao.saudeapp.network.retrofit.RestClient;
@@ -38,5 +39,17 @@ public class GroupInteractorImpl implements GroupInteractor {
         return RestClient.getHeader(mUser.getAppToken(), null)
                 .createGroup(new CreateGroup(Integer.valueOf(mContext.getString(R.string.app_id)),
                         nomeFantasia));
+    }
+
+    @Override
+    public Observable<Response<List<MembroGrupo>>> requestGroupMembers(int groupId) {
+        return RestClient.getHeader(mUser.getAppToken(), null)
+                .getGroupMembers(groupId);
+    }
+
+    @Override
+    public Observable<Response<User>> requestUser(Long userId) {
+        return RestClient.getHeader(mUser.getAppToken(), null)
+                .getUser(userId);
     }
 }

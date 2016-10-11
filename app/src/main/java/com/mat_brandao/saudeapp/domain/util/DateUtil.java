@@ -1,5 +1,6 @@
 package com.mat_brandao.saudeapp.domain.util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -21,5 +22,16 @@ public class DateUtil {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'");
         Timber.i("timeString = " + simpleDateFormat.format(new Date(longDate)));
         return simpleDateFormat.format(new Date(longDate));
+    }
+
+    public static String getFormattedDate(String date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm dd/MM/yyyy");
+        SimpleDateFormat oldSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'BRT'");
+        try {
+            return simpleDateFormat.format(oldSimpleDateFormat.parse(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 }

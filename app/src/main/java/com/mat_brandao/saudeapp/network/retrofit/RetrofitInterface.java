@@ -4,6 +4,7 @@ import com.mat_brandao.saudeapp.domain.model.CreateGroup;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.model.Grupo;
 import com.mat_brandao.saudeapp.domain.model.Installation;
+import com.mat_brandao.saudeapp.domain.model.MembroGrupo;
 import com.mat_brandao.saudeapp.domain.model.Post;
 import com.mat_brandao.saudeapp.domain.model.PostContent;
 import com.mat_brandao.saudeapp.domain.model.PostResponse;
@@ -48,6 +49,9 @@ public interface RetrofitInterface {
 
     @POST("appCivicoRS/rest/pessoas")
     Observable<Response<ResponseBody>> createUser(@Body User user);
+
+    @GET("appCivicoRS/rest/pessoas/{codUsuario}")
+    Observable<Response<User>> getUser(@Path("codUsuario") Long userId);
 
     @FormUrlEncoded
     @POST("appCivicoRS/rest/pessoas/redefinirSenha")
@@ -127,4 +131,9 @@ public interface RetrofitInterface {
 
     @POST("/appCivicoRS/rest/grupos")
     Observable<Response<ResponseBody>> createGroup(@Body CreateGroup createGroup);
+
+    @GET("/appCivicoRS/rest/grupos/{codGrupo}/membros")
+    Observable<Response<List<MembroGrupo>>> getGroupMembers(@Path("codGrupo") Integer groupId);
+
+
 }
