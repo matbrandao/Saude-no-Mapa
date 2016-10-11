@@ -12,4 +12,8 @@ public interface GroupView extends BaseView.BaseProgressView {
     void setGroupMembersAdapter(GroupMembersAdapter adapter);
 
     void showLeaveGroupDialog(GenericActionListener listener);
+
+    void setEmptyTextVisibility(int visibility);
+
+    void setIsRefreshing(boolean isRefreshing);
 }

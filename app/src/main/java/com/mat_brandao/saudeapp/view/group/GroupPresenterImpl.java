@@ -1,7 +1,9 @@
 package com.mat_brandao.saudeapp.view.group;
 
 import android.content.Context;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.view.View;
 
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
@@ -19,7 +21,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 
-public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickListener<MembroGrupo> {
+public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickListener<MembroGrupo>,
+        SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "GroupPresenterImpl";
 
     private GroupInteractorImpl mInteractor;
@@ -50,6 +53,7 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
 
     @Override
     public void onRetryClicked() {
+        mView.showProgressDialog(mContext.getString(R.string.progress_wait));
         requestGroup();
     }
 
@@ -61,11 +65,11 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
         mEstablishment = mView.getIntentEstablishment();
         mView.setToolbarTitle("Grupo: " + mEstablishment.getNomeFantasia());
 
+        mView.showProgressDialog(mContext.getString(R.string.progress_wait));
         requestGroup();
     }
 
     private void requestGroup() {
-        mView.showProgressDialog(mContext.getString(R.string.progress_wait));
         mSubscription.add(mInteractor.requestGroup(mEstablishment.getNomeFantasia())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(getGroupsObserver));
@@ -99,6 +103,15 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
                 .subscribe(leaveGroupObserver));
     }
 
+    @Override
+    public void onRefresh() {
+        if (mGroup != null) {
+            requestGroupMembers();
+        } else {
+            requestGroup();
+        }
+    }
+
     private Observer<Response<List<Grupo>>> getGroupsObserver = new Observer<Response<List<Grupo>>>() {
         @Override
         public void onCompleted() {
@@ -108,6 +121,7 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
         @Override
         public void onError(Throwable e) {
             mView.dismissProgressDialog();
+            mView.setIsRefreshing(false);
             mView.showNoConnectionSnackBar();
             Log.d(TAG, "onError() called with: e = [" + e + "]");
         }
@@ -122,6 +136,7 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
                     requestGroupMembers();
                 }
             } else {
+                mView.setIsRefreshing(false);
                 mView.dismissProgressDialog();
                 mView.showNoConnectionSnackBar();
             }
@@ -137,6 +152,7 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
         @Override
         public void onError(Throwable e) {
             mView.dismissProgressDialog();
+            mView.setIsRefreshing(false);
             mView.showNoConnectionSnackBar();
             Log.d(TAG, "onError() called with: e = [" + e + "]");
         }
@@ -144,8 +160,10 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
         @Override
         public void onNext(Response<ResponseBody> responseBodyResponse) {
             if (responseBodyResponse.isSuccessful()) {
+                mView.showProgressDialog(mContext.getString(R.string.progress_wait));
                 requestGroup();
             } else {
+                mView.setIsRefreshing(false);
                 mView.dismissProgressDialog();
                 mView.showNoConnectionSnackBar();
             }
@@ -161,6 +179,7 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
         @Override
         public void onError(Throwable e) {
             mView.dismissProgressDialog();
+            mView.setIsRefreshing(false);
             mView.showNoConnectionSnackBar();
             Log.d(TAG, "onError() called with: e = [" + e + "]");
         }
@@ -169,6 +188,7 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
         public void onNext(Response<List<MembroGrupo>> responseBodyResponse) {
             if (responseBodyResponse.isSuccessful()) {
                 mView.dismissProgressDialog();
+                mView.setIsRefreshing(false);
                 mGroupMembers = responseBodyResponse.body();
                 for (MembroGrupo mGroupMember : mGroupMembers) {
                     mGroupMember.setMembroId(GenericUtil
@@ -180,9 +200,12 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
 
                 mView.setGroupMembersAdapter(new GroupMembersAdapter(mContext, mGroupMembers, GroupPresenterImpl.this));
                 if (mGroupMembers.isEmpty()) {
-                    // TODO: 11/10/2016 show empty view here;
+                    mView.setEmptyTextVisibility(View.VISIBLE);
+                } else {
+                    mView.setEmptyTextVisibility(View.GONE);
                 }
             } else {
+                mView.setIsRefreshing(false);
                 mView.dismissProgressDialog();
                 mView.showNoConnectionSnackBar();
             }
@@ -192,7 +215,6 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
     private Observer<Response<ResponseBody>> leaveGroupObserver = new Observer<Response<ResponseBody>>() {
         @Override
         public void onCompleted() {
-
         }
 
         @Override

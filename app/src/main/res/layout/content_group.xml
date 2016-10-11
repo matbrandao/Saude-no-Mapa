@@ -9,9 +9,32 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_group">
 
-    <android.support.v7.widget.RecyclerView
+    <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/group_members_recycler"
-        android:padding="5dp"/>
+        android:id="@+id/refresh_layout">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/group_members_recycler"
+                android:padding="5dp"
+                tools:listitem="@layout/item_group_member_layout"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/empty_text_view"
+                android:visibility="gone"
+                android:background="#FFF"
+                android:gravity="center"
+                android:padding="32dp"
+                android:textSize="20sp"
+                android:text="@string/empty_group_text"/>
+        </FrameLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

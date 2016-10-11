@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
 
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
@@ -29,6 +31,10 @@ public class GroupActivity extends BaseActivity implements GroupView {
     CoordinatorLayout coordinatorLayout;
     @Bind(R.id.group_members_recycler)
     RecyclerView groupMembersRecycler;
+    @Bind(R.id.empty_text_view)
+    TextView emptyTextView;
+    @Bind(R.id.refresh_layout)
+    SwipeRefreshLayout refreshLayout;
 
     private GroupPresenterImpl mPresenter;
 
@@ -52,6 +58,8 @@ public class GroupActivity extends BaseActivity implements GroupView {
         groupMembersRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         mPresenter = new GroupPresenterImpl(this, this);
+
+        refreshLayout.setOnRefreshListener(mPresenter);
     }
 
     @Override
@@ -116,5 +124,15 @@ public class GroupActivity extends BaseActivity implements GroupView {
         });
         builder.setNegativeButton(R.string.dialog_leave_group_negative, null);
         builder.create().show();
+    }
+
+    @Override
+    public void setEmptyTextVisibility(int visibility) {
+        emptyTextView.setVisibility(visibility);
+    }
+
+    @Override
+    public void setIsRefreshing(boolean isRefreshing) {
+        refreshLayout.setRefreshing(isRefreshing);
     }
 }

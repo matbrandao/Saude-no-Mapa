@@ -120,4 +120,5 @@
     <string name="dialog_leave_group_title">Sair do Grupo</string>
     <string name="dialog_leave_group_positive">Sair</string>
     <string name="dialog_leave_group_negative">Cancelar</string>
+    <string name="empty_group_text">O grupo está vazio</string>
 </resources>
