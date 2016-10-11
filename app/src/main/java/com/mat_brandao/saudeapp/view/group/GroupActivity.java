@@ -20,13 +20,12 @@ import com.mat_brandao.saudeapp.view.establishment.EstablishmentPresenterImpl;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class GroupActivity extends BaseActivity implements GroupView {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.fab)
-    FloatingActionButton fab;
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
     @Bind(R.id.group_members_recycler)
@@ -35,6 +34,10 @@ public class GroupActivity extends BaseActivity implements GroupView {
     TextView emptyTextView;
     @Bind(R.id.refresh_layout)
     SwipeRefreshLayout refreshLayout;
+    @Bind(R.id.join_fab)
+    FloatingActionButton joinFab;
+    @Bind(R.id.chat_fab)
+    FloatingActionButton chatFab;
 
     private GroupPresenterImpl mPresenter;
 
@@ -60,6 +63,16 @@ public class GroupActivity extends BaseActivity implements GroupView {
         mPresenter = new GroupPresenterImpl(this, this);
 
         refreshLayout.setOnRefreshListener(mPresenter);
+    }
+
+    @OnClick(R.id.join_fab)
+    void onJoinFabClick() {
+        mPresenter.onJoinFabClick();
+    }
+
+    @OnClick(R.id.chat_fab)
+    void onChatFabClick() {
+        mPresenter.onChatFabClick();
     }
 
     @Override
@@ -127,6 +140,18 @@ public class GroupActivity extends BaseActivity implements GroupView {
     }
 
     @Override
+    public void showJoinGroupDialog(GenericActionListener listener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.dialog_join_group_title);
+        builder.setMessage(R.string.dialog_join_group_message);
+        builder.setPositiveButton(R.string.dialog_join_group_positive, (dialog, which) -> {
+            listener.onAction();
+        });
+        builder.setNegativeButton(R.string.dialog_join_group_negative, null);
+        builder.create().show();
+    }
+
+    @Override
     public void setEmptyTextVisibility(int visibility) {
         emptyTextView.setVisibility(visibility);
     }
@@ -134,5 +159,15 @@ public class GroupActivity extends BaseActivity implements GroupView {
     @Override
     public void setIsRefreshing(boolean isRefreshing) {
         refreshLayout.setRefreshing(isRefreshing);
+    }
+
+    @Override
+    public void setJoinFabVisibility(int visibility) {
+        joinFab.setVisibility(visibility);
+    }
+
+    @Override
+    public void setChatFabVisibility(int visibility) {
+        chatFab.setVisibility(visibility);
     }
 }

@@ -21,5 +21,11 @@ public interface GroupInteractor {
 
     Observable<Response<ResponseBody>> requestLeaveGroup(Integer codGrupo, Long membroId);
 
+    Observable<Response<ResponseBody>> requestJoinGroup(Integer codGrupo);
+
     User getUser();
+
+    void setGroupMemberIds(List<MembroGrupo> mGroupMembers, Integer groupId);
+
+    boolean isUserJoined(List<MembroGrupo> mGroupMembers);
 }

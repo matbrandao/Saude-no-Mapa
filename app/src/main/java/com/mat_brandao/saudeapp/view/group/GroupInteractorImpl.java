@@ -8,6 +8,7 @@ import com.mat_brandao.saudeapp.domain.model.Grupo;
 import com.mat_brandao.saudeapp.domain.model.MembroGrupo;
 import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.repository.UserRepositoryImpl;
+import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 import com.mat_brandao.saudeapp.network.retrofit.RestClient;
 
 import java.util.List;
@@ -60,7 +61,34 @@ public class GroupInteractorImpl implements GroupInteractor {
     }
 
     @Override
+    public Observable<Response<ResponseBody>> requestJoinGroup(Integer codGrupo) {
+        return RestClient.getHeader(mUser.getAppToken(), null)
+                .joinGroup(codGrupo, mUser.getId());
+    }
+
+    @Override
     public User getUser() {
         return mUserRepository.getUser();
+    }
+
+    @Override
+    public void setGroupMemberIds(List<MembroGrupo> mGroupMembers, Integer groupId) {
+        for (MembroGrupo mGroupMember : mGroupMembers) {
+            mGroupMember.setMembroId(GenericUtil
+                    .getContentIdFromUrl(String.valueOf(groupId),
+                            mGroupMember.getLinks().get(0).getHref()));
+            mGroupMember.setUsuarioId(GenericUtil
+                    .getNumbersFromString(mGroupMember.getLinks().get(1).getHref()));
+        }
+    }
+
+    @Override
+    public boolean isUserJoined(List<MembroGrupo> mGroupMembers) {
+        for (MembroGrupo mGroupMember : mGroupMembers) {
+            if (mGroupMember.getUsuarioId() == mUser.getId()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

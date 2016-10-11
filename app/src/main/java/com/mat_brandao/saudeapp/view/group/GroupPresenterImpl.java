@@ -10,7 +10,6 @@ import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.model.Grupo;
 import com.mat_brandao.saudeapp.domain.model.MembroGrupo;
 import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
-import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 
 import java.util.List;
 
@@ -21,7 +20,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 
-public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickListener<MembroGrupo>,
+class GroupPresenterImpl implements GroupPresenter, GenericObjectClickListener<MembroGrupo>,
         SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "GroupPresenterImpl";
 
@@ -69,6 +68,19 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
         requestGroup();
     }
 
+    @Override
+    public void onJoinFabClick() {
+        mView.showJoinGroupDialog(() -> {
+            mView.showProgressDialog(mContext.getString(R.string.progress_wait));
+            requestJoinGroup();
+        });
+    }
+
+    @Override
+    public void onChatFabClick() {
+        // TODO: 11/10/2016
+    }
+
     private void requestGroup() {
         mSubscription.add(mInteractor.requestGroup(mEstablishment.getNomeFantasia())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -87,13 +99,10 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
                 .subscribe(groupMemberObserver));
     }
 
-    @Override
-    public void onItemClick(MembroGrupo membroGrupo) {
-        if (membroGrupo.getUsuarioId() == mInteractor.getUser().getId()) {
-            mView.showLeaveGroupDialog(() -> {
-                requestLeaveGroup(membroGrupo);
-            });
-        }
+    private void requestJoinGroup() {
+        mSubscription.add(mInteractor.requestJoinGroup(mGroup.getCodGrupo())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(joinGroup));
     }
 
     private void requestLeaveGroup(MembroGrupo membroGrupo) {
@@ -101,6 +110,23 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
         mSubscription.add(mInteractor.requestLeaveGroup(mGroup.getCodGrupo(), membroGrupo.getMembroId())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(leaveGroupObserver));
+    }
+
+    private void showJoinFab() {
+        mView.setJoinFabVisibility(View.VISIBLE);
+        mView.setChatFabVisibility(View.GONE);
+    }
+
+    private void showChatFab() {
+        mView.setJoinFabVisibility(View.GONE);
+        mView.setChatFabVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onItemClick(MembroGrupo membroGrupo) {
+        if (membroGrupo.getUsuarioId() == mInteractor.getUser().getId()) {
+            mView.showLeaveGroupDialog(() -> requestLeaveGroup(membroGrupo));
+        }
     }
 
     @Override
@@ -173,7 +199,6 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
     private Observer<Response<List<MembroGrupo>>> groupMemberObserver = new Observer<Response<List<MembroGrupo>>>() {
         @Override
         public void onCompleted() {
-
         }
 
         @Override
@@ -190,12 +215,13 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
                 mView.dismissProgressDialog();
                 mView.setIsRefreshing(false);
                 mGroupMembers = responseBodyResponse.body();
-                for (MembroGrupo mGroupMember : mGroupMembers) {
-                    mGroupMember.setMembroId(GenericUtil
-                            .getContentIdFromUrl(String.valueOf(mGroup.getCodGrupo()),
-                                    mGroupMember.getLinks().get(0).getHref()));
-                    mGroupMember.setUsuarioId(GenericUtil
-                            .getNumbersFromString(mGroupMember.getLinks().get(1).getHref()));
+
+                mInteractor.setGroupMemberIds(mGroupMembers, mGroup.getCodGrupo());
+
+                if (mInteractor.isUserJoined(mGroupMembers)) {
+                    showChatFab();
+                } else {
+                    showJoinFab();
                 }
 
                 mView.setGroupMembersAdapter(new GroupMembersAdapter(mContext, mGroupMembers, GroupPresenterImpl.this));
@@ -208,6 +234,29 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
                 mView.setIsRefreshing(false);
                 mView.dismissProgressDialog();
                 mView.showNoConnectionSnackBar();
+            }
+        }
+    };
+
+    private Observer<Response<ResponseBody>> joinGroup = new Observer<Response<ResponseBody>>() {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            mView.dismissProgressDialog();
+            mView.showToast(mContext.getString(R.string.http_error_generic));
+            Log.d(TAG, "onError() called with: e = [" + e + "]");
+        }
+
+        @Override
+        public void onNext(Response<ResponseBody> responseBodyResponse) {
+            if (responseBodyResponse.isSuccessful()) {
+                requestGroupMembers();
+            } else {
+                mView.dismissProgressDialog();
             }
         }
     };

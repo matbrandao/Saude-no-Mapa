@@ -121,4 +121,8 @@
     <string name="dialog_leave_group_positive">Sair</string>
     <string name="dialog_leave_group_negative">Cancelar</string>
     <string name="empty_group_text">O grupo está vazio</string>
+    <string name="dialog_join_group_title">Participar do Grupo</string>
+    <string name="dialog_join_group_message">Você receberá as mensagens postadas neste grupo. Deseja fazer parte deste grupo?</string>
+    <string name="dialog_join_group_positive">Participar</string>
+    <string name="dialog_join_group_negative">Cancelar</string>
 </resources>

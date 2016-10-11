@@ -25,12 +25,22 @@
     <include layout="@layout/content_group"/>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/join_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:visibility="gone"
         android:layout_margin="16dp"
-        android:src="@android:drawable/ic_dialog_email"/>
+        android:visibility="gone"
+        app:fabSize="auto"
+        android:src="@drawable/ic_group_add"/>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/chat_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:visibility="gone"
+        app:fabSize="auto"
+        android:src="@drawable/ic_chat"/>
 </android.support.design.widget.CoordinatorLayout>
