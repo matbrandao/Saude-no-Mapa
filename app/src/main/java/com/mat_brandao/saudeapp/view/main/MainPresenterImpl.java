@@ -12,6 +12,7 @@ import com.mat_brandao.saudeapp.view.edit_profile.EditProfileActivity;
 import com.mat_brandao.saudeapp.view.establishment.EstablishmentFragment;
 import com.mat_brandao.saudeapp.view.favorites.FavoritesFragment;
 import com.mat_brandao.saudeapp.view.login.LoginActivity;
+import com.mat_brandao.saudeapp.view.my_groups.MyGroupsFragment;
 import com.mat_brandao.saudeapp.view.remedy.RemedyFragment;
 
 public class MainPresenterImpl implements MainPresenter, NavigationView.OnNavigationItemSelectedListener {
@@ -70,6 +71,10 @@ public class MainPresenterImpl implements MainPresenter, NavigationView.OnNaviga
             mView.showFragment(EstablishmentFragment.newInstance());
         } else if (item.getItemId() == R.id.menu_item_my_list) {
             mView.showFragment(FavoritesFragment.newInstance());
+        } else if (item.getItemId() == R.id.menu_item_my_groups) {
+            mView.showFragment(MyGroupsFragment.newInstance());
+        } else if (item.getItemId() == R.id.menu_item_about) {
+            // TODO: 13/10/2016 add about fragment
         } else if (item.getItemId() == R.id.menu_item_logout) {
             mInteractor.logout();
             Intent intent = new Intent(mContext, LoginActivity.class);

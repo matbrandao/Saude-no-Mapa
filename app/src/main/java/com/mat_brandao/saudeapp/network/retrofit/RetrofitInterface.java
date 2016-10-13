@@ -1,7 +1,10 @@
 package com.mat_brandao.saudeapp.network.retrofit;
 
+import com.mat_brandao.saudeapp.domain.model.CreateGroup;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
+import com.mat_brandao.saudeapp.domain.model.Grupo;
 import com.mat_brandao.saudeapp.domain.model.Installation;
+import com.mat_brandao.saudeapp.domain.model.MembroGrupo;
 import com.mat_brandao.saudeapp.domain.model.Post;
 import com.mat_brandao.saudeapp.domain.model.PostContent;
 import com.mat_brandao.saudeapp.domain.model.PostResponse;
@@ -46,6 +49,9 @@ public interface RetrofitInterface {
 
     @POST("appCivicoRS/rest/pessoas")
     Observable<Response<ResponseBody>> createUser(@Body User user);
+
+    @GET("appCivicoRS/rest/pessoas/{codUsuario}")
+    Observable<Response<User>> getUser(@Path("codUsuario") Long userId);
 
     @FormUrlEncoded
     @POST("appCivicoRS/rest/pessoas/redefinirSenha")
@@ -118,4 +124,22 @@ public interface RetrofitInterface {
 
     @PUT("/appCivicoRS/rest/pessoas/reativar")
     Observable<Response<ResponseBody>> reactivateGoogleAccount(@Header("googleToken") String googleToken);
+
+    @GET("/appCivicoRS/rest/grupos")
+    Observable<Response<List<Grupo>>> getGroups(@Query("codAplicativo") String codAplicativo,
+                                                @Query("descricao") String descricao, @Query("codPessoa") Long userId);
+
+    @POST("/appCivicoRS/rest/grupos")
+    Observable<Response<ResponseBody>> createGroup(@Body CreateGroup createGroup);
+
+    @GET("/appCivicoRS/rest/grupos/{codGrupo}/membros")
+    Observable<Response<List<MembroGrupo>>> getGroupMembers(@Path("codGrupo") Integer groupId);
+
+    @POST("/appCivicoRS/rest/grupos/{codGrupo}/membros")
+    Observable<Response<ResponseBody>> joinGroup(@Path("codGrupo") Integer groupId, @Query("codUsuario") Long userId);
+
+    @DELETE("/appCivicoRS/rest/grupos/{codGrupo}/membros/{codMembro}")
+    Observable<Response<ResponseBody>> leaveGroup(@Path("codGrupo") Integer groupId, @Path("codMembro") Long memberId);
+
+
 }

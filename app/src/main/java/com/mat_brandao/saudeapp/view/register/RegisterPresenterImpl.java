@@ -1,17 +1,20 @@
 package com.mat_brandao.saudeapp.view.register;
 
 import android.Manifest;
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Error401;
@@ -36,8 +39,10 @@ import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectClickListener<Integer> {
+    private static final String TAG = "RegisterPresenterImpl";
+
     private RegisterInteractorImpl mInteractor;
-    private Context mContext;
+    private Activity mContext;
     private RegisterView mView;
 
     private Observable mLastObservable;
@@ -46,13 +51,16 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
     private String mName, mEmail, mSelectedSex, mCep, mPassword;
     private long mBirthDate;
 
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
     private User mUser;
     private BottomSheetDialog mBottomSheetDialog;
     private Integer mAvatarUrl = R.drawable.avatar_placeholder;
 
     @Override
     public void onResume() {
-
+        mFirebaseAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
@@ -62,6 +70,9 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
 
     @Override
     public void onDestroy() {
+        if (mAuthListener != null) {
+            mFirebaseAuth.removeAuthStateListener(mAuthListener);
+        }
         mView = null;
         mSubscription.unsubscribe();
     }
@@ -74,12 +85,14 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
                 .subscribe(mLastObserver));
     }
 
-    public RegisterPresenterImpl(RegisterView view, Context context) {
+    public RegisterPresenterImpl(RegisterView view, Activity context) {
         mInteractor = new RegisterInteractorImpl(context);
         mContext = context;
         mView = view;
 
         mUser = mInteractor.getUser();
+
+        configureFirebaseAuth();
 
         setupSpinners();
         setupObservables();
@@ -88,6 +101,20 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
             showFacebookData();
             mView.disableFields();
         }
+    }
+
+    private void configureFirebaseAuth() {
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                // User is signed in
+                Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+            } else {
+                // User is signed out
+                Log.d(TAG, "onAuthStateChanged:signed_out");
+            }
+        };
     }
 
     private void showFacebookData() {
@@ -319,32 +346,40 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
         @Override
         public void onNext(Response<ResponseBody> response) {
             mView.dismissProgressDialog();
-
             if (response.isSuccessful()) {
                 try {
                     mView.showToast(response.body().string().replace("\"", ""));
                 } catch (Exception e) {
                     mView.showToast(mContext.getString(R.string.http_success_register_user));
                 }
-                if (mUser == null) {
-                    mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
-                    mSubscription.add(mInteractor
-                            .requestLoginWithAccount(mEmail, mPassword)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(loginObserver));
-                } else if (mUser.getPasswordType() == User.FACEBOOK_LOGIN_TYPE) {
-                    mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
-                    mSubscription.add(mInteractor
-                            .requestLoginWithFacebook(mEmail, mPassword)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(loginObserver));
-                } else if (mUser.getPasswordType() == User.GOOGLE_LOGIN_TYPE) {
-                    mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
-                    mSubscription.add(mInteractor
-                            .requestLoginWithGoogle(mEmail, mPassword)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(loginObserver));
-                }
+
+                mFirebaseAuth.createUserWithEmailAndPassword(mEmail, mPassword)
+                        .addOnCompleteListener(mContext, task -> {
+                            Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
+                            mFirebaseAuth.signInWithEmailAndPassword(mEmail, mPassword)
+                                    .addOnCompleteListener(mContext, task1 -> {
+                                        Log.d(TAG, "signInWithEmail:onComplete:" + task1.isSuccessful());
+                                        if (mUser == null) {
+                                            mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
+                                            mSubscription.add(mInteractor
+                                                    .requestLoginWithAccount(mEmail, mPassword)
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe(loginObserver));
+                                        } else if (mUser.getPasswordType() == User.FACEBOOK_LOGIN_TYPE) {
+                                            mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
+                                            mSubscription.add(mInteractor
+                                                    .requestLoginWithFacebook(mEmail, mPassword)
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe(loginObserver));
+                                        } else if (mUser.getPasswordType() == User.GOOGLE_LOGIN_TYPE) {
+                                            mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
+                                            mSubscription.add(mInteractor
+                                                    .requestLoginWithGoogle(mEmail, mPassword)
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe(loginObserver));
+                                        }
+                                    });
+                        });
             } else {
                 if (response.code() == 400) {
                     try {

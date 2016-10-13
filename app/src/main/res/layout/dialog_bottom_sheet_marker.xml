@@ -122,17 +122,30 @@
                             tools:text="33460665"/>
                     </LinearLayout>
 
-                    <com.iarcuschin.simpleratingbar.SimpleRatingBar
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/rating_view"
-                        android:layout_gravity="center_horizontal"
-                        app:srb_starSize="15dp"
-                        app:srb_numberOfStars="5"
-                        app:srb_rating="0"
-                        app:srb_stepSize="0.5"
-                        app:srb_borderColor="@color/colorAccent"
-                        app:srb_fillColor="@color/colorAccent"/>
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.iarcuschin.simpleratingbar.SimpleRatingBar
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/rating_view"
+                            android:layout_gravity="center"
+                            app:srb_starSize="15dp"
+                            app:srb_numberOfStars="5"
+                            app:srb_rating="0"
+                            app:srb_stepSize="0.5"
+                            app:srb_borderColor="@color/colorAccent"
+                            app:srb_fillColor="@color/colorAccent"/>
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:id="@+id/group_image"
+                            android:src="@drawable/ic_group"
+                            android:layout_gravity="right"
+                            android:contentDescription="@null"/>
+                    </FrameLayout>
                 </LinearLayout>
             </LinearLayout>
         </android.support.v7.widget.CardView>

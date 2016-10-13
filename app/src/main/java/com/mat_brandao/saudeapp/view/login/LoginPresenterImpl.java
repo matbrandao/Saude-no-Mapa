@@ -1,6 +1,6 @@
 package com.mat_brandao.saudeapp.view.login;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,6 +29,8 @@ import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Error401;
@@ -53,8 +55,11 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
     private static final String TAG = "LoginPresenterImpl";
 
     private LoginInteractorImpl mInteractor;
-    private Context mContext;
+    private Activity mContext;
     private LoginView mView;
+
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     private boolean isFacebook;
 
@@ -67,16 +72,18 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
 
     @Override
     public void onResume() {
-
+        mFirebaseAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
     public void onPause() {
     }
 
-
     @Override
     public void onDestroy() {
+        if (mAuthListener != null) {
+            mFirebaseAuth.removeAuthStateListener(mAuthListener);
+        }
         mSubscription.unsubscribe();
         mView = null;
     }
@@ -85,7 +92,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
     public void onRetryClicked() {
     }
 
-    public LoginPresenterImpl(LoginView view, Context context) {
+    public LoginPresenterImpl(LoginView view, Activity context) {
         mInteractor = new LoginInteractorImpl(context);
         mContext = context;
         mView = view;
@@ -95,7 +102,22 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
         EditText passEdit = mView.getPasswordEditText();
         mInteractor.validateLoginForms(emailEdit, passEdit, this);
 
+        configureFirebaseAuth();
         configureGoogleClient();
+    }
+
+    private void configureFirebaseAuth() {
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                // User is signed in
+                Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+            } else {
+                // User is signed out
+                Log.d(TAG, "onAuthStateChanged:signed_out");
+            }
+        };
     }
 
     private void configureGoogleClient() {
@@ -202,10 +224,14 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
         mView.hideKeyboard();
         isFacebook = false;
         mView.showProgressDialog(mContext.getString(R.string.progress_logging_in));
-        mSubscription.add(mInteractor
-                .requestLoginWithAccount(email, password)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(loginObserver));
+        mFirebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(mContext, task -> {
+                    Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+                    mSubscription.add(mInteractor
+                            .requestLoginWithAccount(email, password)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(loginObserver));
+                });
     }
 
     @Override
@@ -293,15 +319,19 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
                                 User user = new User();
                                 user.setName(name);
 //                            Log.d(TAG, "onSuccess: " + loginResult.getAccessToken().getToken());
-                                user.setEmail(email);
+                                user.setEmail("xx" + email);
                                 user.setPassword(AccessToken.getCurrentAccessToken().getApplicationId() +
-                                        AccessToken.getCurrentAccessToken().getUserId());
+                                        AccessToken.getCurrentAccessToken().getUserId() + "xx");
                                 user.setPasswordType(User.FACEBOOK_LOGIN_TYPE);
                                 mInteractor.saveUserToRealm(user);
                                 isFacebook = true;
-                                mSubscription.add(mInteractor.requestLoginWithFacebook(user.getEmail(), user.getPassword())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(loginObserver));
+                                mFirebaseAuth.signInWithEmailAndPassword(user.getEmail(), user.getPassword())
+                                        .addOnCompleteListener(mContext, task -> {
+                                            Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+                                            mSubscription.add(mInteractor.requestLoginWithFacebook(user.getEmail(), user.getPassword())
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe(loginObserver));
+                                        });
                             }
                         }
                     });
@@ -404,9 +434,13 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
                 user.setPasswordType(User.GOOGLE_LOGIN_TYPE);
                 mInteractor.saveUserToRealm(user);
                 isFacebook = true;
-                mSubscription.add(mInteractor.requestLoginWithGoogle(user.getEmail(), user.getPassword())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(loginObserver));
+                mFirebaseAuth.signInWithEmailAndPassword(user.getEmail(), user.getEmail())
+                        .addOnCompleteListener(mContext, task -> {
+                            Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+                            mSubscription.add(mInteractor.requestLoginWithGoogle(user.getEmail(), user.getPassword())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(loginObserver));
+                        });
             }
         } else {
             mView.showToast(mContext.getString(R.string.login_error_try_again));
