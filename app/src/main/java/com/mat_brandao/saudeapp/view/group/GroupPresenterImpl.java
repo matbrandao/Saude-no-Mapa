@@ -10,6 +10,7 @@ import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.model.Grupo;
 import com.mat_brandao.saudeapp.domain.model.MembroGrupo;
 import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
+import com.mat_brandao.saudeapp.view.chat.ChatActivity;
 
 import java.util.List;
 
@@ -78,7 +79,7 @@ class GroupPresenterImpl implements GroupPresenter, GenericObjectClickListener<M
 
     @Override
     public void onChatFabClick() {
-        // TODO: 11/10/2016
+        mView.goToActivity(ChatActivity.class);
     }
 
     private void requestGroup() {

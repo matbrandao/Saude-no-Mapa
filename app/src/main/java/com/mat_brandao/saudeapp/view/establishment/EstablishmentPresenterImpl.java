@@ -61,8 +61,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static com.mat_brandao.saudeapp.R.id.map;
-
 
 public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMapReadyCallback, OnLocationFound {
     private static final String TAG = "MainPresenterImpl";
@@ -165,8 +163,8 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-//        MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(mContext, R.raw.map_style);
-//        mMap.setMapStyle(style);
+        MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(mContext, R.raw.map_style);
+        mMap.setMapStyle(style);
         checkPermissions();
         configureMapClickListener();
     }
