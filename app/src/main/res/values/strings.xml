@@ -125,4 +125,7 @@
     <string name="dialog_join_group_message">Você receberá as mensagens postadas neste grupo. Deseja fazer parte deste grupo?</string>
     <string name="dialog_join_group_positive">Participar</string>
     <string name="dialog_join_group_negative">Cancelar</string>
+    <string name="menu_item_my_groups">Meus Grupos</string>
+    <string name="menu_item_about">Sobre</string>
+    <string name="empty_my_group_text">Você não está participando de nenhum grupo</string>
 </resources>

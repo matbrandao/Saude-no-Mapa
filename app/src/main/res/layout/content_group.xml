@@ -23,7 +23,7 @@
                 android:layout_height="match_parent"
                 android:id="@+id/group_members_recycler"
                 android:padding="5dp"
-                tools:listitem="@layout/item_group_member_layout"/>
+                tools:listitem="@layout/item_group_layout"/>
 
             <TextView
                 android:layout_width="match_parent"

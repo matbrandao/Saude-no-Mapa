@@ -32,7 +32,7 @@ public class GroupInteractorImpl implements GroupInteractor {
     @Override
     public Observable<Response<List<Grupo>>> requestGroup(String nomeFantasia) {
         return RestClient.get()
-                .getGroups(mContext.getString(R.string.app_id), nomeFantasia);
+                .getGroups(mContext.getString(R.string.app_id), nomeFantasia, null);
     }
 
     @Override

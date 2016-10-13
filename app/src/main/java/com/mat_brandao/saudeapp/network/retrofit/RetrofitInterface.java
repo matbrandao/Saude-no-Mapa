@@ -127,7 +127,7 @@ public interface RetrofitInterface {
 
     @GET("/appCivicoRS/rest/grupos")
     Observable<Response<List<Grupo>>> getGroups(@Query("codAplicativo") String codAplicativo,
-                                                @Query("descricao") String descricao);
+                                                @Query("descricao") String descricao, @Query("codPessoa") Long userId);
 
     @POST("/appCivicoRS/rest/grupos")
     Observable<Response<ResponseBody>> createGroup(@Body CreateGroup createGroup);
