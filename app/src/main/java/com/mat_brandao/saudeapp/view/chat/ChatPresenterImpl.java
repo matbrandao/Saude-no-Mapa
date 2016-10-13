@@ -97,6 +97,7 @@ public class ChatPresenterImpl implements ChatPresenter {
                 }
                 Picasso.with(mContext)
                         .load(friendlyMessage.getPhotoUrl())
+                        .placeholder(R.drawable.avatar_placeholder)
                         .error(R.drawable.avatar_placeholder)
                         .into(viewHolder.messengerImageView);
             }
