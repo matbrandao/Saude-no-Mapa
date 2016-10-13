@@ -53,6 +53,10 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
+            android:name=".view.chat.ChatActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
             android:name=".view.splash.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar">
              <intent-filter>

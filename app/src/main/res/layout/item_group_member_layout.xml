@@ -15,8 +15,8 @@
         android:orientation="horizontal">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:src="@drawable/avatar_placeholder"
             android:id="@+id/member_avatar_img"/>
 
