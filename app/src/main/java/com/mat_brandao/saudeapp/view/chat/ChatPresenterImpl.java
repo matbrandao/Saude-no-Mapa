@@ -3,13 +3,21 @@ package com.mat_brandao.saudeapp.view.chat;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.FriendlyMessage;
+import com.mat_brandao.saudeapp.domain.model.Grupo;
+import com.mat_brandao.saudeapp.domain.model.User;
+import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -17,12 +25,16 @@ public class ChatPresenterImpl implements ChatPresenter {
     private static final String TAG = "ChatPresenterImpl";
     public static final String MESSAGES_CHILD = "messages";
 
+    private Grupo mGroup;
+
     private ChatInteractorImpl mInteractor;
     private Context mContext;
     private ChatView mView;
 
-    private DatabaseReference mFirebaseDatabaseReference;
+    private User mUser;
+
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> mFirebaseAdapter;
+    private DatabaseReference mFirebaseGroupReference;
 
     @Override
     public void onResume() {
@@ -36,7 +48,7 @@ public class ChatPresenterImpl implements ChatPresenter {
 
     @Override
     public void onDestroy() {
-        mView = null;
+//        mView = null;
     }
 
     @Override
@@ -49,26 +61,44 @@ public class ChatPresenterImpl implements ChatPresenter {
         mContext = context;
         mView = view;
 
+        mGroup = mView.getGroupFromIntent();
+        mView.setToolbarTitle("Chat: " + mGroup.getDescricao());
+
+        mUser = mInteractor.getUser();
         configureFirebaseAdapter();
     }
 
     private void configureFirebaseAdapter() {
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseGroupReference = mFirebaseDatabaseReference.child(String.valueOf(mGroup.getCodGrupo()));
+        checkIfGroupHasMessages();
         mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage,
                 MessageViewHolder>(
                 FriendlyMessage.class,
                 R.layout.item_message,
                 MessageViewHolder.class,
-                mFirebaseDatabaseReference.child(MESSAGES_CHILD)) {
+                mFirebaseGroupReference.child(MESSAGES_CHILD)) {
 
             @Override
             protected void populateViewHolder(MessageViewHolder viewHolder,
                                               FriendlyMessage friendlyMessage, int position) {
                 mView.setProgressBarVisibility(View.GONE);
-                viewHolder.messageTextView.setText(friendlyMessage.getText());
-                viewHolder.messengerTextView.setText(friendlyMessage.getName());
+                mView.setEmptyViewVisibility(View.GONE);
 
-                // TODO: 12-Oct-16 showImageHere
+                if (friendlyMessage.getEmail().equals(mUser.getEmail())) {
+                    viewHolder.messageLayout.setVisibility(View.GONE);
+                    viewHolder.ounMessageLayout.setVisibility(View.VISIBLE);
+                    viewHolder.ounMessageTextView.setText(friendlyMessage.getText());
+                } else {
+                    viewHolder.messageLayout.setVisibility(View.VISIBLE);
+                    viewHolder.ounMessageLayout.setVisibility(View.GONE);
+                    viewHolder.messageTextView.setText(friendlyMessage.getText());
+                    viewHolder.messengerTextView.setText(friendlyMessage.getName());
+                }
+                Picasso.with(mContext)
+                        .load(friendlyMessage.getPhotoUrl())
+                        .error(R.drawable.avatar_placeholder)
+                        .into(viewHolder.messengerImageView);
             }
         };
 
@@ -78,11 +108,9 @@ public class ChatPresenterImpl implements ChatPresenter {
                 super.onItemRangeInserted(positionStart, itemCount);
                 int friendlyMessageCount = mFirebaseAdapter.getItemCount();
                 int lastVisiblePosition = mView.getLastPositionVisible();
-                // If the recycler view is initially being loaded or the
-                // user is at the bottom of the list, scroll to the bottom
-                // of the list to show the newly added message.
+
                 if (lastVisiblePosition == -1 || (positionStart >= (friendlyMessageCount - 1) &&
-                                lastVisiblePosition == (positionStart - 1))) {
+                        lastVisiblePosition == (positionStart - 1))) {
                     mView.scrollRecyclerToPosition(positionStart);
                 }
             }
@@ -91,17 +119,52 @@ public class ChatPresenterImpl implements ChatPresenter {
         mView.setMessageAdapter(mFirebaseAdapter);
     }
 
+    private void checkIfGroupHasMessages() {
+        mFirebaseGroupReference.child(MESSAGES_CHILD).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mView.setProgressBarVisibility(View.GONE);
+                if (dataSnapshot.getValue() == null) {
+                    mView.setEmptyViewVisibility(View.VISIBLE);
+                } else {
+                    mView.setEmptyViewVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                mView.setProgressBarVisibility(View.GONE);
+            }
+        });
+    }
+
+    @Override
+    public void onSendButtonClick(String message) {
+        if (mInteractor.isMessageValid(message)) {
+            mView.clearMessageText();
+            FriendlyMessage friendlyMessage = new FriendlyMessage(message, mUser.getName(), mUser.getEmail(),
+                    mInteractor.getPhotoUrl(mUser.getId()));
+            mFirebaseGroupReference.child(MESSAGES_CHILD)
+                    .push().setValue(friendlyMessage);
+        }
+    }
 
     static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageTextView;
+        TextView ounMessageTextView;
         TextView messengerTextView;
         CircleImageView messengerImageView;
+        LinearLayout messageLayout;
+        RelativeLayout ounMessageLayout;
 
         public MessageViewHolder(View v) {
             super(v);
             messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
+            ounMessageTextView = (TextView) itemView.findViewById(R.id.ounMessageTextView);
             messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
             messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
+            messageLayout = (LinearLayout) itemView.findViewById(R.id.message_layout);
+            ounMessageLayout = (RelativeLayout) itemView.findViewById(R.id.oun_message_layout);
         }
     }
 }

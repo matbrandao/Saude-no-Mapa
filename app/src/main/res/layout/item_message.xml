@@ -1,33 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/message_layout"
         android:gravity="center_vertical">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:id="@+id/messengerImageView"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="4dp"
             android:src="@drawable/avatar_placeholder"/>
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_marginLeft="10dp">
+            android:layout_marginLeft="5dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:id="@+id/messageTextView"
+                tools:text="Texto mensagem"
                 android:layout_weight="0"/>
 
             <TextView
@@ -35,10 +42,42 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:id="@+id/messengerTextView"
+                tools:text="Nome usuario"
+                android:layout_weight="0"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/oun_message_layout"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/ounMessengerImageView"
+            android:gravity="right">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/ounMessageTextView"
+                tools:text="Texto mensagem"
                 android:layout_weight="0"/>
         </LinearLayout>
 
-    </LinearLayout>
-
-
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/ounMessengerImageView"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="4dp"
+            android:src="@drawable/avatar_placeholder"/>
+    </RelativeLayout>
 </LinearLayout>

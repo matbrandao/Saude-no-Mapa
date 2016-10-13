@@ -325,7 +325,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
                                 user.setPasswordType(User.FACEBOOK_LOGIN_TYPE);
                                 mInteractor.saveUserToRealm(user);
                                 isFacebook = true;
-                                mFirebaseAuth.signInWithEmailAndPassword(user.getEmail(), user.getEmail())
+                                mFirebaseAuth.signInWithEmailAndPassword(user.getEmail(), user.getPassword())
                                         .addOnCompleteListener(mContext, task -> {
                                             Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
                                             mSubscription.add(mInteractor.requestLoginWithFacebook(user.getEmail(), user.getPassword())

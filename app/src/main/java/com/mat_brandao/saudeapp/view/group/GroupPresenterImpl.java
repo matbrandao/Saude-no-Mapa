@@ -1,6 +1,7 @@
 package com.mat_brandao.saudeapp.view.group;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
@@ -21,9 +22,10 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 
-class GroupPresenterImpl implements GroupPresenter, GenericObjectClickListener<MembroGrupo>,
+public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickListener<MembroGrupo>,
         SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "GroupPresenterImpl";
+    public static final String GROUP_KEY = "group_key";
 
     private GroupInteractorImpl mInteractor;
     private Context mContext;
@@ -79,7 +81,9 @@ class GroupPresenterImpl implements GroupPresenter, GenericObjectClickListener<M
 
     @Override
     public void onChatFabClick() {
-        mView.goToActivity(ChatActivity.class);
+        Intent intent = new Intent(mContext, ChatActivity.class);
+        intent.putExtra(GROUP_KEY, mGroup);
+        mView.goToActivity(intent);
     }
 
     private void requestGroup() {

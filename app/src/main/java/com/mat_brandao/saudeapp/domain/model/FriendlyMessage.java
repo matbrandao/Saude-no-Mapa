@@ -32,6 +32,21 @@ public class FriendlyMessage {
         this.photoUrl = photoUrl;
     }
 
+    public FriendlyMessage(String text, String name, String email, String time, String photoUrl) {
+        this.text = text;
+        this.name = name;
+        this.email = email;
+        this.time = time;
+        this.photoUrl = photoUrl;
+    }
+
+    public FriendlyMessage(String text, String name, String email, String photoUrl) {
+        this.text = text;
+        this.name = name;
+        this.email = email;
+        this.photoUrl = photoUrl;
+    }
+
     public String getText() {
         return text;
     }
@@ -54,5 +69,21 @@ public class FriendlyMessage {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

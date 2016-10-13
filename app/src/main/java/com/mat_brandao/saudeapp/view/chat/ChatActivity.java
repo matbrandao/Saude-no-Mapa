@@ -8,17 +8,21 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.FriendlyMessage;
+import com.mat_brandao.saudeapp.domain.model.Grupo;
 import com.mat_brandao.saudeapp.view.base.BaseActivity;
 import com.mat_brandao.saudeapp.view.base.BasePresenter;
+import com.mat_brandao.saudeapp.view.group.GroupPresenterImpl;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class ChatActivity extends BaseActivity implements ChatView {
 
@@ -36,6 +40,8 @@ public class ChatActivity extends BaseActivity implements ChatView {
     RelativeLayout chatEntry;
     @Bind(R.id.progressBar)
     ProgressBar progressBar;
+    @Bind(R.id.empty_view_layout)
+    LinearLayout emptyViewLayout;
 
     private ChatPresenterImpl mPresenter;
     private LinearLayoutManager mLinearLayoutManager;
@@ -62,6 +68,11 @@ public class ChatActivity extends BaseActivity implements ChatView {
         messageRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         mPresenter = new ChatPresenterImpl(this, this);
+    }
+
+    @OnClick(R.id.sendButton)
+    void onSendButtonClick() {
+        mPresenter.onSendButtonClick(messageEditText.getText().toString());
     }
 
     @Override
@@ -119,5 +130,25 @@ public class ChatActivity extends BaseActivity implements ChatView {
     @Override
     public void setProgressBarVisibility(int visibility) {
         progressBar.setVisibility(visibility);
+    }
+
+    @Override
+    public void clearMessageText() {
+        messageEditText.setText(null);
+    }
+
+    @Override
+    public Grupo getGroupFromIntent() {
+        return (Grupo) getIntent().getSerializableExtra(GroupPresenterImpl.GROUP_KEY);
+    }
+
+    @Override
+    public void setToolbarTitle(String title) {
+        toolbar.setTitle(title);
+    }
+
+    @Override
+    public void setEmptyViewVisibility(int visibility) {
+        emptyViewLayout.setVisibility(visibility);
     }
 }

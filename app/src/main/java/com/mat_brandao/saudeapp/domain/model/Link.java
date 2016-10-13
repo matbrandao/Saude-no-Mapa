@@ -3,7 +3,9 @@ package com.mat_brandao.saudeapp.domain.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Link {
+import java.io.Serializable;
+
+public class Link implements Serializable {
 
     @SerializedName("rel")
     @Expose
