@@ -4,4 +4,8 @@ import com.mat_brandao.saudeapp.domain.model.User;
 
 public interface SplashInteractor {
     User getUser();
+
+    boolean isFirstUse();
+
+    void setNotFirstUse();
 }

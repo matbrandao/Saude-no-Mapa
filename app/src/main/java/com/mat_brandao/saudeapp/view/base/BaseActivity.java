@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
@@ -23,7 +24,8 @@ import com.mat_brandao.saudeapp.R;
  * Created by Mateus Brandão on 04-Apr-16.
  */
 public abstract class BaseActivity extends AppCompatActivity {
-
+    private static final String TAG = "BaseActivity";
+    public boolean shouldAnimate = true;
     private ProgressDialog mProgressDialog;
 
     @Override protected void onResume() {
@@ -41,11 +43,18 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Log.d(TAG, "onCreate: shouldAnimate " + shouldAnimate);
+            if (shouldAnimate)
+                setupWindowAnimations();
+        }
+    }
+
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            setupWindowAnimations();
-        }
     }
 
     @SuppressLint("NewApi")

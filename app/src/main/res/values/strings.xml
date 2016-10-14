@@ -95,8 +95,6 @@
     <string name="app_id">261</string>
     <string name="device_os">Android</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="favorites_title">Minha Lista</string>
     <string name="fav_establishment_empty">Nenhum estabelecimento favoritado</string>
     <string name="fav_remedy_empty">Nenhum remédio favoritado</string>
@@ -132,4 +130,10 @@
     <string name="about_title">Sobre o Aplicativo</string>
     <string name="doubt_or_suggestions"><![CDATA[Qualquer dúvida ou sugestão, favor entrar em contato pelo email: <b>brandao309@gmail.com<b>]]></string>
     <string name="about_text"><![CDATA[O aplicativo <b>Saúde no Mapa</b> foi desenvolvido com o intuito de concorrer no concurso DESAFIO DE APLICATIVOS CÍVICOS: CONTROLE SOCIAL DIGITAL-2016, disponibilizado pelo Tribunal de Contas da União, com o objetivo de ajudar a população utilizando dados abertos.]]></string>
+    <string name="title_one">Estabelecimentos de Saúde</string>
+    <string name="description_one">Pesquise e veja todas as informações sobre os estabelecimentos de saúde próximos a você.</string>
+    <string name="title_two">Remédios</string>
+    <string name="description_two">Veja informações sobre os remédios cadastrados no DATASUS</string>
+    <string name="title_three">Chats em Grupo</string>
+    <string name="description_three">Converse com quem está no estabelecimento de saúde naquele momento, e obtenha informações em tempo real sobre o estado do local.</string>
 </resources>

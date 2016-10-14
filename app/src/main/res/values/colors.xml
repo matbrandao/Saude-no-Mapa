@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#c25d58</color>
     <color name="colorAccent">#00707f</color>
 
+    <color name="splash_background">#793A37</color>
+
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="login_edit_text_color">#CCCCCC</color>

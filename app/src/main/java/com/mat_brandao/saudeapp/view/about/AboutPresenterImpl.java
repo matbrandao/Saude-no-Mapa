@@ -38,6 +38,5 @@ public class AboutPresenterImpl implements AboutPresenter {
 
     @Override
     public void onRetryClicked() {
-        // TODO:
     }
 }
