@@ -106,7 +106,6 @@ public class LoginActivity extends BaseActivity implements LoginView {
 
     @Override
     public void showNoConnectionSnackBar() {
-        // TODO: 07-Sep-16
     }
 
     @Override

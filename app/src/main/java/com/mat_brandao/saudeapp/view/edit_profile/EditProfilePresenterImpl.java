@@ -87,7 +87,6 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
         mView = view;
 
         mUser = mInteractor.getUser();
-        // TODO: 04/10/2016 show sex
         setupSpinners();
         setupObservables();
 

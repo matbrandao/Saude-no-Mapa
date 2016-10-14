@@ -29,6 +29,12 @@ public class FavoritesFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) getContext()).setNavigationItemChecked(R.id.menu_item_my_list);
+    }
+
     public static FavoritesFragment newInstance() {
         FavoritesFragment fragment = new FavoritesFragment();
         Bundle args = new Bundle();

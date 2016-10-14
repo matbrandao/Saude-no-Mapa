@@ -80,7 +80,6 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Override
     public void showNoConnectionSnackBar() {
-        // TODO: 16/09/2016  
     }
 
     @Override
@@ -102,6 +101,7 @@ public class MainActivity extends BaseActivity implements MainView {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.frame_content, fragment)
+                .addToBackStack(null)
                 .commit();
     }
 

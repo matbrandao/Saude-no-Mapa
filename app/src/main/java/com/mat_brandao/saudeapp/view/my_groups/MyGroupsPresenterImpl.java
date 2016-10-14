@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 
+import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Grupo;
 import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
 import com.mat_brandao.saudeapp.view.chat.ChatActivity;
+import com.mat_brandao.saudeapp.view.main.MainActivity;
 
 import java.util.List;
 
@@ -29,7 +31,7 @@ public class MyGroupsPresenterImpl implements MyGroupsPresenter, GenericObjectCl
 
     @Override
     public void onResume() {
-
+        ((MainActivity) mContext).setNavigationItemChecked(R.id.menu_item_my_groups);
     }
 
     @Override

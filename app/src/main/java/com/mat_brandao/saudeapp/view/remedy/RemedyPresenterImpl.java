@@ -19,6 +19,7 @@ import com.mat_brandao.saudeapp.domain.model.Conteudo;
 import com.mat_brandao.saudeapp.domain.model.Remedy;
 import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
+import com.mat_brandao.saudeapp.view.main.MainActivity;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.util.List;
@@ -50,7 +51,7 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
 
     @Override
     public void onResume() {
-
+        ((MainActivity) mContext).setNavigationItemChecked(R.id.menu_item_remedy);
     }
 
     @Override

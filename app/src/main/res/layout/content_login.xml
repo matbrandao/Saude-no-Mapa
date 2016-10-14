@@ -18,11 +18,6 @@
            android:src="@drawable/login_back_dark"/>
    </FrameLayout>
 
-    <!--<View-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:background="#44000000"/>-->
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="200dp"
@@ -32,6 +27,19 @@
         android:layout_marginTop="32dp"
         android:layout_centerHorizontal="true"
         android:contentDescription="@null"/>
+
+    <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/contest_text"-->
+        <!--android:textSize="12sp"-->
+        <!--android:paddingLeft="32dp"-->
+        <!--android:paddingRight="32dp"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:gravity="center"-->
+        <!--android:layout_below="@id/logo_image"-->
+        <!--android:textColor="@color/white"-->
+        <!--android:text="DESAFIO DE APLICATIVOS CÍVICOS:\nCONTROLE SOCIAL DIGITAL-2016\nTribunal de Contas da União"/>-->
 
     <!--<View-->
     <!--android:layout_width="match_parent"-->

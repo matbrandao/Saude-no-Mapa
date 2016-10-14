@@ -20,7 +20,6 @@ public class SaudeApp extends Application {
         Timber.plant(new Timber.DebugTree());
 
         RealmConfiguration configuration = new RealmConfiguration.Builder(this)
-                // TODO: 27/07/2016
                 .deleteRealmIfMigrationNeeded()
                 .build();
 

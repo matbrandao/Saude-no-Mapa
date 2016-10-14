@@ -46,6 +46,7 @@ import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
 import com.mat_brandao.saudeapp.view.group.GroupActivity;
+import com.mat_brandao.saudeapp.view.main.MainActivity;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.util.ArrayList;
@@ -96,6 +97,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
 
     @Override
     public void onResume() {
+        ((MainActivity) mContext).setNavigationItemChecked(R.id.menu_item_establishments);
     }
 
     @Override
