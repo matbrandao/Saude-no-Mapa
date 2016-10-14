@@ -77,7 +77,6 @@ public class ChatPresenterImpl implements ChatPresenter {
                 R.layout.item_message,
                 MessageViewHolder.class,
                 mFirebaseGroupReference.child(MESSAGES_CHILD)) {
-
             @Override
             protected void populateViewHolder(MessageViewHolder viewHolder,
                                               FriendlyMessage friendlyMessage, int position) {
@@ -113,7 +112,7 @@ public class ChatPresenterImpl implements ChatPresenter {
                         lastVisiblePosition == (positionStart - 1))) {
                     mView.scrollRecyclerToPosition(positionStart);
                 }
-                mInteractor.saveItemCount(mGroup.getCodGrupo(), itemCount);
+                mInteractor.saveItemCount(mGroup.getCodGrupo(), mFirebaseAdapter.getItemCount());
             }
         });
 

@@ -47,9 +47,7 @@ public class SaudeApp extends Application {
             mUser = realm.where(User.class).findFirst();
         });
 
-        if (mUser != null) {
-            setAlarm();
-        }
+        setAlarm();
     }
 
     private void setAlarm() {

@@ -45,35 +45,42 @@ public class GroupsService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d(TAG, "onHandleIntent() called with: intent = [" + intent + "]");
         mInteractor = new MyGroupsInteractorImpl(this);
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mInteractor.requestMyGroups()
-                .onErrorReturn(throwable -> null)
-                .retry(3)
-                .subscribe(listResponse -> {
-                    if (listResponse != null) {
-                        for (Grupo grupo : listResponse.body()) {
-                            mFirebaseGroupReference = mFirebaseDatabaseReference.child(String.valueOf(grupo.getCodGrupo()));
-                            mFirebaseGroupReference.child(MESSAGES_CHILD).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.getValue() != null) {
-                                        int itemCount = mInteractor.getChatItemCountByGroupId(grupo.getCodGrupo());
-                                        if (itemCount < dataSnapshot.getChildrenCount()) {
-                                            mInteractor.saveItemCount(grupo.getCodGrupo(), (int) dataSnapshot.getChildrenCount());
-                                            showNotification(grupo);
+        if (mInteractor.getUser() != null) {
+            mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+            mInteractor.requestMyGroups()
+                    .onErrorReturn(throwable -> null)
+                    .retry(3)
+                    .subscribe(listResponse -> {
+                        if (listResponse != null) {
+                            for (Grupo grupo : listResponse.body()) {
+                                Log.d(TAG, "onHandleIntent: group loop");
+                                mFirebaseGroupReference = mFirebaseDatabaseReference.child(String.valueOf(grupo.getCodGrupo()));
+                                mFirebaseGroupReference.child(MESSAGES_CHILD).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.getValue() != null) {
+                                            int itemCount = mInteractor.getChatItemCountByGroupId(grupo.getCodGrupo());
+                                            Log.d(TAG, "onDataChange: group: " + grupo.getDescricao());
+                                            Log.d(TAG, "onDataChange: itemCount: " + itemCount);
+                                            Log.d(TAG, "onDataChange: snapshotChildrenCount: " + dataSnapshot.getChildrenCount());
+                                            if (itemCount < dataSnapshot.getChildrenCount()) {
+                                                mInteractor.saveItemCount(grupo.getCodGrupo(), (int) dataSnapshot.getChildrenCount());
+                                                showNotification(grupo);
+                                            }
                                         }
                                     }
-                                }
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                    Log.d(TAG, "onCancelled() called with: databaseError = [" + databaseError + "]");
-                                }
-                            });
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        Log.d(TAG, "onCancelled() called with: databaseError = [" + databaseError + "]");
+                                    }
+                                });
+                            }
                         }
-                    }
-                });
+                    });
+        }
     }
 
     private void showNotification(Grupo grupo) {

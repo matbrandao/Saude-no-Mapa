@@ -1,6 +1,7 @@
 package com.mat_brandao.saudeapp.view.my_groups;
 
 import com.mat_brandao.saudeapp.domain.model.Grupo;
+import com.mat_brandao.saudeapp.domain.model.User;
 
 import java.util.List;
 
@@ -13,4 +14,6 @@ public interface MyGroupsInteractor {
     int getChatItemCountByGroupId(Integer groupId);
 
     void saveItemCount(Integer codGrupo, int itemCount);
+
+    User getUser();
 }

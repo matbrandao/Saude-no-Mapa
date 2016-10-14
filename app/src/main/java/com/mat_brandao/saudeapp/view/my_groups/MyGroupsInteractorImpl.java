@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Grupo;
+import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.repository.UserRepositoryImpl;
 import com.mat_brandao.saudeapp.network.retrofit.RestClient;
 
@@ -43,5 +44,10 @@ public class MyGroupsInteractorImpl implements MyGroupsInteractor {
         mSharedPreferences.edit()
                 .putInt(String.valueOf(codGrupo), itemCount)
                 .apply();
+    }
+
+    @Override
+    public User getUser() {
+        return mUserRepository.getUser();
     }
 }
