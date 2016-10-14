@@ -27,6 +27,7 @@ public class SplashInteractorImpl implements SplashInteractor {
 
     @Override
     public boolean isFirstUse() {
+        // TODO: 14/10/2016
         return mSharedPreferences.getBoolean(FIRST_USE_KEY, true);
 //        return true;
     }

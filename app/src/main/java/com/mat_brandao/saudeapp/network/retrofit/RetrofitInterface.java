@@ -104,6 +104,9 @@ public interface RetrofitInterface {
     @GET("mapa-da-saude/rest/estabelecimentos/unidade/{codUnidade}")
     Observable<Response<List<Establishment>>> getEstablishmentByCod(@Path("codUnidade") Long establishmentCod);
 
+    @GET("mapa-da-saude/rest/estabelecimentos/")
+    Observable<Response<List<Establishment>>> getEstablishmentByName(@Query("nomeFantasia") String nomeFantasia, @Query("uf") String uf);
+
     @GET("mapa-da-saude/rest/remedios")
     Observable<Response<List<Remedy>>> getRemedyByCod(@Query("codBarraEan") Long codBarraEan);
 

@@ -8,6 +8,7 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -15,9 +16,13 @@ import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 
 import com.google.android.gms.maps.SupportMapFragment;
+import com.jakewharton.rxbinding.widget.RxAdapterView;
+import com.jakewharton.rxbinding.widget.RxTextView;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.view.base.BaseFragment;
 import com.mat_brandao.saudeapp.view.base.BasePresenter;
@@ -26,6 +31,7 @@ import com.mat_brandao.saudeapp.view.main.MainActivity;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Observable;
 
 public class EstablishmentFragment extends BaseFragment implements EstablishmentView {
     @Bind(R.id.coordinator_layout)
@@ -34,6 +40,10 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
     FloatingActionButton filterFab;
     @Bind(R.id.progress_fab)
     ProgressBar progressFab;
+    @Bind(R.id.search_remedy_edit_text)
+    TextInputEditText searchRemedyEditText;
+    @Bind(R.id.uf_spinner)
+    Spinner ufSpinner;
 
     private EstablishmentPresenterImpl mPresenter;
 
@@ -123,7 +133,6 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
 
     @Override
     public void toggleFabButton(boolean enabled) {
-        // TODO: 12/09/2016 Maybe animate this state change
         if (enabled) {
             filterFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorAccent)));
             filterFab.setEnabled(true);
@@ -138,7 +147,6 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
         alertBuilder.setTitle(R.string.dialog_gps_title);
         alertBuilder.setMessage(R.string.dialog_gps_message);
-        // TODO: 16/09/2016
         alertBuilder.setPositiveButton("Ligar GPS", onAcceptListener);
         alertBuilder.setNegativeButton("Continuar", (dialog, which) -> {
             mPresenter.onGpsTurnedOff();
@@ -163,6 +171,31 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
     }
 
     @Override
+    public void setFabVisibility(int visibility) {
+        filterFab.setVisibility(visibility);
+    }
+
+    @Override
+    public void setUfSpinnerAdapter(ArrayAdapter<String> adapter) {
+        ufSpinner.setAdapter(adapter);
+    }
+
+    @Override
+    public void setUfSpinnerSelection(int selection) {
+        ufSpinner.setSelection(selection);
+    }
+
+    @Override
+    public Observable<CharSequence> registerSearchEditTextObserver() {
+        return RxTextView.textChanges(searchRemedyEditText);
+    }
+
+    @Override
+    public Observable<Integer> registerUfSpinnerObserver() {
+        return RxAdapterView.itemSelections(ufSpinner);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         String provider = Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
@@ -171,5 +204,11 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
         } else {
             mPresenter.onGpsTurnedOff();
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 }

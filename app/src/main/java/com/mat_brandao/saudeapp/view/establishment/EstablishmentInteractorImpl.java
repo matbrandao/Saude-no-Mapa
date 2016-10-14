@@ -29,8 +29,10 @@ import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 import com.mat_brandao.saudeapp.domain.util.MaskUtil;
 import com.mat_brandao.saudeapp.domain.util.MetaModelConstants;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
+import com.mat_brandao.saudeapp.domain.util.StringListener;
 import com.mat_brandao.saudeapp.network.retrofit.RestClient;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,11 @@ import okhttp3.ResponseBody;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import retrofit2.Response;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+import static android.icu.lang.UCharacter.JoiningGroup.PE;
+import static com.google.android.gms.common.internal.zzf.BA;
 
 public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     private static final Double SEARCH_RADIUS = 10.0;
@@ -412,5 +419,64 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     @Override
     public String getPostCode() {
         return String.valueOf(mUser.getEstablishmentLikePost());
+    }
+
+    @Override
+    public List<String> getUfList() {
+        List<String> ufList = new ArrayList<>();
+        ufList.add("AC");
+        ufList.add("AL");
+        ufList.add("AP");
+        ufList.add("AM");
+        ufList.add("BA");
+        ufList.add("CE");
+        ufList.add("DF");
+        ufList.add("ES");
+        ufList.add("GO");
+        ufList.add("MS");
+        ufList.add("MT");
+        ufList.add("MS");
+        ufList.add("MG");
+        ufList.add("PR");
+        ufList.add("PB");
+        ufList.add("PA");
+        ufList.add("PE");
+        ufList.add("PI");
+        ufList.add("RJ");
+        ufList.add("RN");
+        ufList.add("RS");
+        ufList.add("RO");
+        ufList.add("RR");
+        ufList.add("SC");
+        ufList.add("SE");
+        ufList.add("SP");
+        ufList.add("TO");
+
+        return ufList;
+    }
+
+    @Override
+    public void requestUserUf(Double lat, Double lng, StringListener listener) {
+        ReactiveLocationProvider locationProvider = new ReactiveLocationProvider(mContext);
+        locationProvider.getReverseGeocodeObservable(lat, lng, 1)
+                .retry(10)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable1 -> new ArrayList<>())
+                .subscribe(addresses -> {
+                    if (addresses != null)
+                        listener.onNext(getUfFromAddress(addresses.get(0).getAddressLine(1)));
+                });
+    }
+
+    @Override
+    public Observable<Response<List<Establishment>>> requestEstablishmentsByName(String searchText, String searchUf) {
+        return RestClient.get()
+                .getEstablishmentByName(searchText, searchUf);
+    }
+
+    private String getUfFromAddress(String addressLine) {
+        String[] adresses = addressLine.split("-");
+        return adresses[1].replace(" ", "");
     }
 }

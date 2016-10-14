@@ -10,6 +10,7 @@ import com.mat_brandao.saudeapp.domain.model.PostContent;
 import com.mat_brandao.saudeapp.domain.model.PostResponse;
 import com.mat_brandao.saudeapp.domain.model.Rating;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
+import com.mat_brandao.saudeapp.domain.util.StringListener;
 
 import java.util.List;
 
@@ -78,4 +79,10 @@ public interface EstablishmentInteractor {
     void addEstablishmentToContentList(Long contentCode, Long codUnidade);
 
     void removeEstablishmentFromLikedList(String codUnidade);
+
+    List<String> getUfList();
+
+    void requestUserUf(Double lat, Double lng, StringListener listener);
+
+    Observable<Response<List<Establishment>>> requestEstablishmentsByName(String searchText, String searchUf);
 }

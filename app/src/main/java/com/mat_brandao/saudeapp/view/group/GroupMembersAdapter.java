@@ -66,7 +66,7 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<GroupMembersAdapte
                             if (userResponse.isSuccessful()) {
                                 holder.memberNameText.setText(userResponse.body().getName());
                             } else {
-                                // TODO: 11/10/2016
+                                holder.memberNameText.setText("Membro");
                             }
                         }
                     });

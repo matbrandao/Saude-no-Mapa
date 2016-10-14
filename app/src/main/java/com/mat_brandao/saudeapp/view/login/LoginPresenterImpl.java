@@ -318,7 +318,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnFormEmitted, Google
                             } else {
                                 User user = new User();
                                 user.setName(name);
-//                            Log.d(TAG, "onSuccess: " + loginResult.getAccessToken().getToken());
+                                // TODO: 14/10/2016  
                                 user.setEmail("xx" + email);
                                 user.setPassword(AccessToken.getCurrentAccessToken().getApplicationId() +
                                         AccessToken.getCurrentAccessToken().getUserId() + "xx");

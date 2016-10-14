@@ -67,7 +67,6 @@ public class RemedyPresenterImpl implements RemedyPresenter, GenericObjectClickL
 
     @Override
     public void onRetryClicked() {
-        // TODO: 27/09/2016
     }
 
     public RemedyPresenterImpl(RemedyView view, Context context) {

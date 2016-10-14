@@ -45,6 +45,7 @@ import com.mat_brandao.saudeapp.domain.model.Error401;
 import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
+import com.mat_brandao.saudeapp.domain.util.StringListener;
 import com.mat_brandao.saudeapp.view.group.GroupActivity;
 import com.mat_brandao.saudeapp.view.main.MainActivity;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -63,7 +64,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 
-public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMapReadyCallback, OnLocationFound {
+public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMapReadyCallback, OnLocationFound,
+        StringListener {
     private static final String TAG = "MainPresenterImpl";
     private static final float DEFAULT_ZOOM = 14f;
     private static final int ESTABLISHMENT_SEARCH_LIMIT = 30;
@@ -94,6 +96,10 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
     private TextView mCurrentFilterTitle;
     private SimpleRatingBar mRatingView;
     private ProgressBar mEstablishmentProgressBar;
+    private ArrayAdapter<String> mAdapter;
+    private List<String> mUfList;
+    private String mSearchText;
+    private String mSearchUf;
 
     @Override
     public void onResume() {
@@ -126,7 +132,57 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         mActivity = activity;
         mView = view;
 
+        setSpinnerAdater();
         requestLikedEstablishments();
+        setupSearchObservers();
+    }
+
+    private void setupSearchObservers() {
+        Observable<CharSequence> searchTextObservable =  mView.registerSearchEditTextObserver();
+        Observable<Integer> ufSpinnerObservable =  mView.registerUfSpinnerObserver();
+
+        searchTextObservable.subscribe();
+        searchTextObservable.subscribe();
+
+        Observable.combineLatest(searchTextObservable, ufSpinnerObservable,
+                (charSequence, integer) -> {
+                    mSearchText = charSequence.toString();
+                    mSearchUf = mUfList.get(integer);
+                    return (mSearchText.trim().length() > 3);
+                }).observeOn(AndroidSchedulers.mainThread())
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .subscribe(shouldFetch -> {
+                    if (shouldFetch) {
+                        // TODO: 14/10/2016 TEST THIS RETURN WITH NOMEFANTASIA AS PARAMETER
+                        try {
+                            mFilteredEstablishmentList.clear();
+                        } catch (Exception e) {}
+                        try {
+                            mCategoriaList.clear();
+                        } catch (Exception e) {}
+                        try {
+                            mEstablishmentList.clear();
+                        } catch (Exception e) {}
+                        try {
+                            mRemoveList.clear();
+                        } catch (Exception e) {}
+                        try {
+                            mRedeAtendimentoList.clear();
+                        } catch (Exception e) {}
+                        mView.setProgressFabVisibility(View.VISIBLE);
+                        mLastObservable = mInteractor.requestEstablishmentsByName(mSearchText, mSearchUf);
+                        mLastObserver = requestEstablishmentsObserver;
+                        mSubscription.add(mInteractor.requestEstablishmentsByName(mSearchText, mSearchUf)
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(requestEstablishmentsObserver));
+                    }
+                });
+    }
+
+    private void setSpinnerAdater() {
+        mUfList = mInteractor.getUfList();
+        mAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mUfList);
+        mView.setUfSpinnerAdapter(mAdapter);
     }
 
     private void requestLikedEstablishments() {
@@ -180,6 +236,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                         requestUserLocation();
                     } else {
                         mView.showToast(mContext.getString(R.string.needed_location_permission));
+                        onNoGpsLayout();
                     }
                 });
     }
@@ -219,7 +276,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                             mInteractor.addEstablishmentToRatingList(listResponse.body().get(0).getCodPostagem(), codUnidade);
                             if (listResponse.body().get(0).getConteudos().size() > 0) {
                                 mInteractor.addEstablishmentToContentList(listResponse.body().
-                                        get(0).getConteudos().get(0).getCodConteudoPostagem()
+                                                get(0).getConteudos().get(0).getCodConteudoPostagem()
                                         , codUnidade);
                             }
                             mInteractor.requestEstablishmentRating(codUnidade)
@@ -463,7 +520,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
     }
 
     private void onNoGpsLayout() {
-        // TODO: 09/09/2016 treat no gps layout;
+        mView.setProgressFabVisibility(View.GONE);
     }
 
     @Override
@@ -674,16 +731,26 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
 
     @Override
     public void onLocationFound(Location location) {
+        mMap.setMyLocationEnabled(true);
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         mLocation = location;
-        mMap.setMyLocationEnabled(true);
+        mInteractor.requestUserUf(location.getLatitude(), location.getLongitude(), this);
         updateMapLocation();
 
         requestEstablishments(0);
+    }
+
+    /**
+     * On Geocode found.
+     * @param uf
+     */
+    @Override
+    public void onNext(String uf) {
+        mView.setUfSpinnerSelection(mUfList.indexOf(uf));
     }
 
     private void requestEstablishments(int pagination) {

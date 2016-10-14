@@ -136,4 +136,5 @@
     <string name="description_two">Veja informações sobre os remédios cadastrados no DATASUS</string>
     <string name="title_three">Chats em Grupo</string>
     <string name="description_three">Converse com quem está no estabelecimento de saúde naquele momento, e obtenha informações em tempo real sobre o estado do local.</string>
+    <string name="search_establishment_hint">Buscar Estabelecimentos</string>
 </resources>
