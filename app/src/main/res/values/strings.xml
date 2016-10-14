@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SaudeApp</string>
+    <string name="app_name">Saúde no Mapa</string>
     <string name="facebook_app_id">407275149396946</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_maps">Map</string>
@@ -128,4 +128,8 @@
     <string name="menu_item_my_groups">Meus Grupos</string>
     <string name="menu_item_about">Sobre</string>
     <string name="empty_my_group_text">Você não está participando de nenhum grupo</string>
+    <string name="my_groups_title">Meus Grupos</string>
+    <string name="about_title">Sobre o Aplicativo</string>
+    <string name="doubt_or_suggestions"><![CDATA[Qualquer dúvida ou sugestão, favor entrar em contato pelo email: <b>brandao309@gmail.com<b>]]></string>
+    <string name="about_text"><![CDATA[O aplicativo <b>Saúde no Mapa</b> foi desenvolvido com o intuito de concorrer no concurso DESAFIO DE APLICATIVOS CÍVICOS: CONTROLE SOCIAL DIGITAL-2016, disponibilizado pelo Tribunal de Contas da União, com o objetivo de ajudar a população utilizando dados abertos.]]></string>
 </resources>

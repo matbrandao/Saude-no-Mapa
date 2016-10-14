@@ -8,6 +8,7 @@ import android.view.MenuItem;
 
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.User;
+import com.mat_brandao.saudeapp.view.about.AboutFragment;
 import com.mat_brandao.saudeapp.view.edit_profile.EditProfileActivity;
 import com.mat_brandao.saudeapp.view.establishment.EstablishmentFragment;
 import com.mat_brandao.saudeapp.view.favorites.FavoritesFragment;
@@ -23,6 +24,8 @@ public class MainPresenterImpl implements MainPresenter, NavigationView.OnNaviga
     private MainView mView;
 
     private User mUser;
+
+    private int mItemShowing;
 
     @Override
     public void onResume() {
@@ -74,7 +77,7 @@ public class MainPresenterImpl implements MainPresenter, NavigationView.OnNaviga
         } else if (item.getItemId() == R.id.menu_item_my_groups) {
             mView.showFragment(MyGroupsFragment.newInstance());
         } else if (item.getItemId() == R.id.menu_item_about) {
-            // TODO: 13/10/2016 add about fragment
+            mView.showFragment(AboutFragment.newInstance());
         } else if (item.getItemId() == R.id.menu_item_logout) {
             mInteractor.logout();
             Intent intent = new Intent(mContext, LoginActivity.class);

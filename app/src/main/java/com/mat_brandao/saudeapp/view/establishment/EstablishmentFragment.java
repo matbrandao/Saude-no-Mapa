@@ -10,17 +10,15 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.SupportMapFragment;
 import com.mat_brandao.saudeapp.R;
-import com.mat_brandao.saudeapp.view.base.BaseActivity;
 import com.mat_brandao.saudeapp.view.base.BaseFragment;
 import com.mat_brandao.saudeapp.view.base.BasePresenter;
 import com.mat_brandao.saudeapp.view.main.MainActivity;
@@ -39,6 +37,8 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
 
     private EstablishmentPresenterImpl mPresenter;
 
+    private static View view;
+
     public EstablishmentFragment() {
         // Required empty public constructor
     }
@@ -55,7 +55,16 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.establishment_fragment, container, false);
+        if (view != null) {
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if (parent != null)
+                parent.removeView(view);
+        }
+        try {
+            view = inflater.inflate(R.layout.establishment_fragment, container, false);
+        } catch (InflateException e) {
+            /* map is already there, just return view as it is */
+        }
         ButterKnife.bind(this, view);
 
         ((MainActivity) getActivity()).setToolbarTitle(getContext().getString(R.string.establishments_title));

@@ -1,15 +1,13 @@
-package com.mat_brandao.saudeapp.view.my_groups;
+package com.mat_brandao.saudeapp.view.about;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.mat_brandao.saudeapp.R;
@@ -20,43 +18,38 @@ import com.mat_brandao.saudeapp.view.main.MainActivity;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class MyGroupsFragment extends BaseFragment implements MyGroupsView {
+public class AboutFragment extends BaseFragment implements AboutView {
 
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
-    @Bind(R.id.groups_recycler)
-    RecyclerView groupsRecycler;
-    @Bind(R.id.empty_text_view)
-    TextView emptyTextView;
-    @Bind(R.id.progress_layout)
-    FrameLayout progressLayout;
+    @Bind(R.id.about_text)
+    TextView aboutText;
+    @Bind(R.id.doubs_and_suggestions_text)
+    TextView doubsAndSuggestionsText;
 
-    private MyGroupsPresenterImpl mPresenter;
-
-    public static MyGroupsFragment newInstance() {
-        Bundle args = new Bundle();
-        MyGroupsFragment fragment = new MyGroupsFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private AboutPresenterImpl mPresenter;
 
     @Override
     protected BasePresenter getPresenter() {
         return mPresenter;
     }
 
+    public static AboutFragment newInstance() {
+        Bundle args = new Bundle();
+        AboutFragment fragment = new AboutFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_my_groups, container, false);
+        View view = inflater.inflate(R.layout.fragment_about, container, false);
         ButterKnife.bind(this, view);
 
-        ((MainActivity) getActivity()).setToolbarTitle(getContext().getString(R.string.my_groups_title));
+        ((MainActivity) getActivity()).setToolbarTitle(getContext().getString(R.string.about_title));
 
-        groupsRecycler.setHasFixedSize(true);
-        groupsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        mPresenter = new MyGroupsPresenterImpl(this, getContext());
+        mPresenter = new AboutPresenterImpl(this, getContext());
         return view;
     }
 
@@ -98,17 +91,18 @@ public class MyGroupsFragment extends BaseFragment implements MyGroupsView {
     }
 
     @Override
-    public void setGroupsAdapter(RecyclerView.Adapter adapter) {
-        groupsRecycler.setAdapter(adapter);
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     @Override
-    public void setEmptyViewVisibility(int visibility) {
-        emptyTextView.setVisibility(visibility);
+    public void setAboutText(Spanned text) {
+        aboutText.setText(text);
     }
 
     @Override
-    public void setProgressBarVisibility(int visibility) {
-        progressLayout.setVisibility(visibility);
+    public void setDoubsAndSuggestionsText(Spanned text) {
+        doubsAndSuggestionsText.setText(text);
     }
 }
