@@ -1,18 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/splash_background"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_splash">
 
-    <LinearLayout
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:id="@+id/login_background_image"
+        android:scaleType="centerCrop"
+        android:src="@drawable/login_back_dark"/>
 
-    </LinearLayout>
-</android.support.v4.widget.NestedScrollView>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:id="@+id/logo_image"
+            android:src="@drawable/app_icon"
+            android:scaleType="fitCenter"
+            android:alpha="0"
+            android:layout_marginTop="75dp"
+            android:layout_centerHorizontal="true"
+            android:contentDescription="@null"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/contest_text"
+            android:textSize="14sp"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="32dp"
+            android:textColor="@color/white"
+            android:text="DESAFIO DE APLICATIVOS CÍVICOS:\nCONTROLE SOCIAL DIGITAL-2016\nTribunal de Contas da União"/>
+    </RelativeLayout>
+</FrameLayout>

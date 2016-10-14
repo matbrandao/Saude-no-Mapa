@@ -53,7 +53,6 @@ public class ChatPresenterImpl implements ChatPresenter {
 
     @Override
     public void onRetryClicked() {
-        // TODO:
     }
 
     public ChatPresenterImpl(ChatView view, Context context) {
