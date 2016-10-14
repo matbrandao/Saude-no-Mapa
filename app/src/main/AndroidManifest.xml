@@ -85,6 +85,9 @@
                 <!--<action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>-->
             <!--</intent-filter>-->
         <!--</service>-->
+        <service
+            android:name=".domain.util.GroupsService"
+            android:exported="false"/>
 
         <service
             android:name=".domain.fcm.FirebaseMessasing">

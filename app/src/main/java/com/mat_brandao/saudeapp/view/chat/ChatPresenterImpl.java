@@ -113,6 +113,7 @@ public class ChatPresenterImpl implements ChatPresenter {
                         lastVisiblePosition == (positionStart - 1))) {
                     mView.scrollRecyclerToPosition(positionStart);
                 }
+                mInteractor.saveItemCount(mGroup.getCodGrupo(), itemCount);
             }
         });
 

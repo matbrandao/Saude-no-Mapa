@@ -9,4 +9,8 @@ import rx.Observable;
 
 public interface MyGroupsInteractor {
     Observable<Response<List<Grupo>>> requestMyGroups();
+
+    int getChatItemCountByGroupId(Integer groupId);
+
+    void saveItemCount(Integer codGrupo, int itemCount);
 }

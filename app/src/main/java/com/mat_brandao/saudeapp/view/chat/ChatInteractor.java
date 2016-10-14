@@ -8,4 +8,6 @@ public interface ChatInteractor {
     User getUser();
 
     String getPhotoUrl(Long userId);
+
+    void saveItemCount(Integer codGrupo, int itemCount);
 }
