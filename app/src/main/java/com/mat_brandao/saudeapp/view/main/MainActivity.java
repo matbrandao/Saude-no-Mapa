@@ -20,6 +20,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity implements MainView {
+    private static final String TAG = "MainActivity";
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -98,11 +99,18 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Override
     public void showFragment(Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frame_content, fragment)
-                .addToBackStack(null)
-                .commit();
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.frame_content, fragment)
+                    .commit();
+        } else {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.frame_content, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     @Override

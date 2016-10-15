@@ -133,13 +133,15 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
 
     @Override
     public void toggleFabButton(boolean enabled) {
-        if (enabled) {
-            filterFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorAccent)));
-            filterFab.setEnabled(true);
-        } else {
-            filterFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.login_edit_text_color)));
-            filterFab.setEnabled(false);
-        }
+        try {
+            if (enabled) {
+                filterFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorAccent)));
+                filterFab.setEnabled(true);
+            } else {
+                filterFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.login_edit_text_color)));
+                filterFab.setEnabled(false);
+            }
+        } catch (Exception e) {}
     }
 
     @Override
@@ -167,7 +169,9 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
 
     @Override
     public void setProgressFabVisibility(int visibility) {
-        progressFab.setVisibility(visibility);
+        try {
+            progressFab.setVisibility(visibility);
+        } catch (Exception e) {}
     }
 
     @Override

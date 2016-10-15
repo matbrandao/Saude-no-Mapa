@@ -45,9 +45,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static android.icu.lang.UCharacter.JoiningGroup.PE;
-import static com.google.android.gms.common.internal.zzf.BA;
-
 public class EstablishmentInteractorImpl implements EstablishmentInteractor {
     private static final Double SEARCH_RADIUS = 10.0;
 
@@ -464,8 +461,14 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable1 -> new ArrayList<>())
                 .subscribe(addresses -> {
-                    if (addresses != null)
-                        listener.onNext(getUfFromAddress(addresses.get(0).getAddressLine(1)));
+                    if (addresses != null) {
+                        String addressLine = addresses.get(0).getAddressLine(1);
+                        if (addressLine.contains("-")) {
+                            listener.onNext(getUfFromAddress(addressLine));
+                        } else {
+                            listener.onNext(addressLine);
+                        }
+                    }
                 });
     }
 

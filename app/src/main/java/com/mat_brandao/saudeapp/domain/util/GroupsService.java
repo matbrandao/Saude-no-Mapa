@@ -6,13 +6,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
-import android.view.View;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -47,7 +43,7 @@ public class GroupsService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG, "onHandleIntent() called with: intent = [" + intent + "]");
         mInteractor = new MyGroupsInteractorImpl(this);
-        if (mInteractor.getUser() != null) {
+        if (mInteractor.getUser() != null && mInteractor.getUser().getId() != 0) {
             mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
             mInteractor.requestMyGroups()
                     .onErrorReturn(throwable -> null)
@@ -87,7 +83,6 @@ public class GroupsService extends IntentService {
         Intent intent = new Intent(this, ChatActivity.class);
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-
         stackBuilder.addParentStack(MainActivity.class);
 
         intent.putExtra(GROUP_KEY, grupo);
