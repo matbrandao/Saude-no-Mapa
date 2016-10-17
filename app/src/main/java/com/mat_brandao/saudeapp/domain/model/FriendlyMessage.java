@@ -20,7 +20,7 @@ public class FriendlyMessage {
     private String text;
     private String name;
     private String email;
-    private String time;
+    private Long time;
     private String photoUrl;
 
     public FriendlyMessage() {
@@ -32,7 +32,7 @@ public class FriendlyMessage {
         this.photoUrl = photoUrl;
     }
 
-    public FriendlyMessage(String text, String name, String email, String time, String photoUrl) {
+    public FriendlyMessage(String text, String name, String email, Long time, String photoUrl) {
         this.text = text;
         this.name = name;
         this.email = email;
@@ -79,11 +79,11 @@ public class FriendlyMessage {
         this.email = email;
     }
 
-    public String getTime() {
+    public Long getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(Long time) {
         this.time = time;
     }
 }

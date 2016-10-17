@@ -59,6 +59,7 @@ import butterknife.ButterKnife;
 import retrofit2.Response;
 import rx.Observable;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -149,14 +150,10 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                     mSearchText = charSequence.toString();
                     mSearchUf = mUfList.get(integer);
                     return (mSearchText.trim().length() > 3);
-                }).observeOn(AndroidSchedulers.mainThread())
-                .debounce(500, TimeUnit.MILLISECONDS)
+                }).debounce(500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(shouldFetch -> {
                     if (shouldFetch) {
-                        // TODO: 14/10/2016 TEST THIS RETURN WITH NOMEFANTASIA AS PARAMETER
-                        try {
-                            mFilteredEstablishmentList.clear();
-                        } catch (Exception e) {}
                         try {
                             mCategoriaList.clear();
                         } catch (Exception e) {}
@@ -169,12 +166,19 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                         try {
                             mRedeAtendimentoList.clear();
                         } catch (Exception e) {}
+                        mInteractor.clearMarkers(mMap);
                         mView.setProgressFabVisibility(View.VISIBLE);
                         mLastObservable = mInteractor.requestEstablishmentsByName(mSearchText, mSearchUf);
                         mLastObserver = requestEstablishmentsObserver;
                         mSubscription.add(mInteractor.requestEstablishmentsByName(mSearchText, mSearchUf)
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(requestEstablishmentsObserver));
+                    } else {
+                        mInteractor.clearMarkers(mMap);
+                        showMapPins(mFilteredEstablishmentList);
+                        try {
+                            mInteractor.animateCameraToAllEstablishments(mMap);
+                        } catch (IllegalStateException e) {}
                     }
                 });
     }

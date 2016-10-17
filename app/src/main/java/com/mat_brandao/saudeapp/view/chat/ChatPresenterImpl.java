@@ -2,6 +2,7 @@ package com.mat_brandao.saudeapp.view.chat;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -17,7 +18,10 @@ import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.FriendlyMessage;
 import com.mat_brandao.saudeapp.domain.model.Grupo;
 import com.mat_brandao.saudeapp.domain.model.User;
+import com.mat_brandao.saudeapp.domain.util.DateUtil;
 import com.squareup.picasso.Picasso;
+
+import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -83,15 +87,18 @@ public class ChatPresenterImpl implements ChatPresenter {
                 mView.setProgressBarVisibility(View.GONE);
                 mView.setEmptyViewVisibility(View.GONE);
 
+
                 if (friendlyMessage.getEmail().equals(mUser.getEmail())) {
                     viewHolder.messageLayout.setVisibility(View.GONE);
                     viewHolder.ounMessageLayout.setVisibility(View.VISIBLE);
                     viewHolder.ounMessageTextView.setText(friendlyMessage.getText());
+                    viewHolder.ounTimeTextView.setText(DateUtils.getRelativeTimeSpanString(friendlyMessage.getTime()));
                 } else {
                     viewHolder.messageLayout.setVisibility(View.VISIBLE);
                     viewHolder.ounMessageLayout.setVisibility(View.GONE);
                     viewHolder.messageTextView.setText(friendlyMessage.getText());
                     viewHolder.messengerTextView.setText(friendlyMessage.getName());
+                    viewHolder.timeTextView.setText(DateUtils.getRelativeTimeSpanString(friendlyMessage.getTime()));
                 }
                 Picasso.with(mContext)
                         .load(friendlyMessage.getPhotoUrl())
@@ -142,7 +149,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     public void onSendButtonClick(String message) {
         if (mInteractor.isMessageValid(message)) {
             mView.clearMessageText();
-            FriendlyMessage friendlyMessage = new FriendlyMessage(message, mUser.getName(), mUser.getEmail(),
+            FriendlyMessage friendlyMessage = new FriendlyMessage(message, mUser.getName(), mUser.getEmail(), new Date().getTime(),
                     mInteractor.getPhotoUrl(mUser.getId()));
             mFirebaseGroupReference.child(MESSAGES_CHILD)
                     .push().setValue(friendlyMessage);
@@ -153,6 +160,8 @@ public class ChatPresenterImpl implements ChatPresenter {
         TextView messageTextView;
         TextView ounMessageTextView;
         TextView messengerTextView;
+        TextView timeTextView;
+        TextView ounTimeTextView;
         CircleImageView messengerImageView;
         LinearLayout messageLayout;
         RelativeLayout ounMessageLayout;
@@ -162,6 +171,8 @@ public class ChatPresenterImpl implements ChatPresenter {
             messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
             ounMessageTextView = (TextView) itemView.findViewById(R.id.ounMessageTextView);
             messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
+            timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
+            ounTimeTextView = (TextView) itemView.findViewById(R.id.ounTimeTextView);
             messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
             messageLayout = (LinearLayout) itemView.findViewById(R.id.message_layout);
             ounMessageLayout = (RelativeLayout) itemView.findViewById(R.id.oun_message_layout);
