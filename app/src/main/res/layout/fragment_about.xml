@@ -25,6 +25,12 @@
                 android:layout_gravity="center"
                 android:src="@drawable/app_icon"/>
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_gravity="center"
+                android:src="@drawable/tcu_logo_big"/>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

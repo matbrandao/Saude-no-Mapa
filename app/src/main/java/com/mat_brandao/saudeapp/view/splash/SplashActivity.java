@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
@@ -26,6 +27,8 @@ public class SplashActivity extends BaseActivity implements SplashView {
     ImageView logoImage;
     @Bind(R.id.contest_text)
     TextView contestText;
+    @Bind(R.id.tcu_logo_image)
+    ImageView tcuLogoImage;
 
     private SplashPresenterImpl mPresenter;
 
@@ -41,7 +44,7 @@ public class SplashActivity extends BaseActivity implements SplashView {
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setupWindowAnimations();
         }
 
@@ -100,6 +103,16 @@ public class SplashActivity extends BaseActivity implements SplashView {
                 .setDuration(2000)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .withEndAction(endRunnable);
+
+        tcuLogoImage.animate()
+                .alpha(1)
+                .setDuration(2000)
+                .setInterpolator(new FastOutSlowInInterpolator());
+
+        tcuLogoImage.animate()
+                .scaleX(1)
+                .setDuration(2000)
+                .setInterpolator(new FastOutSlowInInterpolator());
 
         loginBackgroundImage.animate()
                 .scaleXBy(0.5f)
