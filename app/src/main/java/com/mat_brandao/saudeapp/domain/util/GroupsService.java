@@ -23,6 +23,7 @@ import com.mat_brandao.saudeapp.view.my_groups.MyGroupsInteractorImpl;
 
 import java.util.Random;
 
+import static android.R.id.list;
 import static com.mat_brandao.saudeapp.view.chat.ChatPresenterImpl.MESSAGES_CHILD;
 import static com.mat_brandao.saudeapp.view.group.GroupPresenterImpl.GROUP_KEY;
 
@@ -49,7 +50,7 @@ public class GroupsService extends IntentService {
                     .onErrorReturn(throwable -> null)
                     .retry(3)
                     .subscribe(listResponse -> {
-                        if (listResponse != null) {
+                        if (listResponse != null && listResponse.isSuccessful() && listResponse.body() != null) {
                             for (Grupo grupo : listResponse.body()) {
                                 Log.d(TAG, "onHandleIntent: group loop");
                                 mFirebaseGroupReference = mFirebaseDatabaseReference.child(String.valueOf(grupo.getCodGrupo()));
