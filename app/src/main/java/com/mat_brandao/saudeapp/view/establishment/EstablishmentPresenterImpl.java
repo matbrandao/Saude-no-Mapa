@@ -59,7 +59,6 @@ import butterknife.ButterKnife;
 import retrofit2.Response;
 import rx.Observable;
 import rx.Observer;
-import rx.Scheduler;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -350,7 +349,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
 
         bottomViews.groupImage.setOnClickListener(v -> {
             Intent intent = new Intent(mContext, GroupActivity.class);
-            intent.putExtra(ESTABLISHMENT_INTENT_KEY, establishment);
+            intent.putExtra(ESTABLISHMENT_INTENT_KEY, establishment.getNomeFantasia());
             mView.goToActivity(intent);
         });
 

@@ -102,12 +102,16 @@ public class FavRemedyFragment extends BaseFragment implements FavRemedyView {
 
     @Override
     public void setProgressLayoutVisibility(int visibility) {
-        progressLayout.setVisibility(visibility);
+        try {
+            progressLayout.setVisibility(visibility);
+        } catch (Exception e) {}
     }
 
     @Override
     public void setEmptyViewVisibility(int visibility) {
-        emptyTextView.setVisibility(visibility);
+        try {
+            emptyTextView.setVisibility(visibility);
+        } catch (Exception e) {}
     }
 
     @Override

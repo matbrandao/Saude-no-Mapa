@@ -26,10 +26,14 @@ public class DateUtil {
 
     public static String getFormattedDate(String date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm dd/MM/yyyy");
-        SimpleDateFormat oldSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'BRT'");
+        SimpleDateFormat oldSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'BRST'");
+        SimpleDateFormat old2SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'BRT'");
         try {
             return simpleDateFormat.format(oldSimpleDateFormat.parse(date));
         } catch (ParseException e) {
+            try {
+                return simpleDateFormat.format(old2SimpleDateFormat.parse(date));
+            } catch (Exception e1) {}
             e.printStackTrace();
         }
         return date;

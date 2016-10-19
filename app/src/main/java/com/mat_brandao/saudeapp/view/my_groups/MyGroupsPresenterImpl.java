@@ -8,7 +8,7 @@ import android.view.View;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.domain.model.Grupo;
 import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
-import com.mat_brandao.saudeapp.view.chat.ChatActivity;
+import com.mat_brandao.saudeapp.view.group.GroupActivity;
 import com.mat_brandao.saudeapp.view.main.MainActivity;
 
 import java.util.List;
@@ -18,7 +18,7 @@ import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static com.mat_brandao.saudeapp.view.group.GroupPresenterImpl.GROUP_KEY;
+import static com.mat_brandao.saudeapp.view.establishment.EstablishmentPresenterImpl.ESTABLISHMENT_INTENT_KEY;
 
 public class MyGroupsPresenterImpl implements MyGroupsPresenter, GenericObjectClickListener<Grupo> {
     private static final String TAG = "MyGroupsPresenterImpl";
@@ -67,8 +67,8 @@ public class MyGroupsPresenterImpl implements MyGroupsPresenter, GenericObjectCl
 
     @Override
     public void onItemClick(Grupo grupo) {
-        Intent intent = new Intent(mContext, ChatActivity.class);
-        intent.putExtra(GROUP_KEY, grupo);
+        Intent intent = new Intent(mContext, GroupActivity.class);
+        intent.putExtra(ESTABLISHMENT_INTENT_KEY, grupo.getDescricao());
         mView.goToActivity(intent);
     }
     

@@ -101,12 +101,16 @@ public class FavEstablishmentFragment extends BaseFragment implements FavEstabli
 
     @Override
     public void setProgressLayoutVisibility(int visibility) {
-        progressLayout.setVisibility(visibility);
+        try {
+            progressLayout.setVisibility(visibility);
+        } catch (Exception e) {}
     }
 
     @Override
     public void setEmptyViewVisibility(int visibility) {
+        try {
         emptyTextView.setVisibility(visibility);
+        } catch (Exception e) {}
     }
 
     @Override

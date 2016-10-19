@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 
 import com.mat_brandao.saudeapp.R;
-import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.model.Grupo;
 import com.mat_brandao.saudeapp.domain.model.MembroGrupo;
 import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
@@ -33,7 +32,7 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
 
     private Grupo mGroup;
     private List<MembroGrupo> mGroupMembers;
-    private final Establishment mEstablishment;
+    private final String mEstablishmentName;
 
     private CompositeSubscription mSubscription = new CompositeSubscription();
 
@@ -64,8 +63,8 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
         mContext = context;
         mView = view;
 
-        mEstablishment = mView.getIntentEstablishment();
-        mView.setToolbarTitle("Grupo: " + mEstablishment.getNomeFantasia());
+        mEstablishmentName = mView.getIntentEstablishment();
+        mView.setToolbarTitle("Grupo: " + mEstablishmentName);
 
         mView.showProgressDialog(mContext.getString(R.string.progress_wait));
         requestGroup();
@@ -87,13 +86,13 @@ public class GroupPresenterImpl implements GroupPresenter, GenericObjectClickLis
     }
 
     private void requestGroup() {
-        mSubscription.add(mInteractor.requestGroup(mEstablishment.getNomeFantasia())
+        mSubscription.add(mInteractor.requestGroup(mEstablishmentName)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(getGroupsObserver));
     }
 
     private void requestCreateGroup() {
-        mSubscription.add(mInteractor.requestCreateGroup(mEstablishment.getNomeFantasia())
+        mSubscription.add(mInteractor.requestCreateGroup(mEstablishmentName)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(createGroupObserver));
     }

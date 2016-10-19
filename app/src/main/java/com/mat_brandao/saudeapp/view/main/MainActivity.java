@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -108,7 +107,7 @@ public class MainActivity extends BaseActivity implements MainView {
         } else {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.frame_content, fragment)
+                    .add(R.id.frame_content, fragment)
                     .addToBackStack(null)
                     .commit();
         }

@@ -12,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 import com.mat_brandao.saudeapp.R;
-import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.util.GenericActionListener;
 import com.mat_brandao.saudeapp.view.base.BaseActivity;
 import com.mat_brandao.saudeapp.view.base.BasePresenter;
@@ -113,8 +112,8 @@ public class GroupActivity extends BaseActivity implements GroupView {
     }
 
     @Override
-    public Establishment getIntentEstablishment() {
-        return (Establishment) getIntent().getSerializableExtra(EstablishmentPresenterImpl.ESTABLISHMENT_INTENT_KEY);
+    public String getIntentEstablishment() {
+        return getIntent().getStringExtra(EstablishmentPresenterImpl.ESTABLISHMENT_INTENT_KEY);
     }
 
     @Override
