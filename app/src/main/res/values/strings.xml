@@ -137,4 +137,9 @@
     <string name="title_three">Chats em Grupo</string>
     <string name="description_three">Converse com quem está no estabelecimento de saúde naquele momento, e obtenha informações em tempo real sobre o estado do local.</string>
     <string name="search_establishment_hint">Buscar Estabelecimentos</string>
+    <string name="menu_item_emergency">Emergência</string>
+    <string name="emergency_title">Serviços de Emergência</string>
+    <string name="search_emergency_hint">Buscar serviços de emergência</string>
+    <string name="dialog_gps_positive">Ligar GPS</string>
+    <string name="dialog_gps_negative">Continuar</string>
 </resources>

@@ -14,6 +14,7 @@ import com.mat_brandao.saudeapp.domain.model.User;
 import com.mat_brandao.saudeapp.domain.util.GroupsService;
 import com.mat_brandao.saudeapp.view.about.AboutFragment;
 import com.mat_brandao.saudeapp.view.edit_profile.EditProfileActivity;
+import com.mat_brandao.saudeapp.view.emergency.EmergencyFragment;
 import com.mat_brandao.saudeapp.view.establishment.EstablishmentFragment;
 import com.mat_brandao.saudeapp.view.favorites.FavoritesFragment;
 import com.mat_brandao.saudeapp.view.login.LoginActivity;
@@ -101,6 +102,8 @@ public class MainPresenterImpl implements MainPresenter, NavigationView.OnNaviga
             mView.showFragment(FavoritesFragment.newInstance());
         } else if (item.getItemId() == R.id.menu_item_my_groups) {
             mView.showFragment(MyGroupsFragment.newInstance());
+        } else if (item.getItemId() == R.id.menu_item_emergency) {
+            mView.showFragment(EmergencyFragment.newInstance());
         } else if (item.getItemId() == R.id.menu_item_about) {
             mView.showFragment(AboutFragment.newInstance());
         } else if (item.getItemId() == R.id.menu_item_logout) {
