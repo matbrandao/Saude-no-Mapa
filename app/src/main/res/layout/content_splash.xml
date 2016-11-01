@@ -25,7 +25,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             android:id="@+id/logo_image"
             android:src="@drawable/app_icon"
             android:alpha="0"
@@ -36,7 +36,19 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="1.5"
+            android:id="@+id/concurso_logo"
+            android:alpha="0"
+            android:padding="50dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/concurso_logo"
+            android:orientation="horizontal"
+            android:contentDescription="@null"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
             android:id="@+id/tcu_logo_image"
             android:alpha="0"
             android:scaleX="0.2"
@@ -47,7 +59,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             android:id="@+id/contest_text"
             android:textSize="14sp"
             android:paddingLeft="32dp"

@@ -84,4 +84,6 @@ public interface EmergencyInteractor {
     Observable<Response<List<Establishment>>> requestEstablishmentsByName(String searchText, String uf);
 
     void removeDislikedContentCode();
+
+    void animateCameraToMarker(GoogleMap mMap, Marker marker);
 }

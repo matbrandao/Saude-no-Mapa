@@ -101,11 +101,19 @@ public interface RetrofitInterface {
             @Path("latitude") Double latitude, @Path("longitude") Double longitude,
             @Path("raio") Double radius, @Query("pagina") Integer pagination);
 
+    @GET("mapa-da-saude/rest/estabelecimentos/latitude/{latitude}/longitude/{longitude}/raio/{raio}")
+    Observable<Response<List<Establishment>>> getEmergencyEstablishmentsByGeoLocation(
+            @Path("latitude") Double latitude, @Path("longitude") Double longitude,
+            @Path("raio") Double radius, @Query("pagina") Integer pagination, @Query("categoria") String category);
+
     @GET("mapa-da-saude/rest/estabelecimentos/unidade/{codUnidade}")
     Observable<Response<List<Establishment>>> getEstablishmentByCod(@Path("codUnidade") Long establishmentCod);
 
     @GET("mapa-da-saude/rest/estabelecimentos/")
     Observable<Response<List<Establishment>>> getEstablishmentByName(@Query("nomeFantasia") String nomeFantasia, @Query("uf") String uf);
+    @GET("mapa-da-saude/rest/estabelecimentos/")
+    Observable<Response<List<Establishment>>> getUrgencyEstablishmentByName(@Query("nomeFantasia") String nomeFantasia, @Query("uf") String uf,
+                                                                     @Query("categoria") String categoria);
 
     @GET("mapa-da-saude/rest/remedios")
     Observable<Response<List<Remedy>>> getRemedyByCod(@Query("codBarraEan") Long codBarraEan);

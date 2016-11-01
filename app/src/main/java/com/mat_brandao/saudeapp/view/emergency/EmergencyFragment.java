@@ -31,6 +31,7 @@ import com.mat_brandao.saudeapp.view.main.MainActivity;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import rx.Observable;
 
 public class EmergencyFragment extends BaseFragment implements EmergencyView {
@@ -86,6 +87,11 @@ public class EmergencyFragment extends BaseFragment implements EmergencyView {
         mapFragment.getMapAsync(mPresenter);
 
         return view;
+    }
+
+    @OnClick(R.id.filter_fab)
+    void onEmergencyFabClick() {
+        mPresenter.onFilterFabClick();
     }
 
     @Override

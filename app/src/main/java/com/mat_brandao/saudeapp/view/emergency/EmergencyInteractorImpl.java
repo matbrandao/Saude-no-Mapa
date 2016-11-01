@@ -45,6 +45,8 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static com.mat_brandao.saudeapp.R.id.map;
+
 public class EmergencyInteractorImpl implements EmergencyInteractor {
 
     private static final Double SEARCH_RADIUS = 10.0;
@@ -91,8 +93,8 @@ public class EmergencyInteractorImpl implements EmergencyInteractor {
     @Override
     public Observable<Response<List<Establishment>>> requestEstablishmentsByLocation(Location location, int pagination) {
         return RestClient.getHeader(mUser.getAppToken(), null)
-                .getEstablishmentsByGeoLocation(location.getLatitude(),
-                        location.getLongitude(), SEARCH_RADIUS, pagination);
+                .getEmergencyEstablishmentsByGeoLocation(location.getLatitude(),
+                        location.getLongitude(), SEARCH_RADIUS, pagination, "URGÊNCIA");
     }
 
     @Override
@@ -447,12 +449,17 @@ public class EmergencyInteractorImpl implements EmergencyInteractor {
     @Override
     public Observable<Response<List<Establishment>>> requestEstablishmentsByName(String searchText, String uf) {
         return RestClient.get()
-                .getEstablishmentByName(searchText, uf);
+                .getUrgencyEstablishmentByName(searchText, uf, "URGÊNCIA");
     }
 
     @Override
     public void removeDislikedContentCode() {
         mLikedEstablishment.remove(mDislikedContentCode);
+    }
+
+    @Override
+    public void animateCameraToMarker(GoogleMap mMap, Marker marker) {
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()), 500, null);
     }
 
     private String getUfFromAddress(String addressLine) {

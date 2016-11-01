@@ -2,13 +2,11 @@ package com.mat_brandao.saudeapp.view.emergency;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
@@ -40,9 +38,6 @@ import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
 import com.mat_brandao.saudeapp.domain.util.StringListener;
-import com.mat_brandao.saudeapp.view.establishment.EstablishmentPresenterImpl;
-import com.mat_brandao.saudeapp.view.favorites.fav_establishment.FavEstablishmentPresenterImpl;
-import com.mat_brandao.saudeapp.view.group.GroupActivity;
 import com.mat_brandao.saudeapp.view.main.MainActivity;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
@@ -55,7 +50,6 @@ import butterknife.ButterKnife;
 import retrofit2.Response;
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -141,8 +135,8 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
                     mHandler.removeCallbacks(mDismissKeyboardRunnable);
                 });
 
-        Observable<CharSequence> searchTextObservable =  mView.registerSearchEditTextObserver();
-        Observable<Integer> ufSpinnerObservable =  mView.registerUfSpinnerObserver();
+        Observable<CharSequence> searchTextObservable = mView.registerSearchEditTextObserver();
+        Observable<Integer> ufSpinnerObservable = mView.registerUfSpinnerObserver();
 
         searchTextObservable.subscribe();
         searchTextObservable.subscribe();
@@ -154,14 +148,17 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
                     return (mSearchText.trim().length() > 3);
                 }).debounce(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
+                .skip(1)
                 .subscribe(shouldFetch -> {
                     if (shouldFetch) {
                         try {
                             mEstablishmentList.clear();
-                        } catch (Exception e) {}
+                        } catch (Exception e) {
+                        }
                         try {
                             mRemoveList.clear();
-                        } catch (Exception e) {}
+                        } catch (Exception e) {
+                        }
                         mInteractor.clearMarkers(mMap);
                         mView.setProgressFabVisibility(View.VISIBLE);
                         mLastObservable = mInteractor.requestEstablishmentsByName(mSearchText, mSearchUf);
@@ -171,10 +168,13 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
                                 .subscribe(requestEstablishmentsObserver));
                     } else {
                         mInteractor.clearMarkers(mMap);
+                        mEstablishmentList.clear();
+                        mEstablishmentList.addAll(mFilteredEstablishmentList);
                         showMapPins(mEstablishmentList);
                         try {
                             mInteractor.animateCameraToAllEstablishments(mMap);
-                        } catch (IllegalStateException e) {}
+                        } catch (IllegalStateException e) {
+                        }
                     }
                 });
     }
@@ -221,7 +221,6 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
     }
 
     private void onNoGpsLayout() {
-        // TODO: 26/10/2016 change this to request all, maybe couse i have no location
         mView.setProgressFabVisibility(View.GONE);
     }
 
@@ -237,7 +236,7 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
 
     @Override
     public void onFilterFabClick() {
-        // TODO: 26/10/2016  
+        showEmergencyBottomSheetDialog();
     }
 
     private void configureMapClickListener() {
@@ -251,7 +250,7 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
                         }
                     }
 
-                    mInteractor.animateMarketToTop(mMap, marker, mView.getMapContainerHeight());
+                    mInteractor.animateCameraToMarker(mMap, marker);
                     Establishment establishment = mInteractor.getEstablishmentFromMarker(marker);
                     new Handler().postDelayed(() -> {
                         mContext.runOnUiThread(() -> {
@@ -339,6 +338,29 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
                 }));
     }
 
+    private void showEmergencyBottomSheetDialog() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
+
+        View dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_bottom_sheet_emergency, null);
+        EmergencyViews emergencyViews = new EmergencyViews();
+        ButterKnife.bind(emergencyViews, dialogView);
+
+        bottomSheetDialog.setContentView(dialogView);
+        bottomSheetDialog.getWindow().findViewById(R.id.design_bottom_sheet)
+                .setBackgroundResource(R.color.default_dialog_background);
+
+        emergencyViews.mainInfoCard.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+
+        BottomSheetBehavior mBehavior = BottomSheetBehavior.from((View) dialogView.getParent());
+        mBehavior.setPeekHeight(emergencyViews.mainInfoCard.getMeasuredHeight() + 115);
+
+//        bottomSheetDialog.setOnDismissListener(dialogInterface -> {
+//            lastOpenned.hideInfoWindow();
+//        });
+
+        bottomSheetDialog.show();
+    }
+
     private void showEstablishmentBottomDialog(Establishment establishment) {
         if (establishment == null) {
             return;
@@ -352,7 +374,7 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
         mRatingView = bottomViews.ratingView;
         mRatingView.setIndicator(true);
         mEstablishmentProgress = bottomViews.establishmentProgress;
-//        mEstablishmentProgress.setVisibility(View.VISIBLE);
+        mEstablishmentProgress.setVisibility(View.VISIBLE);
 
         bottomViews.establishmentTitle.setText(GenericUtil.capitalize(establishment.getNomeFantasia().toLowerCase()));
         bottomViews.descricaoCompletaText.setText(GenericUtil.capitalize(establishment.getDescricaoCompleta().toLowerCase()));
@@ -517,11 +539,12 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
         builder.setTitle(R.string.location_dialog_title);
         builder.setMessage(mContext.getString(R.string.location_dialog_message));
         builder.setPositiveButton(R.string.location_dialog_positive, (dialogInterface, i) -> {
-            Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+            Intent intent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse("http://maps.google.com/maps?daddr=" + latitude + "," + longitude));
             mView.goToActivity(intent);
         });
-        builder.setNegativeButton(R.string.location_dialog_negative, (dialogInterface, i) -> {});
+        builder.setNegativeButton(R.string.location_dialog_negative, (dialogInterface, i) -> {
+        });
         builder.create().show();
     }
 
@@ -541,10 +564,12 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
                         }
                     });
         });
-        builder.setNegativeButton(R.string.call_dialog_negative, (dialogInterface, i) -> {});
+        builder.setNegativeButton(R.string.call_dialog_negative, (dialogInterface, i) -> {
+        });
         builder.create().show();
     }
 
+    private List<Establishment> mFilteredEstablishmentList = new ArrayList<>();
     private Observer<Response<List<Establishment>>> requestEstablishmentsObserver = new Observer<Response<List<Establishment>>>() {
         @Override
         public void onCompleted() {
@@ -561,6 +586,7 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
         public void onNext(Response<List<Establishment>> listResponse) {
             if (listResponse.isSuccessful()) {
                 mEstablishmentList.addAll(listResponse.body());
+                mFilteredEstablishmentList.addAll(listResponse.body());
 
                 showMapPins(listResponse.body());
                 if (listResponse.body().size() == ESTABLISHMENT_SEARCH_LIMIT) {
@@ -589,6 +615,13 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
     @Override
     public void onNext(String uf) {
         mView.setUfSpinnerSelection(mUfList.indexOf(uf));
+    }
+
+    class EmergencyViews {
+        @Bind(R.id.main_info_card)
+        LinearLayout mainInfoCard;
+        @Bind(R.id.bottom_sheet)
+        NestedScrollView bottomSheet;
     }
 
     class MarkerViews {
