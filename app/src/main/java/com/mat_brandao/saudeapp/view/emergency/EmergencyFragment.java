@@ -179,6 +179,30 @@ public class EmergencyFragment extends BaseFragment implements EmergencyView {
     }
 
     @Override
+    public void showPoliceDialog(DialogInterface.OnClickListener clickListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.dialog_police_message);
+        builder.setPositiveButton("Ligar", clickListener);
+        builder.create().show();
+    }
+
+    @Override
+    public void showFiremanDialog(DialogInterface.OnClickListener clickListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.dialog_fireman_message);
+        builder.setPositiveButton("Ligar", clickListener);
+        builder.create().show();
+    }
+
+    @Override
+    public void showSamuDialog(DialogInterface.OnClickListener clickListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.dialog_samu_message);
+        builder.setPositiveButton("Ligar", clickListener);
+        builder.create().show();
+    }
+
+    @Override
     public void dismissKeyboard() {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);

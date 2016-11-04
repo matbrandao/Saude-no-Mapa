@@ -142,4 +142,7 @@
     <string name="search_emergency_hint">Buscar serviços de emergência</string>
     <string name="dialog_gps_positive">Ligar GPS</string>
     <string name="dialog_gps_negative">Continuar</string>
+    <string name="dialog_police_message">Deseja ligar para a Polícia Militar (190)?</string>
+    <string name="dialog_fireman_message">Deseja ligar para o Corpo de Bombeiros (193)?</string>
+    <string name="dialog_samu_message">Deseja ligar para o SAMU (192)?</string>
 </resources>

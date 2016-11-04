@@ -2,6 +2,7 @@ package com.mat_brandao.saudeapp.view.emergency;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -351,12 +352,32 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
 
         emergencyViews.mainInfoCard.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
+        emergencyViews.samuLayout.setOnClickListener(v -> {
+            mView.showSamuDialog((dialog, which) -> {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + "33233323"));
+                mContext.startActivity(intent);
+            });
+        });
+
+        emergencyViews.firemanLayout.setOnClickListener(v -> {
+            mView.showFiremanDialog((dialog, which) -> {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + 193));
+                mContext.startActivity(intent);
+            });
+        });
+
+        emergencyViews.policeLayout.setOnClickListener(v -> {
+            mView.showPoliceDialog((dialog, which) -> {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + 190));
+                mContext.startActivity(intent);
+            });
+        });
+
         BottomSheetBehavior mBehavior = BottomSheetBehavior.from((View) dialogView.getParent());
         mBehavior.setPeekHeight(emergencyViews.mainInfoCard.getMeasuredHeight() + 115);
-
-//        bottomSheetDialog.setOnDismissListener(dialogInterface -> {
-//            lastOpenned.hideInfoWindow();
-//        });
 
         bottomSheetDialog.show();
     }
@@ -553,16 +574,9 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
         builder.setTitle(R.string.call_dialog_title);
         builder.setMessage(mContext.getString(R.string.call_dialog_message) + telefone + "?");
         builder.setPositiveButton(R.string.call_dialog_positive, (dialogInterface, i) -> {
-            RxPermissions.getInstance(mContext)
-                    .request(Manifest.permission.CALL_PHONE)
-                    .subscribe(granted -> {
-                        if (granted) {
-                            Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + telefone));
-                            mView.goToActivity(intent);
-                        } else {
-                            mView.showToast(mContext.getString(R.string.call_phone_permission_needed));
-                        }
-                    });
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + telefone));
+            mContext.startActivity(intent);
         });
         builder.setNegativeButton(R.string.call_dialog_negative, (dialogInterface, i) -> {
         });
@@ -622,6 +636,12 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
         LinearLayout mainInfoCard;
         @Bind(R.id.bottom_sheet)
         NestedScrollView bottomSheet;
+        @Bind(R.id.samu_layout)
+        LinearLayout samuLayout;
+        @Bind(R.id.fireman_layout)
+        LinearLayout firemanLayout;
+        @Bind(R.id.police_layout)
+        LinearLayout policeLayout;
     }
 
     class MarkerViews {

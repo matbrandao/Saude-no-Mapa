@@ -27,4 +27,10 @@ public interface EmergencyView extends BaseView.BaseProgressView {
     void setUfSpinnerAdapter(ArrayAdapter adapter);
 
     void setUfSpinnerSelection(int selection);
+
+    void showPoliceDialog(DialogInterface.OnClickListener clickListener);
+
+    void showFiremanDialog(DialogInterface.OnClickListener clickListener);
+
+    void showSamuDialog(DialogInterface.OnClickListener clickListener);
 }
