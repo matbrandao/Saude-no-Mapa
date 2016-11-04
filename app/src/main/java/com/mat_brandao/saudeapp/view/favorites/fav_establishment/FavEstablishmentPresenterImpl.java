@@ -263,16 +263,9 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
         builder.setTitle(R.string.call_dialog_title);
         builder.setMessage(mContext.getString(R.string.call_dialog_message) + telefone + "?");
         builder.setPositiveButton(R.string.call_dialog_positive, (dialogInterface, i) -> {
-            RxPermissions.getInstance(mContext)
-                    .request(Manifest.permission.CALL_PHONE)
-                    .subscribe(granted -> {
-                        if (granted) {
-                            Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + telefone));
-                            mView.goToActivity(intent);
-                        } else {
-                            mView.showToast(mContext.getString(R.string.call_phone_permission_needed));
-                        }
-                    });
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + telefone));
+            mContext.startActivity(intent);
         });
         builder.setNegativeButton(R.string.call_dialog_negative, (dialogInterface, i) -> {});
         builder.create().show();

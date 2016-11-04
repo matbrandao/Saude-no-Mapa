@@ -132,7 +132,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         mActivity = activity;
         mView = view;
 
-        setSpinnerAdater();
+        setSpinnerAdapter();
         requestLikedEstablishments();
         setupSearchObservers();
     }
@@ -182,7 +182,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                 });
     }
 
-    private void setSpinnerAdater() {
+    private void setSpinnerAdapter() {
         mUfList = mInteractor.getUfList();
         mAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mUfList);
         mView.setUfSpinnerAdapter(mAdapter);
@@ -476,16 +476,9 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         builder.setTitle(R.string.call_dialog_title);
         builder.setMessage(mContext.getString(R.string.call_dialog_message) + telefone + "?");
         builder.setPositiveButton(R.string.call_dialog_positive, (dialogInterface, i) -> {
-            RxPermissions.getInstance(mContext)
-                    .request(Manifest.permission.CALL_PHONE)
-                    .subscribe(granted -> {
-                        if (granted) {
-                            Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + telefone));
-                            mView.goToActivity(intent);
-                        } else {
-                            mView.showToast(mContext.getString(R.string.call_phone_permission_needed));
-                        }
-                    });
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + telefone));
+            mContext.startActivity(intent);
         });
         builder.setNegativeButton(R.string.call_dialog_negative, (dialogInterface, i) -> {});
         builder.create().show();
@@ -786,7 +779,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         @Override
         public void onError(Throwable e) {
             Log.d(TAG, "onError() called with: " + "e = [" + e + "]");
-            mView.setProgressFabVisibility(View.INVISIBLE);
+            mView.setProgressFabVisibility(View.GONE);
             mView.showNoConnectionSnackBar();
         }
 
@@ -814,7 +807,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                 } catch (Exception e) {
                     mView.showToast(mContext.getString(R.string.http_error_generic));
                 }
-                mView.setProgressFabVisibility(View.INVISIBLE);
+                mView.setProgressFabVisibility(View.GONE);
                 mView.showNoConnectionSnackBar();
             }
         }

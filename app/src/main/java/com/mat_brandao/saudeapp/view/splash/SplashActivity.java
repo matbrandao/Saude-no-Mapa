@@ -29,6 +29,8 @@ public class SplashActivity extends BaseActivity implements SplashView {
     TextView contestText;
     @Bind(R.id.tcu_logo_image)
     ImageView tcuLogoImage;
+    @Bind(R.id.concurso_logo)
+    ImageView concursoLogo;
 
     private SplashPresenterImpl mPresenter;
 
@@ -103,6 +105,11 @@ public class SplashActivity extends BaseActivity implements SplashView {
                 .setDuration(2000)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .withEndAction(endRunnable);
+
+        concursoLogo.animate()
+                .alpha(1)
+                .setDuration(2000)
+                .setInterpolator(new FastOutSlowInInterpolator());
 
         tcuLogoImage.animate()
                 .alpha(1)

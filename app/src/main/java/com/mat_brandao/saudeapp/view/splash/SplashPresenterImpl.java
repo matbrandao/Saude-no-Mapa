@@ -53,9 +53,9 @@ public class SplashPresenterImpl implements SplashPresenter {
                     mView.goToActivity(MainActivity.class);
                 }
             }
-            new Handler().postDelayed(() -> {
+//            new Handler().postDelayed(() -> {
                 mView.finishActivity();
-            }, 1000);
+//            }, 1000);
         });
     }
 }

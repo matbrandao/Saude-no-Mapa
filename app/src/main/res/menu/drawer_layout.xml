@@ -24,6 +24,11 @@
             android:icon="@drawable/ic_group"/>
 
         <item
+            android:id="@+id/menu_item_emergency"
+            android:title="@string/menu_item_emergency"
+            android:icon="@drawable/ic_ambulance"/>
+
+        <item
             android:id="@+id/menu_item_about"
             android:title="@string/menu_item_about"
             android:icon="@drawable/ic_info_outline"/>

@@ -1,5 +1,6 @@
-package com.mat_brandao.saudeapp.view.establishment;
+package com.mat_brandao.saudeapp.view.emergency;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -11,11 +12,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -33,33 +34,31 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
 
-public class EstablishmentFragment extends BaseFragment implements EstablishmentView {
+public class EmergencyFragment extends BaseFragment implements EmergencyView {
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
+    @Bind(R.id.search_remedy_edit_text)
+    TextInputEditText searchRemedyEditText;
     @Bind(R.id.filter_fab)
     FloatingActionButton filterFab;
     @Bind(R.id.progress_fab)
     ProgressBar progressFab;
-    @Bind(R.id.search_remedy_edit_text)
-    TextInputEditText searchRemedyEditText;
     @Bind(R.id.uf_spinner)
     Spinner ufSpinner;
 
-    private EstablishmentPresenterImpl mPresenter;
-
+    private EmergencyPresenterImpl mPresenter;
     private static View view;
-
-    public EstablishmentFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     protected BasePresenter getPresenter() {
         return mPresenter;
     }
 
-    public static EstablishmentFragment newInstance() {
-        return new EstablishmentFragment();
+    public static EmergencyFragment newInstance() {
+        Bundle args = new Bundle();
+        EmergencyFragment fragment = new EmergencyFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Nullable
@@ -71,16 +70,17 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
                 parent.removeView(view);
         }
         try {
-            view = inflater.inflate(R.layout.establishment_fragment, container, false);
+            view = inflater.inflate(R.layout.fragment_emergency, container, false);
         } catch (InflateException e) {
             /* map is already there, just return view as it is */
         }
         ButterKnife.bind(this, view);
 
-        ((MainActivity) getActivity()).setToolbarTitle(getContext().getString(R.string.establishments_title));
+        ((MainActivity) getActivity()).setToolbarTitle(getContext().getString(R.string.emergency_title));
 
         toggleFabButton(false);
-        mPresenter = new EstablishmentPresenterImpl(this, getContext(), getActivity());
+
+        mPresenter = new EmergencyPresenterImpl(this, getActivity());
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
@@ -90,7 +90,7 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
     }
 
     @OnClick(R.id.filter_fab)
-    void onFilterFabClick() {
+    void onEmergencyFabClick() {
         mPresenter.onFilterFabClick();
     }
 
@@ -115,13 +115,6 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
     }
 
     @Override
-    public void showNoConnectionSnackBar() {
-        super.showConnectionError(coordinatorLayout, view -> {
-            mPresenter.onRetryClicked();
-        });
-    }
-
-    @Override
     public void showProgressDialog(String message) {
         super.showProgressDialog(getContext(), message);
     }
@@ -132,16 +125,10 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
     }
 
     @Override
-    public void toggleFabButton(boolean enabled) {
-        try {
-            if (enabled) {
-                filterFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorAccent)));
-                filterFab.setEnabled(true);
-            } else {
-                filterFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.login_edit_text_color)));
-                filterFab.setEnabled(false);
-            }
-        } catch (Exception e) {}
+    public void showNoConnectionSnackBar() {
+        super.showConnectionError(coordinatorLayout, v -> {
+            mPresenter.onRetryClicked();
+        });
     }
 
     @Override
@@ -163,30 +150,17 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
     }
 
     @Override
-    public double getMapContainerHeight() {
-        return (double) coordinatorLayout.getHeight();
-    }
-
-    @Override
-    public void setProgressFabVisibility(int visibility) {
+    public void toggleFabButton(boolean enabled) {
         try {
-            progressFab.setVisibility(visibility);
-        } catch (Exception e) {}
-    }
-
-    @Override
-    public void setFabVisibility(int visibility) {
-        filterFab.setVisibility(visibility);
-    }
-
-    @Override
-    public void setUfSpinnerAdapter(ArrayAdapter<String> adapter) {
-        ufSpinner.setAdapter(adapter);
-    }
-
-    @Override
-    public void setUfSpinnerSelection(int selection) {
-        ufSpinner.setSelection(selection);
+            if (enabled) {
+                filterFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorAccent)));
+                filterFab.setEnabled(true);
+            } else {
+                filterFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.login_edit_text_color)));
+                filterFab.setEnabled(false);
+            }
+        } catch (Exception e) {
+        }
     }
 
     @Override
@@ -200,13 +174,55 @@ public class EstablishmentFragment extends BaseFragment implements Establishment
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        String provider = Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-        if (!TextUtils.isEmpty(provider)) {
-            mPresenter.onGpsTurnedOn();
-        } else {
-            mPresenter.onGpsTurnedOff();
+    public void setUfSpinnerSelection(int selection) {
+        ufSpinner.setSelection(selection);
+    }
+
+    @Override
+    public void showPoliceDialog(DialogInterface.OnClickListener clickListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.dialog_police_message);
+        builder.setPositiveButton("Ligar", clickListener);
+        builder.create().show();
+    }
+
+    @Override
+    public void showFiremanDialog(DialogInterface.OnClickListener clickListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.dialog_fireman_message);
+        builder.setPositiveButton("Ligar", clickListener);
+        builder.create().show();
+    }
+
+    @Override
+    public void showSamuDialog(DialogInterface.OnClickListener clickListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.dialog_samu_message);
+        builder.setPositiveButton("Ligar", clickListener);
+        builder.create().show();
+    }
+
+    @Override
+    public void dismissKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+    }
+
+    @Override
+    public void setUfSpinnerAdapter(ArrayAdapter adapter) {
+        ufSpinner.setAdapter(adapter);
+    }
+
+    @Override
+    public double getMapContainerHeight() {
+        return (double) coordinatorLayout.getHeight();
+    }
+
+    @Override
+    public void setProgressFabVisibility(int visibility) {
+        try {
+            progressFab.setVisibility(visibility);
+        } catch (Exception e) {
         }
     }
 

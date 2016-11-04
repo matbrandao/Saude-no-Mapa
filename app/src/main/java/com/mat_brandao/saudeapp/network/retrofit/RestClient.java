@@ -50,8 +50,8 @@ public class RestClient {
         // Can be Level.BASIC, Level.HEADERS, or Level.BODY
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         builder.networkInterceptors().add(httpLoggingInterceptor);
-        builder.readTimeout(30, TimeUnit.SECONDS);
-        builder.connectTimeout(30, TimeUnit.SECONDS);
+        builder.readTimeout(60, TimeUnit.SECONDS);
+        builder.connectTimeout(60, TimeUnit.SECONDS);
 
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd")
@@ -76,6 +76,8 @@ public class RestClient {
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         builder.networkInterceptors().add(httpLoggingInterceptor);
+        builder.readTimeout(60, TimeUnit.SECONDS);
+        builder.connectTimeout(60, TimeUnit.SECONDS);
 
         if (mToken != null) {
             if (mAppId != null) {

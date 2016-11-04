@@ -107,7 +107,7 @@ public class MainActivity extends BaseActivity implements MainView {
         } else {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.frame_content, fragment)
+                    .replace(R.id.frame_content, fragment)
                     .addToBackStack(null)
                     .commit();
         }

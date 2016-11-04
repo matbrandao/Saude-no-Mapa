@@ -27,7 +27,14 @@
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
+                android:layout_height="130dp"
+                android:layout_margin="8dp"
+                android:layout_gravity="center"
+                android:src="@drawable/concurso_logo"/>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
                 android:layout_gravity="center"
                 android:src="@drawable/tcu_logo_big"/>
 
