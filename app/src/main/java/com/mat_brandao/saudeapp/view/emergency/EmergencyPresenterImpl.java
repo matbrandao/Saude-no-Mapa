@@ -39,6 +39,7 @@ import com.mat_brandao.saudeapp.domain.model.Establishment;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 import com.mat_brandao.saudeapp.domain.util.OnLocationFound;
 import com.mat_brandao.saudeapp.domain.util.StringListener;
+import com.mat_brandao.saudeapp.view.group.GroupActivity;
 import com.mat_brandao.saudeapp.view.main.MainActivity;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
@@ -55,6 +56,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 import static com.google.android.gms.internal.zzs.TAG;
+import static com.mat_brandao.saudeapp.view.establishment.EstablishmentPresenterImpl.ESTABLISHMENT_INTENT_KEY;
 
 public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFound, OnMapReadyCallback, StringListener {
 
@@ -90,7 +92,7 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
 
     @Override
     public void onResume() {
-        ((MainActivity) mContext).setNavigationItemChecked(R.id.menu_item_establishments);
+        ((MainActivity) mContext).setNavigationItemChecked(R.id.menu_item_emergency);
     }
 
     @Override
@@ -355,7 +357,7 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
         emergencyViews.samuLayout.setOnClickListener(v -> {
             mView.showSamuDialog((dialog, which) -> {
                 Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:" + "33233323"));
+                intent.setData(Uri.parse("tel:" + 192));
                 mContext.startActivity(intent);
             });
         });
@@ -424,6 +426,12 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
         if (mInteractor.isEstablishmentLiked(Long.valueOf(establishment.getCodUnidade()))) {
             bottomViews.likeImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_like_filled));
         }
+
+        bottomViews.groupImage.setOnClickListener(v -> {
+            Intent intent = new Intent(mContext, GroupActivity.class);
+            intent.putExtra(ESTABLISHMENT_INTENT_KEY, establishment.getNomeFantasia());
+            mView.goToActivity(intent);
+        });
 
         isLiked = mInteractor.isEstablishmentLiked(Long.valueOf(establishment.getCodUnidade()));
         bottomViews.likeImage.setOnClickListener(v -> {

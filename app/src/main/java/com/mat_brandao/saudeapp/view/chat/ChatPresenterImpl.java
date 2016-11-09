@@ -156,7 +156,7 @@ public class ChatPresenterImpl implements ChatPresenter {
         }
     }
 
-    static class MessageViewHolder extends RecyclerView.ViewHolder {
+    public static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageTextView;
         TextView ounMessageTextView;
         TextView messengerTextView;

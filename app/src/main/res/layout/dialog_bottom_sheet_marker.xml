@@ -131,7 +131,7 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/rating_view"
                             android:layout_gravity="center"
-                            app:srb_starSize="15dp"
+                            app:srb_starSize="20dp"
                             app:srb_numberOfStars="5"
                             app:srb_rating="0"
                             app:srb_stepSize="0.5"

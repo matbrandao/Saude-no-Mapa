@@ -25,6 +25,7 @@ import com.mat_brandao.saudeapp.domain.model.PostContent;
 import com.mat_brandao.saudeapp.domain.model.PostResponse;
 import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
+import com.mat_brandao.saudeapp.view.group.GroupActivity;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.net.UnknownHostException;
@@ -38,6 +39,8 @@ import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+
+import static com.mat_brandao.saudeapp.view.establishment.EstablishmentPresenterImpl.ESTABLISHMENT_INTENT_KEY;
 
 
 public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter, GenericObjectClickListener<Establishment> {
@@ -146,6 +149,12 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
 
         bottomViews.phoneText.setOnClickListener(v -> {
             showCallToPhoneDialog(establishment.getTelefone());
+        });
+
+        bottomViews.groupImage.setOnClickListener(v -> {
+            Intent intent = new Intent(mContext, GroupActivity.class);
+            intent.putExtra(ESTABLISHMENT_INTENT_KEY, establishment.getNomeFantasia());
+            mView.goToActivity(intent);
         });
 
         isLiked = true;
@@ -393,6 +402,8 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
     };
 
     class MarkerViews {
+        @Bind(R.id.group_image)
+        ImageView groupImage;
         @Bind(R.id.establishment_title)
         TextView establishmentTitle;
         @Bind(R.id.descricao_completa_text)

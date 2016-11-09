@@ -34,6 +34,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
             android:tag="1"
+            android:gravity="center"
             android:paddingLeft="32dp"
             android:paddingRight="32dp"
             android:textColor="@android:color/white"
