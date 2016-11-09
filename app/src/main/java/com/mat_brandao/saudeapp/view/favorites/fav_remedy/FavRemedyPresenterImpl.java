@@ -25,6 +25,7 @@ import com.mat_brandao.saudeapp.view.remedy.RemedyPresenterImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -111,6 +112,8 @@ public class FavRemedyPresenterImpl implements FavRemedyPresenter, GenericObject
 
         mRemedyProgress = bottomViews.remedyProgress;
 
+        bottomViews.priceText.setText("R$ " + String.format(Locale.getDefault(), "%.2f", remedy.getPmc0()) + " a " +
+                "R$ " + String.format(Locale.getDefault(), "%.2f", remedy.getPmc20()));
         bottomViews.establishmentTitle.setText(GenericUtil.capitalize(remedy.getProduto().toLowerCase()));
         bottomViews.apresentacaoText.setText(GenericUtil.capitalize(remedy.getApresentacao().toLowerCase()));
         bottomViews.classeTerapeuticaText.setText(GenericUtil.capitalize(remedy.getClasseTerapeutica().toLowerCase()));
@@ -295,6 +298,8 @@ public class FavRemedyPresenterImpl implements FavRemedyPresenter, GenericObject
     class BottomViews {
         @Bind(R.id.establishment_title)
         TextView establishmentTitle;
+        @Bind(R.id.price_text)
+        TextView priceText;
         @Bind(R.id.principio_ativo_text)
         TextView principioAtivoText;
         @Bind(R.id.classe_terapeutica_text)
