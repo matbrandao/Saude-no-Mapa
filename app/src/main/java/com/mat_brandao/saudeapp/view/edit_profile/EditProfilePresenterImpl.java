@@ -25,6 +25,7 @@ import com.squareup.picasso.Picasso;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -351,7 +352,9 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
 
         @Override
         public void onError(Throwable e) {
-            mView.showNoConnectionSnackBar();
+            if (e instanceof UnknownHostException) {
+                mView.showNoConnectionSnackBar();
+            }
         }
 
         @Override
@@ -394,7 +397,9 @@ public class EditProfilePresenterImpl implements EditProfilePresenter, GenericOb
 
         @Override
         public void onError(Throwable e) {
-            mView.dismissProgressDialog();
+            if (e instanceof UnknownHostException) {
+                mView.showNoConnectionSnackBar();
+            }
         }
 
         @Override

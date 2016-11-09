@@ -461,7 +461,7 @@ public class EstablishmentInteractorImpl implements EstablishmentInteractor {
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable1 -> new ArrayList<>())
                 .subscribe(addresses -> {
-                    if (addresses != null) {
+                    if (addresses != null && !addresses.isEmpty()) {
                         String addressLine = addresses.get(0).getAddressLine(1);
                         if (addressLine.contains("-")) {
                             listener.onNext(getUfFromAddress(addressLine));

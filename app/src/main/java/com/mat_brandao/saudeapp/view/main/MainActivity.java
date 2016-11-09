@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.mat_brandao.saudeapp.R;
 import com.mat_brandao.saudeapp.view.base.BaseActivity;
 import com.mat_brandao.saudeapp.view.base.BasePresenter;
+import com.mat_brandao.saudeapp.view.establishment.EstablishmentFragment;
 import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
@@ -105,6 +106,7 @@ public class MainActivity extends BaseActivity implements MainView {
                     .replace(R.id.frame_content, fragment)
                     .commit();
         } else {
+            getSupportFragmentManager().getFragments().get(0).onDestroyView();
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.frame_content, fragment)

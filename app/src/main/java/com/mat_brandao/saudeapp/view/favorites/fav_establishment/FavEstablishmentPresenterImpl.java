@@ -27,6 +27,7 @@ import com.mat_brandao.saudeapp.domain.util.GenericObjectClickListener;
 import com.mat_brandao.saudeapp.domain.util.GenericUtil;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,9 +78,9 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
     @Override
     public void onRetryClicked() {
         showProgressBar();
-        mLastObservable
+        mSubscription.add(mLastObservable
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(mLastObserver);
+                .subscribe(mLastObserver));
     }
 
     public FavEstablishmentPresenterImpl(FavEstablishmentView view, Context context) {
@@ -294,7 +295,10 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
 
         @Override
         public void onError(Throwable e) {
-            mView.showNoConnectionSnackBar();
+            if (e instanceof UnknownHostException) {
+                mView.setProgressLayoutVisibility(View.GONE);
+                mView.showNoConnectionSnackBar();
+            }
         }
 
         @Override
@@ -310,10 +314,10 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
                             .flatMap(codConteudo -> mInteractor.requestGetPostContent(codConteudo));
                     mLastObserver = postContentObserver;
 
-                    Observable.from(codConteudoList)
+                    mSubscription.add(Observable.from(codConteudoList)
                             .flatMap(codConteudo -> mInteractor.requestGetPostContent(codConteudo))
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(postContentObserver);
+                            .subscribe(postContentObserver));
                 } else {
                     showEmptyView();
                 }
@@ -330,15 +334,18 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
                     .flatMap(establishmentCode -> mInteractor.requestGetEstablishment(establishmentCode));
             mLastObserver = establishmentObserver;
 
-            Observable.from(mEstablishmentCodeList)
+            mSubscription.add(Observable.from(mEstablishmentCodeList)
                     .flatMap(establishmentCode -> mInteractor.requestGetEstablishment(establishmentCode))
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(establishmentObserver);
+                    .subscribe(establishmentObserver));
         }
 
         @Override
         public void onError(Throwable e) {
-            mView.showNoConnectionSnackBar();
+            if (e instanceof UnknownHostException) {
+                mView.setProgressLayoutVisibility(View.GONE);
+                mView.showNoConnectionSnackBar();
+            }
         }
 
         @Override
@@ -356,18 +363,14 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
     private Observer<Response<List<Establishment>>> establishmentObserver = new Observer<Response<List<Establishment>>>() {
         @Override
         public void onCompleted() {
-            if (mEstablishmentList.size() > 0) {
-                showList();
-                mAdapterCountAfterFetching = mEstablishmentList.size();
-                mView.setRecyclerAdapter(new FavEstablishmentAdapter(mContext, mEstablishmentList, FavEstablishmentPresenterImpl.this));
-            } else {
-                showEmptyView();
-            }
         }
 
         @Override
         public void onError(Throwable e) {
-            mView.showNoConnectionSnackBar();
+            if (e instanceof UnknownHostException) {
+                mView.setProgressLayoutVisibility(View.GONE);
+                mView.showNoConnectionSnackBar();
+            }
         }
 
         @Override
@@ -378,6 +381,13 @@ public class FavEstablishmentPresenterImpl implements FavEstablishmentPresenter,
                 }
             } else {
                 mView.showToast(mContext.getString(R.string.http_error_generic));
+            }
+            if (mEstablishmentList.size() > 0) {
+                showList();
+                mAdapterCountAfterFetching = mEstablishmentList.size();
+                mView.setRecyclerAdapter(new FavEstablishmentAdapter(mContext, mEstablishmentList, FavEstablishmentPresenterImpl.this));
+            } else {
+                showEmptyView();
             }
         }
     };

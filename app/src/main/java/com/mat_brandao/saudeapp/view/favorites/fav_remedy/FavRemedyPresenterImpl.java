@@ -23,6 +23,7 @@ import com.mat_brandao.saudeapp.view.favorites.fav_establishment.FavEstablishmen
 import com.mat_brandao.saudeapp.view.favorites.fav_establishment.FavEstablishmentPresenterImpl;
 import com.mat_brandao.saudeapp.view.remedy.RemedyPresenterImpl;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -74,9 +75,9 @@ public class FavRemedyPresenterImpl implements FavRemedyPresenter, GenericObject
     @Override
     public void onRetryClicked() {
         showProgressBar();
-        mLastObservable
+        mSubscription.add(mLastObservable
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(mLastObserver);
+                .subscribe(mLastObserver));
     }
 
     public FavRemedyPresenterImpl(FavRemedyView view, Context context) {
@@ -207,7 +208,10 @@ public class FavRemedyPresenterImpl implements FavRemedyPresenter, GenericObject
 
         @Override
         public void onError(Throwable e) {
-            mView.showNoConnectionSnackBar();
+            if (e instanceof UnknownHostException) {
+                mView.setProgressLayoutVisibility(View.GONE);
+                mView.showNoConnectionSnackBar();
+            }
         }
 
         @Override
@@ -223,10 +227,10 @@ public class FavRemedyPresenterImpl implements FavRemedyPresenter, GenericObject
                             .flatMap(codConteudo -> mInteractor.requestGetPostContent(codConteudo));
                     mLastObserver = postContentObserver;
 
-                    Observable.from(codConteudoList)
+                    mSubscription.add(Observable.from(codConteudoList)
                             .flatMap(codConteudo -> mInteractor.requestGetPostContent(codConteudo))
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(postContentObserver);
+                            .subscribe(postContentObserver));
                 } else {
                     showEmptyView();
                 }
@@ -243,15 +247,18 @@ public class FavRemedyPresenterImpl implements FavRemedyPresenter, GenericObject
                     .flatMap(remedyCode -> mInteractor.requestGetRemedy(remedyCode));
             mLastObserver = establishmentObserver;
 
-            Observable.from(mRemedyCodeList)
+            mSubscription.add(Observable.from(mRemedyCodeList)
                     .flatMap(remedyCode -> mInteractor.requestGetRemedy(remedyCode))
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(establishmentObserver);
+                    .subscribe(establishmentObserver));
         }
 
         @Override
         public void onError(Throwable e) {
-            mView.showNoConnectionSnackBar();
+            if (e instanceof UnknownHostException) {
+                mView.setProgressLayoutVisibility(View.GONE);
+                mView.showNoConnectionSnackBar();
+            }
         }
 
         @Override
@@ -269,18 +276,14 @@ public class FavRemedyPresenterImpl implements FavRemedyPresenter, GenericObject
     private Observer<Response<List<Remedy>>> establishmentObserver = new Observer<Response<List<Remedy>>>() {
         @Override
         public void onCompleted() {
-            if (mRemedyList.size() > 0) {
-                showList();
-                mAdapterCountAfterFetching = mRemedyList.size();
-                mView.setRecyclerAdapter(new FavRemedyAdapter(mContext, mRemedyList, FavRemedyPresenterImpl.this));
-            } else {
-                showEmptyView();
-            }
         }
 
         @Override
         public void onError(Throwable e) {
-            mView.showNoConnectionSnackBar();
+            if (e instanceof UnknownHostException) {
+                mView.setProgressLayoutVisibility(View.GONE);
+                mView.showNoConnectionSnackBar();
+            }
         }
 
         @Override
@@ -291,6 +294,14 @@ public class FavRemedyPresenterImpl implements FavRemedyPresenter, GenericObject
                 }
             } else {
                 mView.showToast(mContext.getString(R.string.http_error_generic));
+            }
+
+            if (mRemedyList.size() > 0) {
+                showList();
+                mAdapterCountAfterFetching = mRemedyList.size();
+                mView.setRecyclerAdapter(new FavRemedyAdapter(mContext, mRemedyList, FavRemedyPresenterImpl.this));
+            } else {
+                showEmptyView();
             }
         }
     };

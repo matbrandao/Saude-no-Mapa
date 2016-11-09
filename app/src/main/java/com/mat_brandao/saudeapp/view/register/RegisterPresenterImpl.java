@@ -442,7 +442,6 @@ public class RegisterPresenterImpl implements RegisterPresenter, GenericObjectCl
         @Override
         public void onError(Throwable e) {
             mView.dismissProgressDialog();
-            Timber.i("onError() called with: e = [" + e + "]");
         }
 
         @Override
