@@ -2,8 +2,10 @@ package com.mat_brandao.saudeapp;
 
 import android.app.Application;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 
+import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import timber.log.Timber;
@@ -19,6 +21,7 @@ public class SaudeApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
 
         Timber.plant(new Timber.DebugTree());
 

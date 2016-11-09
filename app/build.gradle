@@ -1,4 +1,14 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'realm-android'
 android {
@@ -36,6 +46,7 @@ repositories {
     jcenter()
     mavenCentral()
     mavenLocal()
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 repositories {
@@ -93,5 +104,8 @@ dependencies {
     compile 'com.iarcuschin:simpleratingbar:0.1.3'
 
     testCompile 'junit:junit:4.12'
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
+        transitive = true;
+    }
 }
 apply plugin: 'com.google.gms.google-services'
