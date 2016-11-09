@@ -789,15 +789,20 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
                 mFilteredEstablishmentList.addAll(listResponse.body());
                 mEstablishmentList.addAll(listResponse.body());
 
-                showMapPins(listResponse.body());
-                if (listResponse.body().size() == ESTABLISHMENT_SEARCH_LIMIT) {
-                    requestEstablishments(mEstablishmentList.size());
-                }
-                if (mEstablishmentList.size() <= ESTABLISHMENT_SEARCH_LIMIT) {
-                    mInteractor.animateCameraToAllEstablishments(mMap);
-                }
                 if (mEstablishmentList.size() > 0) {
+                    showMapPins(listResponse.body());
+                    if (listResponse.body().size() == ESTABLISHMENT_SEARCH_LIMIT) {
+                        requestEstablishments(mEstablishmentList.size());
+                    }
+                    if (mEstablishmentList.size() <= ESTABLISHMENT_SEARCH_LIMIT) {
+                        mInteractor.animateCameraToAllEstablishments(mMap);
+                    }
+
                     mView.toggleFabButton(true);
+                    mView.setProgressFabVisibility(View.GONE);
+                } else {
+                    mView.toggleFabButton(false);
+                    mView.showToast(mContext.getString(R.string.establishment_no_results));
                     mView.setProgressFabVisibility(View.GONE);
                 }
             } else {

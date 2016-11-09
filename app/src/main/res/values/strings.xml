@@ -146,4 +146,5 @@
     <string name="dialog_fireman_message">Deseja ligar para o Corpo de Bombeiros (193)?</string>
     <string name="dialog_samu_message">Deseja ligar para o SAMU (192)?</string>
     <string name="price_text">Preço:</string>
+    <string name="establishment_no_results">Nenhum estabelecimento encontrado</string>
 </resources>
