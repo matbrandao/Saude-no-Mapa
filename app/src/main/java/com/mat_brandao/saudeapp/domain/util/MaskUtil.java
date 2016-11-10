@@ -20,6 +20,8 @@ public class MaskUtil {
 
 
     public static String unmask(String s) {
+        if (TextUtils.isEmpty(s))
+            return s;
         return s.replaceAll("[.]", "").replaceAll("[-]", "")
                 .replaceAll("[/]", "").replaceAll("[(]", "")
                 .replaceAll("[)]", "").replaceAll(" ", "")

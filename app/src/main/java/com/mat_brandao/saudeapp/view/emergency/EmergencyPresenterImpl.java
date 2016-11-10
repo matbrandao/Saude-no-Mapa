@@ -255,12 +255,14 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
 
                     mInteractor.animateCameraToMarker(mMap, marker);
                     Establishment establishment = mInteractor.getEstablishmentFromMarker(marker);
-                    new Handler().postDelayed(() -> {
-                        mContext.runOnUiThread(() -> {
-                            showEstablishmentBottomDialog(establishment);
-                            getEstablishmentRating(Long.valueOf(establishment.getCodUnidade()));
-                        });
-                    }, 500);
+                    if (establishment != null) {
+                        new Handler().postDelayed(() -> {
+                            mContext.runOnUiThread(() -> {
+                                showEstablishmentBottomDialog(establishment);
+                                getEstablishmentRating(Long.valueOf(establishment.getCodUnidade()));
+                            });
+                        }, 500);
+                    }
                     marker.showInfoWindow();
                     lastOpenned = marker;
                     return true;
@@ -639,7 +641,9 @@ public class EmergencyPresenterImpl implements EmergencyPresenter, OnLocationFou
 
     @Override
     public void onNext(String uf) {
-        mView.setUfSpinnerSelection(mUfList.indexOf(uf));
+        try {
+            mView.setUfSpinnerSelection(mUfList.indexOf(uf));
+        } catch (Exception e) {}
     }
 
     class EmergencyViews {
