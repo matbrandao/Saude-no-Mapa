@@ -131,10 +131,11 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/rating_view"
                             android:layout_gravity="center"
-                            app:srb_starSize="20dp"
+                            app:srb_starSize="25dp"
                             app:srb_numberOfStars="5"
                             app:srb_rating="0"
                             app:srb_stepSize="0.5"
+                            app:srb_starBorderWidth="2"
                             app:srb_borderColor="@color/colorAccent"
                             app:srb_fillColor="@color/colorAccent"/>
 
