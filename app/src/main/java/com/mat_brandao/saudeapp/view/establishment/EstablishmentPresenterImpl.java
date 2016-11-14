@@ -358,7 +358,7 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
         }
 
         mRatingView = bottomViews.ratingView;
-        bottomViews.ratingView.setIndicator(true);
+//        bottomViews.ratingView.setIndicator(true);
         Observable<View> clickEventObservable = Observable.create(new Observable.OnSubscribe<View>() {
             @Override
             public void call(final Subscriber<? super View> subscriber) {
@@ -746,7 +746,11 @@ public class EstablishmentPresenterImpl implements EstablishmentPresenter, OnMap
      */
     @Override
     public void onNext(String uf) {
-        mView.setUfSpinnerSelection(mUfList.indexOf(uf));
+        try {
+            mView.setUfSpinnerSelection(mUfList.indexOf(uf));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void requestEstablishments(int pagination) {
