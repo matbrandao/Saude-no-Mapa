@@ -86,9 +86,11 @@ public abstract class BaseFragment extends Fragment {
     }
 
     protected void showConnectionError(View coordinatorLayout, View.OnClickListener listener) {
-        Snackbar.make(coordinatorLayout, getString(R.string.connection_error_snack), Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.connection_retry, listener)
-                .show();
+        try {
+            Snackbar.make(coordinatorLayout, getString(R.string.connection_error_snack), Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.connection_retry, listener)
+                    .show();
+        } catch (Exception e) {}
     }
 
     protected void showProgressDialog(Context context, String message) {

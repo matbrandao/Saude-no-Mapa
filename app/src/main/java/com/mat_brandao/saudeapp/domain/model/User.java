@@ -166,7 +166,7 @@ public class User extends RealmObject {
         this.appToken = appToken;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
